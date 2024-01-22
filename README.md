@@ -1,5 +1,5 @@
-# USEEIO-State
-Two region State Environmentally Extended Input-Output models and related components
+# USEEIO State Models
+Code to build USEEIO family Environmentally-Extended Input-Output models for US states and calculate example results.
 
 
 ## Disclaimer
