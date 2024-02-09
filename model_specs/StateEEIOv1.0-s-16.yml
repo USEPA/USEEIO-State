@@ -1,8 +1,8 @@
-Model: "WAEEIOv1.0-s-20" # 2020 Summary, Commodity
+Model: "StateEEIOv1.0-s-16" # 2016 Summary, Commodity
 BaseIOSchema: 2012
 BaseIOLevel: &BaseIOLevel "Summary"
-IOYear: &Year 2020 # Year for IO data
-ModelRegionAcronyms: ["US-WA", "RoUS"]
+IOYear: &Year 2016 # Year for IO data
+ModelRegionAcronyms: ["US-ME", "RoUS"]
 ModelType: "EEIO"
 IODataSource: "stateior"
 IODataVersion: "0.2.1"
@@ -54,7 +54,7 @@ SatelliteTable:
     <<: *flowsa
     FullName: "Greenhouse Gases"
     Abbreviation: "GHG"
-    StaticFile: "flowsa/FlowBySector/GHG_state_2020_m1_v2.0.0_a8c5929.parquet"
+    StaticFile: "flowsa/FlowBySector/GHG_state_2016_m1_v2.0.0_a8c5929.parquet"
     DataYears:
       - *Year
     OriginalFlowSource: "FEDEFLv1.0.9"
@@ -62,14 +62,14 @@ SatelliteTable:
       USEPA_GHG_2022:
         Title: "GHG Disaggregated State Inventory"
         Author: "USEPA"
-        DataYear: 2020
+        DataYear: 2016
         URL: ""
         Primary: TRUE
   WAT:
     <<: *flowsa
     FullName: "Water withdrawals"
     Abbreviation: "WAT"
-    StaticFile: "flowsa/FlowBySector/Water_state_2015_m1_v2.0.0_62522ae.parquet"
+    StaticFile: "flowsa/FlowBySector/Water_state_2015_m1_v2.0.0_372aab5.parquet"
     DataYears: [2015]
     OriginalFlowSource: "FEDEFLv1.0.9"
     DataSources:
@@ -83,8 +83,8 @@ SatelliteTable:
     <<: *flowsa
     FullName: "Criteria and Hazardous Air Emissions"
     Abbreviation: "CHAIR"
-    StaticFile: "flowsa/FlowBySector/CAP_HAP_state_2020_m1_v2.0.0_6e96a28.parquet"
-    DataYears: [2020]
+    StaticFile: "flowsa/FlowBySector/CAP_HAP_state_2017_m1_v2.0.0_6e96a28.parquet"
+    DataYears: [2017]
     OriginalFlowSource: "FEDEFLv1.0.9"
     DataSources:
       EPA_NEI_2017:
@@ -103,7 +103,7 @@ SatelliteTable:
     <<: *flowsa
     FullName: "Point source industrial releases to ground"
     Abbreviation: "GRDREL"
-    StaticFile: "flowsa/FlowBySector/GRDREL_state_2020_v2.0.0_a52db57.parquet"
+    StaticFile: "flowsa/FlowBySector/GRDREL_state_2016_v2.0.0_a52db57.parquet"
     DataYears:
       - *Year
     OriginalFlowSource: "FEDEFLv1.0.9"
@@ -118,7 +118,7 @@ SatelliteTable:
     <<: *flowsa
     FullName: "Point source releases to water"
     Abbreviation: "WATREL"
-    StaticFile: "flowsa/FlowBySector/TRI_DMR_state_2020_v2.0.0_a52db57.parquet"
+    StaticFile: "flowsa/FlowBySector/TRI_DMR_state_2016_v2.0.0_a52db57.parquet"
     DataYears:
       - *Year
     OriginalFlowSource: "FEDEFLv1.0.9"
@@ -171,8 +171,8 @@ SatelliteTable:
     <<: *flowsa
     FullName: "Commercial RCRA-defined hazardous waste"
     Abbreviation: "CRHW"
-    StaticFile: "flowsa/FlowBySector/CRHW_state_2019_v2.0.0_a52db57.parquet"
-    DataYears: [2019]
+    StaticFile: "flowsa/FlowBySector/CRHW_state_2017_v2.0.0_a52db57.parquet"
+    DataYears: [2017]
     OriginalFlowSource: "RCRAInfo"
     DataSources:
       USEPA_RCRAInfo_2017:
@@ -185,7 +185,7 @@ SatelliteTable:
     <<: *flowsa
     FullName: "Employment"
     Abbreviation: "EMP"
-    StaticFile: "flowsa/FlowBySector/Employment_state_2020_v2.0.0_62522ae.parquet"
+    StaticFile: "flowsa/FlowBySector/Employment_state_2016_v2.0.0_c31283d.parquet"
     DataYears: 
       - *Year
     OriginalFlowSource: "National Employment Matrix"

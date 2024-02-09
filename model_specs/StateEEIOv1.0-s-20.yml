@@ -1,8 +1,8 @@
-Model: "GAEEIOv1.0-s-20" # 2020 Summary, Commodity
+Model: "StateEEIOv1.0-s-20" # 2020 Summary, Commodity
 BaseIOSchema: 2012
 BaseIOLevel: &BaseIOLevel "Summary"
 IOYear: &Year 2020 # Year for IO data
-ModelRegionAcronyms: ["US-GA", "RoUS"]
+ModelRegionAcronyms: ["US-ME", "RoUS"]
 ModelType: "EEIO"
 IODataSource: "stateior"
 IODataVersion: "0.2.1"
