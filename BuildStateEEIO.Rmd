@@ -1,0 +1,45 @@
+---
+title: State EEIO Models"
+output:
+  md_document:
+    variant: gfm
+---
+
+```{r setup, include=FALSE}
+source("R/utils.R")
+
+## Select model build parameters
+year <- 2020
+state <- "US-GA"
+
+modelstub <- 'StateEEIOv1.0-s-'
+modelname <- paste0("StateEEIOv1.0-s-",substr(year,3,4)) 
+configpaths <- file.path(paste0('model_specs/', modelname, '.yml'))
+output_dir <- file.path('output')
+dir.create(output_dir, showWarnings = FALSE)
+
+install_useeior()
+library(useeior)
+```
+
+
+```{r build-model, include=FALSE}
+print(paste0("Building model for ", state, " in ", year))
+
+# model <- buildModel(modelname, configpaths)
+model <- useeior:::initializeModel(modelname, configpaths)
+
+model$specs$Model <- paste0(substring(state, 4), substring(modelname, 6))
+model$specs$ModelRegionAcronyms[1] <- state
+
+model <- useeior:::loadIOData(model, configpaths)
+model <- useeior:::loadandbuildSatelliteTables(model)
+model <- useeior:::loadandbuildIndicators(model)
+model <- useeior:::loadDemandVectors(model)
+model <- useeior:::constructEEIOMatrices(model)
+
+writeModeltoXLSX(model, output_dir)
+
+```
+
+Model built for `r state` in `r year`.
