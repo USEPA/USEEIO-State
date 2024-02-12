@@ -3,17 +3,30 @@ title: State EEIO Models"
 output:
   md_document:
     variant: gfm
+params:
+  modelyear:
+    label: "Model Year"
+    value: 2020
+    input: select
+    choices: [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020]
+  modelstate:
+    label: "State"
+    value: "GA"
+    input: select
+    choices: ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL",
+              "IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT",
+              "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI",
+              "SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"]
 ---
 
 ```{r setup, include=FALSE}
 source("R/utils.R")
 
 ## Select model build parameters
-year <- 2020
-state <- "US-GA"
+state <- paste0("US-", params$modelstate)
 
 modelstub <- 'StateEEIOv1.0-s-'
-modelname <- paste0("StateEEIOv1.0-s-",substr(year,3,4)) 
+modelname <- paste0("StateEEIOv1.0-s-",substr(params$modelyear,3,4)) 
 configpaths <- file.path(paste0('model_specs/', modelname, '.yml'))
 output_dir <- file.path('output')
 dir.create(output_dir, showWarnings = FALSE)
@@ -24,12 +37,12 @@ library(useeior)
 
 
 ```{r build-model, include=FALSE}
-print(paste0("Building model for ", state, " in ", year))
+print(paste0("Building model for ", state, " in ", params$modelyear))
 
 # model <- buildModel(modelname, configpaths)
 model <- useeior:::initializeModel(modelname, configpaths)
 
-model$specs$Model <- paste0(substring(state, 4), substring(modelname, 6))
+model$specs$Model <- paste0(params$modelstate, substring(modelname, 6))
 model$specs$ModelRegionAcronyms[1] <- state
 
 model <- useeior:::loadIOData(model, configpaths)
@@ -42,4 +55,4 @@ writeModeltoXLSX(model, output_dir)
 
 ```
 
-Model built for `r state` in `r year`.
+Model built for `r params$modelstate` in `r params$modelyear`.

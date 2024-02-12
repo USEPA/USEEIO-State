@@ -7,11 +7,11 @@ The models are described in the EPA report [USEEIO State Models v1.0: Environmen
 
 The code in this repository can be used to generate the StateEEIO models based on options selected by the user.
 
-Run the file [BuildStateEEIO.Rmd](BuildStateEEIO.rmd)
+Run the file [BuildStateEEIO.Rmd](BuildStateEEIO.rmd) by selecting "Knit with Parameters"
 
 A single year can be selected from the range of 2012 - 2020.
 
-A single state can be selected using two digit codes starting with "US-", e.g., "US-GA".
+A single state can be selected using two digit codes e.g., "GA".
 
 An excel version of the model is produced and stored in a folder labeled "output". A markdown file, BuildStateEEIO.md, is automatically generated during execution, but it contains no original content.
 
