@@ -7,7 +7,7 @@ The models are described in the EPA report [USEEIO State Models v1.0: Environmen
 
 The code in this repository can be used to generate the StateEEIO models based on options selected by the user.
 
-Run the file [BuildStateEEIO.Rmd](BuildStateEEIO.rmd) by selecting "Knit with Parameters"
+Run the file [BuildStateEEIO.Rmd](BuildStateEEIO.Rmd) by selecting "Knit with Parameters"
 
 A single year can be selected from the range of 2012 - 2020.
 
