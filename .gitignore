@@ -4,4 +4,6 @@
 .Ruserdata
 *.Rproj
 output/*
-BuildStateEEIO.md
+DownloadandSaveModelLocally.md
+models/*
+.idea/*
