@@ -1,16 +1,54 @@
+# Demonstrate the Computation of Type I Multiplers and Related Impacts of construction spending from a Colorado EEIO model
+
 This script builds a Colorado USEEIO State model for 2020 with
 extensions for Jobs, Greenhouse Gas Emissions, and Value Added
 components.
 
-It requires useeior \>= v1.5.1. We use the remotes package to install
-it. The we build a custom COEEIO state model using useeior and a [new
-custom model specification file](model_specs/COEEIOv1.0-s-JGV-20.yml)
+It requires *useeior* \>= v1.5.1 which will be installed from github
+using the remotes library if *useeior* doesn’t exist already in your R
+environment.
+
+Your R environment needs to be setup to use the Project directory to
+knit this file (usually from RStudio).
+
+``` r
+# Load a local R file with an install_useeior() function
+source("R/utils.R")
+install_useeior() # This install
+library(useeior)
+```
+
+Then we build a custom state EEIO model for Colorado using useeior and a
+[new custom model specification
+file](model_specs/COEEIOv1.0-s-JGV-20.yml). All the raw files including
+the relevant StateIO and National totals of Employment and GHGs by
+sector, and Indicators (for GHGs to convert to kg CO2e) tables are
+retrieved from the EPA Data Commons and stored locally in your
+machine-defined `appdata` directory under *stateio* and *flowsa*, and
+*lciaformatter*, respectively (each are EPA Tools for Industrial Ecology
+modeling).
+
+If you’ve already built it once, it will load a stored RDS version from
+an output directory in this project.
+
+``` r
+dir <- file.path("output")
+local_model_RDS <- "COEEIOv1.0-s-JGV-20.rds"
+dir_local_model_RDS <- file.path(dir,local_model_RDS)
+if (!file.exists(dir_local_model_RDS)) {
+  CO <- buildModel("COEEIOv1.0-s-JGV-20","model_specs/COEEIOv1.0-s-JGV-20.yml")  
+  if (!dir.exists(dir)) dir.create(dir)
+  saveRDS(CO,dir_local_model_RDS)
+} else {
+  CO <- readRDS(dir_local_model_RDS)
+}
+```
 
 Assume a scenario of \$2 million in spending in construction in
 Colorado.
 
-Get the Type 1 (indirect) output multiplier, defined here has the sum of
-total requirements table column for that sector of interest
+Get the Type I (indirect) output multiplier, defined here has the sum of
+total requirements table column for that sector and region of interest.
 
 ``` r
 # Create a custom demand vector for CO construction
@@ -21,8 +59,6 @@ regions <- c("CO","RoUS","All US")
 output_multiplier_CO <- sum(CO$L_d[grep("US-CO",row.names(CO$L_d)),sector])
 output_multiplier_RoUS <- sum(CO$L_d[grep("RoUS",row.names(CO$L_d)),sector])
 output_multiplier <- output_multiplier_CO + output_multiplier_RoUS
-
-#data.frame(CO=output_multiplier_CO,RoUS=output_multiplier_RoUS,All_US=output_multiplier)  
 
 data.frame(Output_Multiplier=c(output_multiplier_CO,output_multiplier_RoUS,output_multiplier), row.names=regions)
 ```
@@ -214,7 +250,3 @@ result$LCIA_d
     ## GSLE/RoUS        6.169977e+02   3.517432e-04 3.167451e+02
     ## Used/RoUS        4.196063e+02   4.954811e-03 9.584619e+02
     ## Other/RoUS       0.000000e+00   0.000000e+00 0.000000e+00
-
-# 
-
-\`\`\`
