@@ -8,7 +8,7 @@ output:
 This script builds a Colorado USEEIO State model for 2020 with extensions for Jobs, Greenhouse Gas Emissions, and Value Added components.
 
 It requires useeior >= v1.5.1. We use the remotes package to install it. 
-The we build a custom COEEIO state model using useeior and a [new custom model specification file](model_specs/COEEIOv1.0-s-JGV-20.yml)
+Then we build a custom COEEIO state model using useeior and a [new custom model specification file](model_specs/COEEIOv1.0-s-JGV-20.yml)
 
 ```{r setup, include=FALSE}
 source("R/utils.R")
@@ -66,9 +66,6 @@ The full results can be viewed by sector and location
 result$LCIA_d
 ```
 
-#
 
 
-
-```
 

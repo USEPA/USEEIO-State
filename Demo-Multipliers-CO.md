@@ -3,7 +3,7 @@ extensions for Jobs, Greenhouse Gas Emissions, and Value Added
 components.
 
 It requires useeior \>= v1.5.1. We use the remotes package to install
-it. The we build a custom COEEIO state model using useeior and a [new
+it. Then we build a custom COEEIO state model using useeior and a [new
 custom model specification file](model_specs/COEEIOv1.0-s-JGV-20.yml)
 
 Assume a scenario of \$2 million in spending in construction in
@@ -214,7 +214,3 @@ result$LCIA_d
     ## GSLE/RoUS        6.169977e+02   3.517432e-04 3.167451e+02
     ## Used/RoUS        4.196063e+02   4.954811e-03 9.584619e+02
     ## Other/RoUS       0.000000e+00   0.000000e+00 0.000000e+00
-
-# 
-
-\`\`\`
