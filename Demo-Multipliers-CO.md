@@ -43,7 +43,6 @@ if (!file.exists(dir_local_model_RDS)) {
   CO <- readRDS(dir_local_model_RDS)
 }
 ```
-
 Assume a scenario of \$2 million in spending in construction in
 Colorado.
 
