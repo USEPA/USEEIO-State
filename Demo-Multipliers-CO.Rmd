@@ -5,25 +5,42 @@ output:
     variant: gfm
 ---
 
+# Demonstrate the Computation of Type I Multipliers and Related Impacts of construction spending from a Colorado EEIO model
+
 This script builds a Colorado USEEIO State model for 2020 with extensions for Jobs, Greenhouse Gas Emissions, and Value Added components.
 
-It requires useeior >= v1.5.1. We use the remotes package to install it. 
-Then we build a custom COEEIO state model using useeior and a [new custom model specification file](model_specs/COEEIOv1.0-s-JGV-20.yml)
+It requires _useeior_ >= v1.5.1 which will be installed from github using the remotes library if _useeior_ doesn't exist already in your R environment.
 
-```{r setup, include=FALSE}
+Your R environment needs to be setup to use the Project directory to knit this file (usually from RStudio).
+
+```{r setup}
+# Load a local R file with an install_useeior() function
 source("R/utils.R")
-install_useeior()
+install_useeior() # This install
+library(useeior)
 ```
 
+Then we build a custom state EEIO model for Colorado using _useeior_ and a [new custom model specification file](model_specs/COEEIOv1.0-s-JGV-20.yml).
+All the raw files including the relevant StateIO models and National totals of Employment and [GHGs by sector](https://doi.org/10.23719/1529805), and Indicators (for GHGs to convert to kg CO2e) tables are retrieved from the EPA Data Commons and stored locally in your machine-defined `appdata` directory under _stateio_ and _flowsa_, and _lciaformatter_, respectively (each are EPA Tools for Industrial Ecology modeling).
 
-```{r buildCOmodel, include=FALSE}
-library(useeior)
-CO <- buildModel("COEEIOv1.0-s-JGV-20","model_specs/COEEIOv1.0-s-JGV-20.yml")
+If you've already built it once, it will load a stored RDS version from an output directory in this project.
+
+```{r buildCOmodel}
+dir <- file.path("output")
+local_model_RDS <- "COEEIOv1.0-s-JGV-20.rds"
+dir_local_model_RDS <- file.path(dir,local_model_RDS)
+if (!file.exists(dir_local_model_RDS)) {
+  CO <- buildModel("COEEIOv1.0-s-JGV-20","model_specs/COEEIOv1.0-s-JGV-20.yml")  
+  if (!dir.exists(dir)) dir.create(dir)
+  saveRDS(CO,dir_local_model_RDS)
+} else {
+  CO <- readRDS(dir_local_model_RDS)
+}
 ```
 
 Assume a scenario of $2 million in spending in construction in Colorado.
 
-Get the Type 1 (indirect) output multiplier, defined here has the sum of total requirements table column for that sector of interest
+Get the Type I (indirect) output multiplier, defined here has the sum of total requirements table column for that sector and region of interest.
 
 ```{r outputmultiplers}
 # Create a custom demand vector for CO construction
@@ -35,10 +52,9 @@ output_multiplier_CO <- sum(CO$L_d[grep("US-CO",row.names(CO$L_d)),sector])
 output_multiplier_RoUS <- sum(CO$L_d[grep("RoUS",row.names(CO$L_d)),sector])
 output_multiplier <- output_multiplier_CO + output_multiplier_RoUS
 
-#data.frame(CO=output_multiplier_CO,RoUS=output_multiplier_RoUS,All_US=output_multiplier)  
-
 data.frame(Output_Multiplier=c(output_multiplier_CO,output_multiplier_RoUS,output_multiplier), row.names=regions)
 ```
+
 Look at total output stimulated in CO, the rest of the U.S., and all the U.S.
 ```{r}
 total_output_stimulated_CO <- demand*output_multiplier_CO
@@ -65,7 +81,3 @@ The full results can be viewed by sector and location
 ```{r}
 result$LCIA_d
 ```
-
-
-
-
