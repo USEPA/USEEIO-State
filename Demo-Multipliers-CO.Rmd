@@ -1,0 +1,71 @@
+---
+title: "Demonstrate the Computation of Indirect Multiplers and Impacts of construction spending from a Colorado EEIO model"
+output:
+  md_document:
+    variant: gfm
+---
+
+This script builds a Colorado USEEIO State model for 2020 with extensions for Jobs, Greenhouse Gas Emissions, and Value Added components.
+
+It requires useeior >= v1.5.1. We use the remotes package to install it. 
+Then we build a custom COEEIO state model using useeior and a [new custom model specification file](model_specs/COEEIOv1.0-s-JGV-20.yml)
+
+```{r setup, include=FALSE}
+source("R/utils.R")
+install_useeior()
+```
+
+
+```{r buildCOmodel, include=FALSE}
+library(useeior)
+CO <- buildModel("COEEIOv1.0-s-JGV-20","model_specs/COEEIOv1.0-s-JGV-20.yml")
+```
+
+Assume a scenario of $2 million in spending in construction in Colorado.
+
+Get the Type 1 (indirect) output multiplier, defined here has the sum of total requirements table column for that sector of interest
+
+```{r outputmultiplers}
+# Create a custom demand vector for CO construction
+sector <- c("23/US-CO")
+demand <- c(2E6)
+regions <- c("CO","RoUS","All US")
+
+output_multiplier_CO <- sum(CO$L_d[grep("US-CO",row.names(CO$L_d)),sector])
+output_multiplier_RoUS <- sum(CO$L_d[grep("RoUS",row.names(CO$L_d)),sector])
+output_multiplier <- output_multiplier_CO + output_multiplier_RoUS
+
+#data.frame(CO=output_multiplier_CO,RoUS=output_multiplier_RoUS,All_US=output_multiplier)  
+
+data.frame(Output_Multiplier=c(output_multiplier_CO,output_multiplier_RoUS,output_multiplier), row.names=regions)
+```
+Look at total output stimulated in CO, the rest of the U.S., and all the U.S.
+```{r}
+total_output_stimulated_CO <- demand*output_multiplier_CO
+total_output_stimulated_RoUS <- demand*output_multiplier_RoUS
+total_output_stimulated <- demand*output_multiplier
+
+data.frame(`Direct_Indirect_Output_Stimulated_$`=c(total_output_stimulated_CO,total_output_stimulated_RoUS,total_output_stimulated), row.names=regions)
+```
+
+Now calculate the direct and indirect impacts on greenhouse gas emissions, jobs supported, and value added.
+
+```{r computeresults, include=FALSE}
+y <- setNames(demand, sector)
+y <- formatDemandVector(y, CO$L)
+# Use a direct perspective calculation which will show the impact in the sectors in which it occurs
+result <- calculateEEIOModel(CO, perspective = "DIRECT", use_domestic_requirements=TRUE, demand = y)
+```
+
+Show the totals for the results for GHGs (kg CO2e), Jobs, and Value Added ($)
+```{r}
+colSums(result$LCIA_d)
+```
+The full results can be viewed by sector and location
+```{r}
+result$LCIA_d
+```
+
+
+
+
