@@ -98,7 +98,7 @@ y <- setNames(demand, sector)
 y <- formatDemandVector(y, CO$L)
 # Use a direct perspective calculation which will show the impact in the sectors in which it occurs
 result <- calculateEEIOModel(CO, perspective = "DIRECT", use_domestic_requirements=TRUE, demand = y)
-```
+``` 
 
     ## 2024-05-21 15:14:41.902822 INFO::Calculating Direct Perspective LCI...
     ## 2024-05-21 15:14:41.933144 INFO::Calculating Direct Perspective LCIA...
