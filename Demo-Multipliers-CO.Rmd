@@ -9,7 +9,7 @@ output:
 
 This script builds a Colorado USEEIO State model for 2020 with extensions for Jobs, Greenhouse Gas Emissions, and Value Added components.
 
-It requires _useeior_ >= v1.5.1 which will be installed from github using the remotes library if _useeior_ doesn't exist already in your R environment.
+It requires _useeior_ >= v1.5.1 which will be installed from github using the remotes library if _useeior_ doesn't exist already in your R environment. The kableExtra package is used for formatting the tables for output here.
 
 Your R environment needs to be setup to use the Project directory to knit this file (usually from RStudio).
 
@@ -18,6 +18,7 @@ Your R environment needs to be setup to use the Project directory to knit this f
 source("R/utils.R")
 install_useeior() # This install
 library(useeior)
+library(kableExtra)
 ```
 
 Then we build a custom state EEIO model for Colorado using _useeior_ and a [new custom model specification file](model_specs/COEEIOv1.0-s-JGV-20.yml).
@@ -52,7 +53,7 @@ output_multiplier_CO <- sum(CO$L_d[grep("US-CO",row.names(CO$L_d)),sector])
 output_multiplier_RoUS <- sum(CO$L_d[grep("RoUS",row.names(CO$L_d)),sector])
 output_multiplier <- output_multiplier_CO + output_multiplier_RoUS
 
-data.frame(Output_Multiplier=c(output_multiplier_CO,output_multiplier_RoUS,output_multiplier), row.names=regions)
+kable(data.frame(Output_Multiplier=c(output_multiplier_CO,output_multiplier_RoUS,output_multiplier), row.names=regions))
 ```
 
 Look at total output stimulated in CO, the rest of the U.S., and all the U.S.
@@ -61,12 +62,12 @@ total_output_stimulated_CO <- demand*output_multiplier_CO
 total_output_stimulated_RoUS <- demand*output_multiplier_RoUS
 total_output_stimulated <- demand*output_multiplier
 
-data.frame(`Direct_Indirect_Output_Stimulated_$`=c(total_output_stimulated_CO,total_output_stimulated_RoUS,total_output_stimulated), row.names=regions)
+kable(data.frame(`Direct_Indirect_Output_Stimulated_$`=c(total_output_stimulated_CO,total_output_stimulated_RoUS,total_output_stimulated), row.names=regions))
 ```
 
 Now calculate the direct and indirect impacts on greenhouse gas emissions, jobs supported, and value added.
 
-```{r computeresults, include=FALSE}
+```{r computeresults}
 y <- setNames(demand, sector)
 y <- formatDemandVector(y, CO$L)
 # Use a direct perspective calculation which will show the impact in the sectors in which it occurs
@@ -79,9 +80,9 @@ CO_result <- colSums(result$LCIA_d[grep("US-CO",row.names(result$LCIA_d)),])
 RoUS_result <- colSums(result$LCIA_d[grep("RoUS",row.names(result$LCIA_d)),])
 US_result <- CO_result+RoUS_result
 
-t(data.frame(CO=CO_result,RoUS=RoUS_result,`AllUS`=US_result))
+kable(t(data.frame(CO=CO_result,RoUS=RoUS_result,`AllUS`=US_result)))
 ```
 The full results can be viewed by sector and location
 ```{r}
-result$LCIA_d
+kable(result$LCIA_d)
 ```
