@@ -1,4 +1,4 @@
-# Demonstrate the Computation of Type I Multiplers and Related Impacts of construction spending from a Colorado EEIO model
+# Demonstrate the Computation of Type I Multipliers and Related Impacts of construction spending from a Colorado EEIO model
 
 This script builds a Colorado USEEIO State model for 2020 with
 extensions for Jobs, Greenhouse Gas Emissions, and Value Added
@@ -18,15 +18,15 @@ install_useeior() # This install
 library(useeior)
 ```
 
-Then we build a custom state EEIO model for Colorado using useeior and a
-[new custom model specification
+Then we build a custom state EEIO model for Colorado using *useeior* and
+a [new custom model specification
 file](model_specs/COEEIOv1.0-s-JGV-20.yml). All the raw files including
-the relevant StateIO and National totals of Employment and GHGs by
-sector, and Indicators (for GHGs to convert to kg CO2e) tables are
-retrieved from the EPA Data Commons and stored locally in your
-machine-defined `appdata` directory under *stateio* and *flowsa*, and
-*lciaformatter*, respectively (each are EPA Tools for Industrial Ecology
-modeling).
+the relevant StateIO models and National totals of Employment and [GHGs
+by sector](https://doi.org/10.23719/1529805), and Indicators (for GHGs
+to convert to kg CO2e) tables are retrieved from the EPA Data Commons
+and stored locally in your machine-defined `appdata` directory under
+*stateio* and *flowsa*, and *lciaformatter*, respectively (each are EPA
+Tools for Industrial Ecology modeling).
 
 If you’ve already built it once, it will load a stored RDS version from
 an output directory in this project.
@@ -43,6 +43,7 @@ if (!file.exists(dir_local_model_RDS)) {
   CO <- readRDS(dir_local_model_RDS)
 }
 ```
+
 Assume a scenario of \$2 million in spending in construction in
 Colorado.
 
@@ -87,14 +88,20 @@ Now calculate the direct and indirect impacts on greenhouse gas
 emissions, jobs supported, and value added.
 
 Show the totals for the results for GHGs (kg CO2e), Jobs, and Value
-Added (\$)
+Added (\$) by Region
 
 ``` r
-colSums(result$LCIA_d)
+CO_result <- colSums(result$LCIA_d[grep("US-CO",row.names(result$LCIA_d)),])
+RoUS_result <- colSums(result$LCIA_d[grep("RoUS",row.names(result$LCIA_d)),])
+US_result <- CO_result+RoUS_result
+
+t(data.frame(CO=CO_result,RoUS=RoUS_result,`AllUS`=US_result))
 ```
 
-    ## Greenhouse Gases   Jobs Supported      Value Added 
-    ##     4.034416e+05     1.282347e+01     1.833513e+06
+    ##       Greenhouse Gases Jobs Supported Value Added
+    ## CO            247223.9       9.866408   1353392.9
+    ## RoUS          156217.8       2.957062    480119.8
+    ## AllUS         403441.6      12.823470   1833512.7
 
 The full results can be viewed by sector and location
 

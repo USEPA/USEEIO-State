@@ -73,9 +73,13 @@ y <- formatDemandVector(y, CO$L)
 result <- calculateEEIOModel(CO, perspective = "DIRECT", use_domestic_requirements=TRUE, demand = y)
 ```
 
-Show the totals for the results for GHGs (kg CO2e), Jobs, and Value Added ($)
+Show the totals for the results for GHGs (kg CO2e), Jobs, and Value Added ($) by Region
 ```{r}
-colSums(result$LCIA_d)
+CO_result <- colSums(result$LCIA_d[grep("US-CO",row.names(result$LCIA_d)),])
+RoUS_result <- colSums(result$LCIA_d[grep("RoUS",row.names(result$LCIA_d)),])
+US_result <- CO_result+RoUS_result
+
+t(data.frame(CO=CO_result,RoUS=RoUS_result,`AllUS`=US_result))
 ```
 The full results can be viewed by sector and location
 ```{r}
