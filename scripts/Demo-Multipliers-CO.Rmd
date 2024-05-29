@@ -13,6 +13,10 @@ It requires _useeior_ >= v1.5.1 which will be installed from github using the re
 
 Your R environment needs to be setup to use the Project directory to knit this file (usually from RStudio).
 
+```{r config, cache=FALSE, include=FALSE}
+knitr::opts_knit$set(root.dir = "../.")
+```
+
 ```{r setup}
 # Load a local R file with an install_useeior() function
 source("R/utils.R")
