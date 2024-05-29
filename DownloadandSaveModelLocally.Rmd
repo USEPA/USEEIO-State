@@ -18,6 +18,9 @@ params:
               "IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT",
               "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI",
               "SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"]
+  write:
+    label: "Write to Excel?"
+    value: FALSE
 ---
 
 ```{r setup, include=FALSE}
@@ -36,7 +39,8 @@ modelstub <- 'EEIOv1.0-s-'
 modelname <- paste0(state, modelstub,substr(year,3,4)) 
 
 ```
-```{r load-model, include=FALSE}
+
+```{r load-model, echo=FALSE}
 
 file_name <- paste0(modelname,".rds")
 
@@ -47,19 +51,30 @@ directory <- "models/"
 file_path <- paste0(directory,file_name)
 
 if(!file.exists(file_path)) {
-  if (!file.exists(directory)) {
+  if (!dir.exists(directory)) {
     dir.create(directory, recursive = TRUE)
   }
   # Download file
   utils::download.file(file_url,file_path,
                        mode = "wb", quiet = TRUE)
-  print(paste0("Downloading model for ", state, " in ", params$modelyear))
+  print(paste0("Downloading model for ", state, " in ", year, " to ", file_path, "."))
 } else {
-  print(paste("File already exists at",file_path))
+  print(paste("File already exists at", file_path))
 }
 
 model <- readRDS(file_path) # Test that it loads correctly
 
 ```
 
-Model saved for `r state` in `r year` to `r file_path`.
+
+```{r write_model, eval=params$write, echo=FALSE}
+install_useeior()
+# write model to Excel
+output_dir <- file.path('output')
+dir.create(output_dir, showWarnings = FALSE)
+
+useeior::writeModeltoXLSX(model, output_dir)
+
+print(paste0("Model for ", state, " in ", year, " written to Excel at ", output_dir, "."))
+```
+
