@@ -1,18 +1,18 @@
 # USEEIO State Models
-This repository provides code to use USEEIO State Models and the [model specification/configuration files](/model_specs) for generating USEEIO State Models. Like for other USEEIO family models, [useeior](https://github.com/USEPA/useeior) is the primary tool used to assemble the USEEIO State models.
+This repository provides code to use USEEIO State Models and the model specification/configuration files for generating USEEIO State Models. Like for other USEEIO family models, [useeior](https://github.com/USEPA/useeior) is the primary tool used to assemble the USEEIO State models.
 
 The first version of the USEEIO State models (v1.0) are described in the EPA report [USEEIO State Models v1.0: Environmentally-Extended Input-Output Models for U.S. States](https://cfpub.epa.gov/si/si_public_record_Report.cfm?dirEntryId=360453).
 
-USEPA generated and QA'd versions of models are stored on the [EPA Data Commons](https://dmap-data-commons-ord.s3.amazonaws.com/index.html#USEEIO-State/). Some of the examples in this repository retrieve these stored, pre-built models. Others build the models using the model specification files and then perform uses of those models.
+USEPA generated and quality-assured versions of models are stored in the EPA Data Commons under the [USEEIO-State directory](https://dmap-data-commons-ord.s3.amazonaws.com/index.html#USEEIO-State/). Some of the examples in this repository retrieve these stored, pre-built models. Other examples build the models using the model specification files and then perform uses of those models.
 
-We recommend downloading a copy of or cloning the entire repository to use the code.
+We recommend downloading a copy or cloning the entire repository to use the code.
 
 ## Contents
 [examples](/examples) contains simple interactive R markdown files to use USEEIO State models. 
 
-[model_specs](/model_specs) contains original model specification.
+[model_specs](/model_specs) contains original model specification/configuration files for USEEIO State models including EPA v1.0 models.
 
-[R](/R) contains helper scripts called in examples.
+[R](/R) contains helper scripts called in examples. These R scripts are not intended for independent use.
 
 _model_ and _output_ subfolders will be created locally upon execution of some of the example code to store a local copy of a model or provide an output.
 
