@@ -4,6 +4,11 @@ output:
   md_document:
     variant: gfm
 params:
+  model:
+    label: "Model Type"
+    value: "v1.0"
+    input: select
+    choices: ["v1.0"] #, "v1.1-GHG"]
   year:
     label: "Model Year"
     value: 2012
@@ -34,8 +39,14 @@ if (params$state=="") {
 ## Select model build parameters
 state <- params$state
 year <- params$year
+spec <- params$model
 
-modelstub <- 'EEIOv1.0-s-'
+if (spec == "v1.0") {
+  modelstub <- 'EEIOv1.0-s-'
+} else if (spec == "v1.1-GHG") {
+  modelstub <- 'EEIOv1.1-GHG-'
+}
+
 modelname <- paste0(state, modelstub,substr(year,3,4)) 
 
 ```
