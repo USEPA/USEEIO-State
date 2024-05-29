@@ -31,7 +31,7 @@ All the raw files including the relevant StateIO models and National totals of E
 After building the model, it will store a version in RDS and Excel formats in an output directory. 
 If you've already built it once, it will load the stored RDS version.
 
-```{r buildCOmodel}
+```{r buildCOmodel, echo= T, results = 'hide'}
 dir <- file.path("output")
 local_model_RDS <- "COEEIOv1.0-s-JGV-20.rds"
 dir_local_model_RDS <- file.path(dir,local_model_RDS)
