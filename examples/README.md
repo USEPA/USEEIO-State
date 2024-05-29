@@ -1,5 +1,20 @@
 # Example Uses of USEEIO State Models
 
-Uses are exemplified in separate combination Rmd (for code) and .md (for printed output readable on github and also translatable into .docx or other format supported by pandoc). 
+These files are designed to run in RStudio. 
+Models and outputs are saved to subfolders of your local directory upon execution of this code.
 
-1. *Demo-Multipliers-CO**. Generate an original Colorado model for use in demonstrating the calculation of economic and environmental Type I multipliers using a USEEIO State model. [Code](Demo-Multipliers-CO.md).  [Output](Demo-Multipliers-CO.md)  
+Each Rmd performs tasks suggested by the name.
+
+To run a file, open the Rmd in RStudio and use the command "Knit with Parameters".
+
+This will produce a pop-up window asking you to select values. 
+
+One selected and entered the code will execute and produce output in your local folders.
+
+A markdown file will be generated with the same name as the Rmd file but an md extension that only contain confirmation of execution.
+
+Uses are exemplified in separate combination .Rmd (for code) and, when applicable, an .md (for printed output readable on github and also translatable into .docx or other format supported by pandoc). 
+
+1. **DownloadandSaveModelLocally**. Interactively select and download an EPA-built USEEIO State model. Save the model locally as .rds for quick retrieval for further uses. Optionally write the model out to Excel. [Code](DownloadandSaveModelLocally.Rmd). Output not applicable.  
+
+2. **Demo-Multipliers-CO**. Build an original Colorado model with jobs, GHG, and value added satellite tables for use in demonstrating the calculation of economic and environmental Type I multipliers using a USEEIO State model. [Code](Demo-Multipliers-CO.Rmd).  [Output](Demo-Multipliers-CO.md)  
