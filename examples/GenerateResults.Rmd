@@ -31,6 +31,7 @@ install_useeior()
 source("../R/StateEEIOFigures.R")
 source("../R/StateEEIOCalculations.R")
 library(useeior)
+library(reshape2)
 
 # Stop execution of Rmd if params not selected
 if (params$state=="") {
@@ -67,13 +68,20 @@ stackedBarChartResultFigure(df, perspective="FINAL", level="group",
 ![GHG emissions, Final perspective.](`r knitr::fig_chunk('ghg_results', 'png')`){#fig:ghg_results}
 
 
-```{r time_series_results, echo=FALSE, fig.width=9, fig.height=4}
+```{r time_series_demand, echo=FALSE, fig.width=9, fig.height=4}
+demand <- data.frame()
+demand_by_source <- data.frame()
 for (y in c(2012:2019)) {
   modelname <- paste0(state, modelstub,substr(y,3,4))
   file_path <- download_model_RDS(modelname)
   model <- readRDS(file_path)
   demands <- calculateDemandVectors(model, price_year = "2019")
-  
+  demand <- rbind(demand, demands$demand)
+  demand_by_source <- rbind(demand_by_source, demands$demand_by_source)
 }
+
+lineChartDemand(demand)
+lineChartDemand(demand_by_source)
+
 
 ```

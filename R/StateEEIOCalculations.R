@@ -32,6 +32,7 @@ calculateDemandVectors <- function(model, price_year=NULL) {
   
   total_demand <- colSums(soi_consumption)
   total_demand <- data.frame(t(total_demand))
+  total_demand <- cbind(total_demand, Total = rowSums(total_demand))
   total_demand$Year <- toString(year)
   
   # Calculate demand by sector by source
@@ -57,6 +58,6 @@ calculateDemandVectors <- function(model, price_year=NULL) {
   total_demand_by_source <- data.frame(t(total_demand_by_source))
   total_demand_by_source$Year <- toString(year)
   
-  return(list("demand" = soi_consumption, "demand_by_source" = total_demand_by_source))
+  return(list("demand" = total_demand, "demand_by_source" = total_demand_by_source))
 }
   
