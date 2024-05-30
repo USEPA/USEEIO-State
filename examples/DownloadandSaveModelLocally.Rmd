@@ -53,25 +53,7 @@ modelname <- paste0(state, modelstub,substr(year,3,4))
 
 ```{r load-model, echo=FALSE}
 
-file_name <- paste0(modelname,".rds")
-
-file_url <- paste0("https://dmap-data-commons-ord.s3.amazonaws.com/USEEIO-State/",file_name)
-
-directory <- "../models/"
-
-file_path <- paste0(directory,file_name)
-
-if(!file.exists(file_path)) {
-  if (!dir.exists(directory)) {
-    dir.create(directory, recursive = TRUE)
-  }
-  # Download file
-  utils::download.file(file_url,file_path,
-                       mode = "wb", quiet = TRUE)
-  print(paste0("Downloading model for ", state, " in ", year, " to ", file_path, "."))
-} else {
-  print(paste("File already exists at", file_path))
-}
+file_path <- download_model_RDS(modelname)
 
 model <- readRDS(file_path) # Test that it loads correctly
 
