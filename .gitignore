@@ -3,3 +3,8 @@
 .RData
 .Ruserdata
 *.Rproj
+output/*
+examples/*.md
+!examples/README.md
+models/*
+.idea/*

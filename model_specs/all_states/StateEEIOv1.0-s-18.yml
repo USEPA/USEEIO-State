@@ -1,0 +1,419 @@
+Model: "StateEEIOv1.0-s-18" # 2018 Summary, Commodity
+BaseIOSchema: 2012
+BaseIOLevel: &BaseIOLevel "Summary"
+IOYear: &Year 2018 # Year for IO data
+ModelRegionAcronyms: ["US-ME", "RoUS"]
+ModelType: "EEIO"
+IODataSource: "stateior"
+IODataVersion: "0.2.1"
+BasePriceType: "PRO" #producer
+BasewithRedefinitions: FALSE
+CommodityorIndustryType: "Commodity"
+ScrapIncluded: FALSE
+DisaggregationSpecs: null
+
+_anchor:
+  flowsa: &flowsa
+    StaticSource: TRUE
+    FileLocation: "DataCommons"
+    Locations: ["US"]
+    SectorListSource: "NAICS"
+    SectorListYear: 2012
+    SectorListLevel: "6"
+    ScriptFunctionCall: "getFlowbySectorCollapsed" #function to call for script
+    ScriptFunctionParameters: null
+
+  traci: &traci
+    StaticSource: TRUE
+    StaticFile: "lciafmt/traci/TRACI_2.1_v1.0.0_5555779.parquet"
+    FileLocation: "DataCommons"
+    ScriptFunctionCall: "getImpactMethod" #function to call for script
+    DataSources:
+      USEPA_TRACI_2.1:
+        Title: "TRACI 2.1"
+        Author: "USEPA"
+        DataYear: NA
+        URL: "https://www.epa.gov/chemical-research/tool-reduction-and-assessment-chemicals-and-other-environmental-impacts-traci"
+        Primary: TRUE
+  fedefl: &fedefl
+    StaticSource: TRUE
+    StaticFile: "lciafmt/fedefl/FEDEFL_Inventory_v1.0.0_5555779.parquet"
+    FileLocation: "DataCommons"
+    ScriptFunctionCall: "getImpactMethod" #function to call for script
+    DataSources:
+      LCIAformatter:
+        Title: "LCIAformatter FEDEFL Inventory Methods"
+        Author: "USEPA"
+        DataYear: 2020
+        URL: "https://github.com/USEPA/LCIAformatter"
+        Primary: TRUE
+
+
+SatelliteTable:
+  GHG:
+    <<: *flowsa
+    FullName: "Greenhouse Gases"
+    Abbreviation: "GHG"
+    StaticFile: "flowsa/FlowBySector/GHG_state_2018_m1_v2.0.0_a8c5929.parquet"
+    DataYears:
+      - *Year
+    OriginalFlowSource: "FEDEFLv1.0.9"
+    DataSources:
+      USEPA_GHG_2022:
+        Title: "GHG Disaggregated State Inventory"
+        Author: "USEPA"
+        DataYear: 2018
+        URL: ""
+        Primary: TRUE
+  WAT:
+    <<: *flowsa
+    FullName: "Water withdrawals"
+    Abbreviation: "WAT"
+    StaticFile: "flowsa/FlowBySector/Water_state_2015_m1_v2.0.0_372aab5.parquet"
+    DataYears: [2015]
+    OriginalFlowSource: "FEDEFLv1.0.9"
+    DataSources:
+      USGS_NWIS_WU_2015:
+        Title: "Water Use in the US"
+        Author: "USGS"
+        DataYear: 2015
+        URL: "https://waterdata.usgs.gov/"
+        Primary: TRUE
+  CHAIR:
+    <<: *flowsa
+    FullName: "Criteria and Hazardous Air Emissions"
+    Abbreviation: "CHAIR"
+    StaticFile: "flowsa/FlowBySector/CAP_HAP_state_2020_m1_v2.0.0_6e96a28.parquet"
+    DataYears: [2020]
+    OriginalFlowSource: "FEDEFLv1.0.9"
+    DataSources:
+      EPA_NEI_2017:
+        Title: "National Emissions Inventory"
+        Author: "EPA"
+        DataYear: 2017
+        URL: "https://www.epa.gov/air-emissions-inventories/national-emissions-inventory-nei"
+        Primary: TRUE
+      EPA_TRI_2017:
+        Title: "Toxic Release Inventory"
+        Author: "EPA"
+        DataYear: 2017
+        URL: "https://www.epa.gov/toxics-release-inventory-tri-program"
+        Primary: TRUE
+  GRDREL:
+    <<: *flowsa
+    FullName: "Point source industrial releases to ground"
+    Abbreviation: "GRDREL"
+    StaticFile: "flowsa/FlowBySector/GRDREL_state_2018_v2.0.0_a52db57.parquet"
+    DataYears:
+      - *Year
+    OriginalFlowSource: "FEDEFLv1.0.9"
+    DataSources:
+      EPA_TRI_2017:
+        Title: "Toxic Release Inventory"
+        Author: "EPA"
+        DataYear: 2017
+        URL: "https://www.epa.gov/toxics-release-inventory-tri-program"
+        Primary: TRUE
+  WATREL:
+    <<: *flowsa
+    FullName: "Point source releases to water"
+    Abbreviation: "WATREL"
+    StaticFile: "flowsa/FlowBySector/TRI_DMR_state_2018_v2.0.0_a52db57.parquet"
+    DataYears:
+      - *Year
+    OriginalFlowSource: "FEDEFLv1.0.9"
+    DataSources:
+      EPA_TRI_2017:
+        Title: "Toxic Release Inventory"
+        Author: "EPA"
+        DataYear: 2017
+        URL: "https://www.epa.gov/toxics-release-inventory-tri-program"
+        Primary: TRUE
+      EPA_DMR_2017:
+        Title: "Discharge Monitoring Report"
+        Author: "EPA"
+        DataYear: 2017
+        URL: "https://echo.epa.gov/tools/data-downloads/icis-npdes-dmr-and-limit-data-set"
+        Primary: TRUE
+  LAND:
+    <<: *flowsa
+    FullName: "Land use"
+    Abbreviation: "LAND"
+    StaticFile: "flowsa/FlowBySector/Land_state_2012_v2.0_8e7970f.parquet"
+    DataYears: [2012]
+    OriginalFlowSource: "FEDEFLv1.0.9"
+    DataSources:
+      BLM_PLS:
+        Title: "Public Land Statistics"
+        Author: "BLM"
+        DataYear: 2012
+        URL: "https://www.blm.gov/about/data/public-land-statistics"
+        Primary: FALSE
+      EIA_CBECS_Land:
+        Title: "Commercial Building Energy Consumption Survey"
+        Author: "EIA"
+        DataYear: 2012
+        URL: "https://www.eia.gov/consumption/commercial/data/2012/"
+        Primary: FALSE
+      EIA_MECS_Land:
+        Title: "Manufacturing Energy Consumption Survey"
+        Author: "EIA"
+        DataYear: 2014
+        URL: "https://www.eia.gov/consumption/manufacturing/data/2014/"
+        Primary: FALSE
+      USDA_ERS_MLU:
+        Title: "Major Uses of Land in the United States"
+        Author: "USDA"
+        DataYear: 2012
+        URL: "https://www.ers.usda.gov/data-products/major-land-uses/"
+        Primary: TRUE
+  CRHW:
+    <<: *flowsa
+    FullName: "Commercial RCRA-defined hazardous waste"
+    Abbreviation: "CRHW"
+    StaticFile: "flowsa/FlowBySector/CRHW_state_2019_v2.0.0_a52db57.parquet"
+    DataYears: [2019]
+    OriginalFlowSource: "RCRAInfo"
+    DataSources:
+      USEPA_RCRAInfo_2017:
+        Title: "National Biennial RCRA Hazardous Waste Report"
+        Author: "USEPA"
+        DataYear: 2017
+        URL: "https://rcrapublic.epa.gov/rcrainfoweb/action/modules/br/main/broverview"
+        Primary: TRUE       
+  EMP:
+    <<: *flowsa
+    FullName: "Employment"
+    Abbreviation: "EMP"
+    StaticFile: "flowsa/FlowBySector/Employment_state_2018_v2.0.0_62522ae.parquet"
+    DataYears: 
+      - *Year
+    OriginalFlowSource: "National Employment Matrix"
+    DataSources:
+      BLS_QCEW_2017:
+        Title: "Quarterly Census of Employment and Wages"
+        Author: "BLS"
+        DataYear: 2017
+        URL: "https://www.bls.gov/cew/"
+        Primary: TRUE  
+  VADD:
+    FullName: "Value Added"
+    Abbreviation: "VADD"
+    StaticSource: FALSE
+    StaticFile: null
+    FileLocation: None
+    DataYears:
+      - *Year
+    Locations: ["US-ME", "RoUS"]
+    SectorListSource: "BEA"
+    SectorListYear: 2012
+    SectorListLevel: *BaseIOLevel
+    OriginalFlowSource: "Input-Output Tables"
+    ScriptFunctionCall: "getValueAddedTotalsbySector" #function to call for script
+    ScriptFunctionParameters: ["model"] #list of parameters
+    DataSources:
+     BEA_USE:
+       Title: "Detail Use Before Redefinitions"
+       Author: "BEA"
+       DataYear: 2012
+       URL: "https://apps.bea.gov//industry/iTables%20Static%20Files/AllTablesIO.zip"
+       Primary: TRUE
+
+Indicators:
+  GreenhouseGases:
+    <<: *traci
+    Name: "Greenhouse Gases"
+    Code: "GHG"
+    Group: "Impact Potential"
+    Unit: "kg CO2 eq"
+    SimpleUnit: "Kilograms Carbon Dioxide (CO2)"
+    SimpleName: "Greenhouse Gases"
+    ScriptFunctionParameters: 
+      indicators: ["Global warming"]
+  Acidification:
+    <<: *traci
+    Name: "Acidification Potential"
+    Code: "ACID"
+    Group: "Impact Potential"
+    Unit: "kg SO2 eq"
+    SimpleUnit: "Kilograms Sulphur Dioxide (SO2)"
+    SimpleName: "Acid Rain"    
+    ScriptFunctionParameters: 
+      indicators: ["Acidification"]
+  Eutrophication:
+    <<: *traci
+    Name: "Eutrophication Potential"
+    Code: "EUTR"
+    Group: "Impact Potential"
+    Unit: "kg N eq"
+    SimpleUnit: "Kilograms Nitrogen (N)"
+    SimpleName: "Water Eutrophication" 
+    ScriptFunctionParameters: 
+      indicators: ["Eutrophication"]
+  FreshwaterEcotox:
+    <<: *traci
+    Name: "Freshwater Ecotoxicity Potential"
+    Code: "ETOX"
+    Group: "Impact Potential"
+    Unit: "CTUe"
+    SimpleUnit: "Comparative Toxic Unit for Ecosystem (CTUe)"
+    SimpleName: "Freshwater Ecotoxicity" 
+    ScriptFunctionParameters: 
+      indicators: ["Freshwater ecotoxicity"]
+  HumanHealthCancer:
+    <<: *traci
+    Name: "Human Health - Cancer"
+    Code: "HCAN"
+    Group: "Impact Potential"
+    Unit: "CTUh"
+    SimpleUnit: "Comparative Toxic Unit for Humans (CTUh)"
+    SimpleName: "Cancer Disease" 
+    ScriptFunctionParameters: 
+      indicators: ["Human health - cancer"]
+  HumanHealthNonCancer:
+    <<: *traci
+    Name: "Human Health - Noncancer"
+    Code: "HNCN"
+    Group: "Impact Potential"
+    Unit: "CTUh"
+    SimpleUnit: "Comparative Toxic Unit for Humans (CTUh)"
+    SimpleName: "Noncancer Disease" 
+    ScriptFunctionParameters: 
+      indicators: ["Human health - non-cancer"]
+  HumanHealthToxicity:
+    Name: "Human Health Toxicity"
+    Code: "HTOX"
+    Group: "Impact Potential"
+    Unit: "CTUh"
+    SimpleUnit: "Comparative Toxic Unit for Humans (CTUh)"
+    SimpleName: "Toxic to Humans" 
+    StaticSource: TRUE
+    StaticFile: "lciafmt/traci/TRACI_2.1_v1.0.0_5555779.parquet"
+    FileLocation: "DataCommons"
+    ScriptFunctionCall: "getCombinedImpactMethods" #function to call for script
+    ScriptFunctionParameters: 
+      indicators: ["Human health - cancer", "Human health - non-cancer"]
+    DataSources:
+      USEEIO_LCIA_Aggregation:
+        Title: "Aggregation of HNCN and HCAN"
+        Author: NA
+        DataYear: NA
+        URL: NA
+        Primary: TRUE
+  HumanHealthRespEffects:
+    <<: *traci
+    Name: "Human Health - Respiratory Effects"
+    Code: "HRSP"
+    Group: "Impact Potential"
+    Unit: "kg PM2.5 eq"
+    SimpleUnit: "Kilograms Particulate Matter"
+    SimpleName: "Respiratory Effects" 
+    ScriptFunctionParameters: 
+      indicators: ["Human health - particulate matter"]
+  Ozone:
+    <<: *traci
+    Name: "Ozone Depletion"
+    Code: "OZON"
+    Group: "Impact Potential"
+    Unit: "kg CFC-11 eq"
+    SimpleUnit: "Kilograms ChloroFluoroCarbon-11"
+    SimpleName: "Ozone Depletion" 
+    ScriptFunctionParameters: 
+      indicators: ["Ozone depletion"]
+  Smog:
+    <<: *traci
+    Name: "Smog Formation Potential"
+    Code: "SMOG"
+    Group: "Impact Potential"
+    Unit: "kg O3 eq"
+    SimpleUnit: "Kilograms Ozone (O3)"
+    SimpleName: "Smog Formation" 
+    ScriptFunctionParameters: 
+      indicators: ["Smog formation"]
+  freshwater_withdrawal:
+    <<: *fedefl
+    Name: "Freshwater withdrawals"
+    Code: "WATR"
+    Group: "Resource Use"
+    Unit: "kg"
+    SimpleUnit: "Kilograms"
+    SimpleName: "Water Use" 
+    ScriptFunctionParameters: 
+      indicators: ["freshwater_resources"]
+  land_use:
+    <<: *fedefl
+    Name: "Land use"
+    Code: "LAND"
+    Group: "Resource Use"
+    Unit: "m2*yr"
+    SimpleUnit: "Square Meters per Year"
+    SimpleName: "Land Use" 
+    ScriptFunctionParameters: 
+      indicators: ["land_use"]
+  HAP:
+    <<: *fedefl
+    Name: "Hazardous Air Pollutants"
+    Code: "HAPS"
+    Group: "Chemical Releases"
+    Unit: "kg"
+    SimpleUnit: "Kilograms"
+    SimpleName: "Hazardous Air Pollutants" 
+    ScriptFunctionParameters: 
+      indicators: ["HAP"]
+  ValueAdded:
+    Name: "Value Added"
+    Code: "VADD"
+    Group: "Economic & Social"
+    Unit: "$"
+    SimpleUnit: "US Dollars ($)"
+    SimpleName: "Value Added"
+    StaticSource: TRUE
+    StaticFile: "USEEIO_LCIA_Factors.csv"
+    FileLocation: "useeior"
+    DataSources:
+      ingwersen_useeiov11_2017:
+        Title: "USEEIOv1.1 - Elementary Flows and Life Cycle Impact Assessment (LCIA) Characterization Factors"
+        Author: "USEPA"
+        DataYear: 2020
+        URL: "http://doi.org/10.23719/1368541"
+        Primary: TRUE
+  Jobs:
+    Name: "Jobs Supported"
+    Code: "JOBS"
+    Group: "Economic & Social"
+    Unit: "jobs"
+    SimpleUnit: "Employees"
+    SimpleName: "Jobs Supported"
+    StaticSource: TRUE
+    StaticFile: "USEEIO_LCIA_Factors.csv"
+    FileLocation: "useeior"
+    DataSources:
+      ingwersen_useeiov11_2017:
+        Title: "USEEIOv1.1 - Elementary Flows and Life Cycle Impact Assessment (LCIA) Characterization Factors"
+        Author: "USEPA"
+        DataYear: 2020
+        URL: "http://doi.org/10.23719/1368541"
+        Primary: TRUE
+  RCRAHazWaste:
+    Name: "Commercial RCRA Hazardous Waste"
+    Code: "CRHW"
+    Group: "Waste Generated"
+    Unit: "kg"
+    SimpleUnit: "Kilograms"
+    SimpleName: "Hazardous Waste" 
+    StaticSource: TRUE
+    StaticFile: "USEEIO_LCIA_Factors.csv"
+    FileLocation: "useeior"
+    DataSources:
+      meyer_analyzing_2020:
+        Title: "Analyzing economy-scale solid waste generation using the United States environmentally-extended input-output model"
+        Author: "USEPA"
+        DataYear: 2020
+        URL: "http://doi.org/10.1016/j.resconrec.2020.104795"
+        Primary: TRUE    
+
+DemandVectors:
+    DefaultDemand: "DefaultDemandVectors" # Name of default demand vectors yml file
+# Additional demand vectors beyond useeior defaults
+
+
