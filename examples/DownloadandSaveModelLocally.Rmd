@@ -29,7 +29,7 @@ params:
 ---
 
 ```{r setup, include=FALSE}
-source("R/utils.R")
+source("../R/utils.R")
 
 # Stop execution of Rmd if params not selected
 if (params$state=="") {
@@ -57,7 +57,7 @@ file_name <- paste0(modelname,".rds")
 
 file_url <- paste0("https://dmap-data-commons-ord.s3.amazonaws.com/USEEIO-State/",file_name)
 
-directory <- "models/"
+directory <- "../models/"
 
 file_path <- paste0(directory,file_name)
 
@@ -81,7 +81,7 @@ model <- readRDS(file_path) # Test that it loads correctly
 ```{r write_model, eval=params$write, echo=FALSE}
 install_useeior()
 # write model to Excel
-output_dir <- file.path('output')
+output_dir <- file.path('../output')
 dir.create(output_dir, showWarnings = FALSE)
 
 useeior::writeModeltoXLSX(model, output_dir)

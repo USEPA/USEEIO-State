@@ -4,6 +4,7 @@
 .Ruserdata
 *.Rproj
 output/*
-DownloadandSaveModelLocally.md
+examples/*.md
+!examples/README.md
 models/*
 .idea/*
