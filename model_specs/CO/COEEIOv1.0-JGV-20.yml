@@ -1,4 +1,4 @@
-Model: "COEEIOv1.0-s-JGV-20" # 2020 Summary, Commodity
+Model: "COEEIOv1.0-JGV-20" # 2020 Summary, Commodity
 BaseIOSchema: 2012
 BaseIOLevel: &BaseIOLevel "Summary"
 IOYear: &Year 2020 # Year for IO data

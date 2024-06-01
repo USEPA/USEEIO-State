@@ -1,7 +1,7 @@
-Model: "StateEEIOv1.0-s-15" # 2015 Summary, Commodity
+Model: "StateEEIOv1.0-14" # 2014 Summary, Commodity
 BaseIOSchema: 2012
 BaseIOLevel: &BaseIOLevel "Summary"
-IOYear: &Year 2015 # Year for IO data
+IOYear: &Year 2014 # Year for IO data
 ModelRegionAcronyms: ["US-ME", "RoUS"]
 ModelType: "EEIO"
 IODataSource: "stateior"
@@ -54,7 +54,7 @@ SatelliteTable:
     <<: *flowsa
     FullName: "Greenhouse Gases"
     Abbreviation: "GHG"
-    StaticFile: "flowsa/FlowBySector/GHG_state_2015_m1_v2.0.0_a8c5929.parquet"
+    StaticFile: "flowsa/FlowBySector/GHG_state_2014_m1_v2.0.0_a8c5929.parquet"
     DataYears:
       - *Year
     OriginalFlowSource: "FEDEFLv1.0.9"
@@ -62,7 +62,7 @@ SatelliteTable:
       USEPA_GHG_2022:
         Title: "GHG Disaggregated State Inventory"
         Author: "USEPA"
-        DataYear: 2015
+        DataYear: 2014
         URL: ""
         Primary: TRUE
   WAT:
@@ -83,8 +83,8 @@ SatelliteTable:
     <<: *flowsa
     FullName: "Criteria and Hazardous Air Emissions"
     Abbreviation: "CHAIR"
-    StaticFile: "flowsa/FlowBySector/CAP_HAP_state_2017_m1_v2.0.0_6e96a28.parquet"
-    DataYears: [2017]
+    StaticFile: "flowsa/FlowBySector/CAP_HAP_state_2014_m1_v2.0.0_48007cc.parquet"
+    DataYears: [2014]
     OriginalFlowSource: "FEDEFLv1.0.9"
     DataSources:
       EPA_NEI_2017:
@@ -103,7 +103,7 @@ SatelliteTable:
     <<: *flowsa
     FullName: "Point source industrial releases to ground"
     Abbreviation: "GRDREL"
-    StaticFile: "flowsa/FlowBySector/GRDREL_state_2015_v2.0.0_a52db57.parquet"
+    StaticFile: "flowsa/FlowBySector/GRDREL_state_2014_v2.0.0_a52db57.parquet"
     DataYears:
       - *Year
     OriginalFlowSource: "FEDEFLv1.0.9"
@@ -118,7 +118,7 @@ SatelliteTable:
     <<: *flowsa
     FullName: "Point source releases to water"
     Abbreviation: "WATREL"
-    StaticFile: "flowsa/FlowBySector/TRI_DMR_state_2015_v2.0.0_a52db57.parquet"
+    StaticFile: "flowsa/FlowBySector/TRI_DMR_state_2014_v2.0.0_a52db57.parquet"
     DataYears:
       - *Year
     OriginalFlowSource: "FEDEFLv1.0.9"
@@ -185,7 +185,7 @@ SatelliteTable:
     <<: *flowsa
     FullName: "Employment"
     Abbreviation: "EMP"
-    StaticFile: "flowsa/FlowBySector/Employment_state_2015_v2.0.0_c31283d.parquet"
+    StaticFile: "flowsa/FlowBySector/Employment_state_2014_v2.0.0_c31283d.parquet"
     DataYears: 
       - *Year
     OriginalFlowSource: "National Employment Matrix"
