@@ -1,4 +1,4 @@
-Model: "MEEEIOv1.1-GHG-15" # 2015 Summary, Commodity
+Model: "MEEEIOv1.1-GHGc-15" # 2015 Summary, Commodity
 BaseIOSchema: 2012
 BaseIOLevel: "Summary"
 IOYear: 2015 # Year for IO data
