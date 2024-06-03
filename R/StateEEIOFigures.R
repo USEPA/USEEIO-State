@@ -120,3 +120,93 @@ lineChartDemand <- function(demand) {
     theme(text = element_text(size=20))
   return(p)
 }
+
+#' Plot time series for two region models
+#' @param df
+#' @param plottype, str, "line" or "bar"
+#' @param scale, int, number of digits to remove from y-axis
+#' @param legend_ncol
+twoRegionTimeSeriesPlot <- function(df,
+                                    plottype, # bar or line
+                                    scale = 0,
+                                    legend_ncol = 1) {
+
+  # Aggregate SoI and RoUS
+  df_agg <- dplyr::group_by(df, modelname, Year, Indicator, color, GroupName)
+  df_agg <- dplyr::summarize(
+    df_agg,
+    ValueAgg = sum(Value),
+    .groups = 'drop'
+  )
+  colnames(df_agg)[colnames(df_agg)=="ValueAgg"] <- "Value"
+  df_agg$State <- gsub("US-", "", df_agg$modelname)
+  df_agg$Value <- df_agg$Value / 10^scale
+  
+  # Load visualization elements
+  vizElements <- loadVisualizationElementsForTimeSeriesPlot()
+  ColorLabelMapping <- vizElements$ColorLabelMapping
+  barplot_theme <- vizElements$barplot_theme
+  
+  df_agg <- subset(df_agg, df_agg$Value >= 0)
+  # Plot
+  plotparameters <- ColorLabelMapping[ColorLabelMapping$V1 %in% df$GroupName, ]
+  if (plottype == "bar") {
+    p <- ggplot(df_agg, aes(x = Year, y = Value, fill = GroupName))
+    p <- p + geom_bar(stat = "identity", width = 0.8, color = "white") +
+      scale_fill_manual(name = "", values = plotparameters$color) +
+      labs(x = "", y = "") +
+      barplot_theme +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      guides(fill = guide_legend(ncol = legend_ncol))
+
+  } else if (plottype == "line") {
+    p <- ggplot(df_agg, aes(x = Year, y = Value, group = GroupName, color = GroupName)) +
+      geom_line(stat = "identity", size=2) +
+      # geom_point(stat = "identity", size=2) +
+      scale_color_manual(name = "", values = plotparameters$color) +
+      labs(x = "", y = "") +
+      barplot_theme +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      guides(color = guide_legend(ncol = legend_ncol))
+
+  } else {
+    print('Error not an available plottype')
+    return()
+  }
+  return(p)
+}
+
+
+# Taken from VisualizeStateIOresults.R global objects
+loadVisualizationElementsForTimeSeriesPlot <- function(){
+  vizElements <- list()
+  
+  configfile <- system.file("extdata", "VisualizationEssentials.yml", package = "useeior")
+  vizElements$VisualizationEssentials <- configr::read.config(configfile)
+  vizElements$ColorLabelMapping <- as.data.frame(t(cbind.data.frame(vizElements$VisualizationEssentials$BEASectorLevel$ColorLabelMapping)))
+  vizElements$ColorLabelMapping$color <- rownames(vizElements$ColorLabelMapping)
+  
+  # Define bar plot common theme
+  vizElements$barplot_theme <- theme_linedraw() +
+    theme(
+      # axis
+      axis.text = element_text(color = "black", size = 14),
+      axis.title = element_text(size = 16),
+      axis.ticks = element_blank(),
+      # legend
+      legend.title = element_blank(),
+      legend.text = element_text(size = 8),
+      legend.key.size = unit(0.6, "cm"),
+      legend.position = "bottom",
+      # panel grid
+      panel.spacing = unit(1, "cm"),
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      # facet strip
+      strip.background = element_rect(fill = "white"),
+      strip.text = element_text(colour = "black", size = 30)
+    )
+  
+  return(vizElements)
+}
