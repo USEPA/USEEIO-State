@@ -60,10 +60,9 @@ model <- readRDS(file_path) # Test that it loads correctly
 
 ```{r ghg_results, echo=FALSE, fig.width=9, fig.height=4}
 
-df <- stackedBarChartResult(model, indicator="Greenhouse Gases", scale=9)
+df <- stackedBarChartResult(model, indicator="Greenhouse Gases", perspective="FINAL", scale=9)
 
-stackedBarChartResultFigure(df, perspective="FINAL", level="group",
-                            x_title="Greenhouse Gases (million tonnes)")
+stackedBarChartResultFigure(df, level="group", x_title="Greenhouse Gases (million tonnes)")
 ```
 ![GHG emissions, Final perspective.](`r knitr::fig_chunk('ghg_results', 'png')`){#fig:ghg_results}
 

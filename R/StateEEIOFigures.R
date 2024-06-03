@@ -5,47 +5,31 @@ library(ggplot2)
 #' @param model
 #' @param indicator A vector of indicators to plot
 #' @param scale, int, number of digits to remove from x-axis
+#' @param demand, str, "Consumption" or "Production"
+#' @param perspective, str, "FINAL" or "DIRECT"
 #' @param household_emissions, pass through to calculateEEIOModel
 stackedBarChartResult <- function(model_list, indicator, scale=0, demand="Consumption",
-                                  household_emissions=FALSE) {
+                                  perspective, household_emissions=FALSE) {
   
   state <- model$specs$ModelRegionAcronyms[[1]]
   model_list <- list()
   model_list[[state]] <- model
 
-  # DIRECT perspective
-  df1 <- prepareDFforFigure(model_list=model_list, matrix_name=NULL, perspective="DIRECT",
+  df1 <- prepareDFforFigure(model_list=model_list, matrix_name=NULL, perspective=perspective,
                             indicator=indicator, sector_to_remove="",
                             combine_SoIRoUS=FALSE, demand=demand,
                             household_emissions=household_emissions)
   df1$Type <- "Total"
-  df1d <- prepareDFforFigure(model_list=model_list, matrix_name=NULL, perspective="DIRECT",
+  df1d <- prepareDFforFigure(model_list=model_list, matrix_name=NULL, perspective=perspective,
                              indicator=indicator, sector_to_remove="",
                              combine_SoIRoUS=FALSE, domestic=TRUE, demand=demand,
                              household_emissions=household_emissions)
   df1d$Type <- "Domestic"
   df1 <- rbind(df1, df1d)
-  df1 <- reshape2::dcast(data = df1, formula = GroupName+Sector+modelname+region+color+SectorName ~ Type,
+  df <- reshape2::dcast(data = df1, formula = GroupName+Sector+modelname+region+color+SectorName ~ Type,
                          fun.aggregate = mean, value.var = "Value")
-  df1$Type <- "DIRECT"
+  df$Type <- perspective
   
-  # FINAL perspective
-  df2 <- prepareDFforFigure(model_list=model_list, matrix_name=NULL, perspective="FINAL",
-                            indicator=indicator, sector_to_remove="",
-                            combine_SoIRoUS=FALSE, demand=demand,
-                            household_emissions=household_emissions)
-  df2$Type <- "Total"
-  df2d <- prepareDFforFigure(model_list=model_list, matrix_name=NULL, perspective="FINAL",
-                             indicator=indicator, sector_to_remove="",
-                              combine_SoIRoUS=FALSE, domestic=TRUE, demand=demand,
-                             household_emissions=household_emissions)
-  df2d$Type <- "Domestic"
-  df2 <- rbind(df2, df2d)
-  df2 <- reshape2::dcast(data = df2, formula = GroupName+Sector+modelname+region+color+SectorName ~ Type,
-                         fun.aggregate = mean, value.var = "Value")
-  df2$Type <- "FINAL"
-  
-  df <- rbind(df1, df2)
   df <- subset(df, df$modelname == state)
   # Calculate contribution from RoW
   df$Imports <- df$Total - df$Domestic
@@ -66,10 +50,9 @@ stackedBarChartResult <- function(model_list, indicator, scale=0, demand="Consum
 #' Stacked bar chart showing location of impact as SoI or RoUS or RoW
 #' @param df, processed from stackedBarChartResult()
 #' @param x_title A string specifying desired title on the x-axis
-#' @param perspective, "DIRECT", "FINAL"
 #' @param sector_to_remove Code of one or more BEA sectors that will be removed from the plot. Can be "". 
 #' @param sector, str options are "sector" for model sectors or "group" to use "GroupName"
-stackedBarChartResultFigure <- function(df, x_title, perspective, sector_to_remove="",
+stackedBarChartResultFigure <- function(df, x_title, sector_to_remove="",
                                         level="sector") {
   df <- df[order(df$Sector, df$region),]
   # Remove certain sectors
@@ -85,8 +68,6 @@ stackedBarChartResultFigure <- function(df, x_title, perspective, sector_to_remo
   df <- subset(df, df$Value >= 0)
   
   label_colors <- rev(unique(df[, c(sector, "color")])[, "color"])
-  
-  df <- subset(df, df$Type == perspective)
 
   p <- ggplot(df, aes(x = Value, fill = region,
                       y = factor(.data[[sector]], levels = unique(.data[[sector]])))) +
