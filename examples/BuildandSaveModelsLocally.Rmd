@@ -51,8 +51,8 @@ models_dir <- file.path("..","models")
 if (!exists(models_dir)) {dir.create(models_dir, showWarnings = FALSE)}
 
 # Model_specs for common model specs are in an all_states folder. 
-if (any(spec=="c")) {
-  specpath <- file.path("..","model_specs",state,"/")
+if (grepl("GHGc",spec)) {
+  specpath <- file.path("..","model_specs")
 } else {
   specpath <- file.path("..","model_specs","all_states//")
 }
@@ -67,9 +67,9 @@ for(state in states) {
     #If this is a custom model the spec will live in the state's own folder and have a state-specific name
     # else a StateEEIO* spec is used
     modelname <- paste0(state, modelstub,substr(year,3,4)) 
-    if (any(spec=="c")) {
+    if (grepl("GHGc",spec)) {
     modelspec <- paste0(state,modelstub,substr(year,3,4))
-    configpaths <- file.path(paste0(specpath, modelspec, '.yml'))
+    configpaths <- file.path(specpath,state,paste0(modelspec,'.yml'))
     } else {
     modelspec <- paste0("State",modelstub,substr(year,3,4))  
     configpaths <- file.path(paste0(specpath, modelspec, '.yml'))
