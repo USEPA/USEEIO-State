@@ -201,11 +201,11 @@ stackedBarChartResultFigure <- function(df, x_title, perspective, sector_to_remo
 }
 
 lineChartDemand <- function(demand) {
-  demand_figure <- melt(demand)
+  demand_figure <- melt(demand, id.vars=c('Year'))
   demand_figure$value <- demand_figure$value / 1000000000
   p <- ggplot(demand_figure, aes(x = Year, y = value, group=variable, color=variable))+
     geom_line(size=3) +
-    ylab("Billion $ (current year)") +
+    ylab("Billion $") +
     xlab("Year") +
     scale_colour_hue(name='Source') +
     theme_bw() +
