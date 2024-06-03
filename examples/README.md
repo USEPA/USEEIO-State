@@ -15,6 +15,8 @@ A markdown file will be generated with the same name as the Rmd file but an md e
 
 Uses are exemplified in separate combination .Rmd (for code) and, when applicable, an .md (for printed output readable on github and also translatable into .docx or other format supported by pandoc). 
 
-1. **DownloadandSaveModelLocally**. Interactively select and download an EPA-built USEEIO State model. Save the model locally as .rds for quick retrieval for further uses. Optionally write the model out to Excel. [Code](DownloadandSaveModelLocally.Rmd). Output not applicable.  
+1. **DownloadandSaveModelLocally**. Interactively select and download an EPA-built USEEIO State model. Save the model locally as .rds for quick retrieval for further uses. Optionally write the model out to Excel. [Code](DownloadandSaveModelLocally.Rmd). Output provides record of action.  
 
-2. **Demo-Multipliers-CO**. Build an original Colorado model with jobs, GHG, and value added satellite tables for use in demonstrating the calculation of economic and environmental Type I multipliers using a USEEIO State model. [Code](Demo-Multipliers-CO.Rmd).  [Output](Demo-Multipliers-CO.md)  
+2. **BuildandSaveModelsLocally**. Interactively select and build USEEIO State models from specs and save the model locally as .rds for quick retrieval for further uses. Optionally write the models out to Excel. [Code](BuildandSaveModelsLocally.Rmd). Output provides record of action.
+
+3. **Demo-Multipliers-CO**. Build an original Colorado model with jobs, GHG, and value added satellite tables for use in demonstrating the calculation of economic and environmental Type I multipliers using a USEEIO State model. [Code](Demo-Multipliers-CO.Rmd).  [Output](Demo-Multipliers-CO.md)  

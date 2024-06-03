@@ -1,0 +1,100 @@
+---
+title: Select, Build, and Save a State EEIO Model locally
+output:
+  md_document:
+    variant: gfm
+params:
+  model:
+    label: "Model Type"
+    value: "v1.0"
+    input: select
+    choices: ["v1.0","v1.1-GHG","v1.1-GHGc"]
+  years:
+    label: "Model Year"
+    value: 2012
+    input: select
+    multiple: TRUE
+    choices: [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020]
+  states:
+    label: "State"
+    value: "AL"
+    input: select
+    multiple: TRUE
+    choices: ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL",
+              "IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT",
+              "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI",
+              "SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"]
+  write:
+    label: "Write to Excel?"
+    value: FALSE
+---
+
+```{r setup, include=FALSE}
+source("../R/utils.R")
+install_useeior()
+library(useeior)
+
+# Stop execution of Rmd if params not selected
+if (length(params$state)==0) {
+  stop("You must select a state and a year.")
+}
+
+## Select model build parameters
+states <- params$states
+years <- params$years
+spec <- params$model
+
+modelstub <- paste0('EEIO',spec,"-")
+
+# Define and create a models directory to write models into if it doesn't exist
+models_dir <- file.path("..","models")
+if (!exists(models_dir)) {dir.create(models_dir, showWarnings = FALSE)}
+
+# Model_specs for common model specs are in an all_states folder. 
+if (any(spec=="c")) {
+  specpath <- file.path("..","model_specs",state,"/")
+} else {
+  specpath <- file.path("..","model_specs","all_states//")
+}
+
+```
+
+```{r load-model, echo=FALSE}
+
+for(state in states) {
+  for(year in years) {
+    print(paste0("Building model for ",state, ": ", year))
+    #If this is a custom model the spec will live in the state's own folder and have a state-specific name
+    # else a StateEEIO* spec is used
+    modelname <- paste0(state, modelstub,substr(year,3,4)) 
+    if (any(spec=="c")) {
+    modelspec <- paste0(state,modelstub,substr(year,3,4))
+    configpaths <- file.path(paste0(specpath, modelspec, '.yml'))
+    } else {
+    modelspec <- paste0("State",modelstub,substr(year,3,4))  
+    configpaths <- file.path(paste0(specpath, modelspec, '.yml'))
+    }
+    m <- useeior:::initializeModel(modelspec, configpaths)
+    m$specs$ModelRegionAcronyms[1] <- paste0("US-",state)
+    m$specs$Model <- modelname
+    m <- useeior:::loadIOData(m, configpaths)
+    m <- useeior:::loadandbuildSatelliteTables(m)
+    m <- useeior:::loadandbuildIndicators(m)
+    m <- useeior:::loadDemandVectors(m)
+    m <- useeior:::constructEEIOMatrices(m)
+   saveRDS(m, file.path("..","models",paste0(modelname,".rds")))
+   
+   if(params$write) {
+     # write model to Excel
+      output_dir <- file.path("..","output")
+      if (!exists(output_dir)) {dir.create(output_dir, showWarnings = FALSE)}
+      useeior::writeModeltoXLSX(m, output_dir)
+      print(paste0("Model for ", state, " in ", year, " written to Excel at ", output_dir, "."))
+   }
+   
+  }
+}
+
+```
+
+
