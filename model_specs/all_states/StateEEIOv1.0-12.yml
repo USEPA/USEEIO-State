@@ -1,7 +1,7 @@
-Model: "StateEEIOv1.0-s-13" # 2013 Summary, Commodity
+Model: "StateEEIOv1.0-12" # 2012 Summary, Commodity
 BaseIOSchema: 2012
 BaseIOLevel: &BaseIOLevel "Summary"
-IOYear: &Year 2013 # Year for IO data
+IOYear: &Year 2012 # Year for IO data
 ModelRegionAcronyms: ["US-ME", "RoUS"]
 ModelType: "EEIO"
 IODataSource: "stateior"
@@ -54,7 +54,7 @@ SatelliteTable:
     <<: *flowsa
     FullName: "Greenhouse Gases"
     Abbreviation: "GHG"
-    StaticFile: "flowsa/FlowBySector/GHG_state_2013_m1_v2.0.0_a8c5929.parquet"
+    StaticFile: "flowsa/FlowBySector/GHG_state_2012_m1_v2.0.0_a8c5929.parquet"
     DataYears:
       - *Year
     OriginalFlowSource: "FEDEFLv1.0.9"
@@ -62,7 +62,7 @@ SatelliteTable:
       USEPA_GHG_2022:
         Title: "GHG Disaggregated State Inventory"
         Author: "USEPA"
-        DataYear: 2013
+        DataYear: 2012
         URL: ""
         Primary: TRUE
   WAT:
@@ -103,7 +103,7 @@ SatelliteTable:
     <<: *flowsa
     FullName: "Point source industrial releases to ground"
     Abbreviation: "GRDREL"
-    StaticFile: "flowsa/FlowBySector/GRDREL_state_2013_v2.0.0_a52db57.parquet"
+    StaticFile: "flowsa/FlowBySector/GRDREL_state_2012_v2.0.0_a52db57.parquet"
     DataYears:
       - *Year
     OriginalFlowSource: "FEDEFLv1.0.9"
@@ -118,7 +118,7 @@ SatelliteTable:
     <<: *flowsa
     FullName: "Point source releases to water"
     Abbreviation: "WATREL"
-    StaticFile: "flowsa/FlowBySector/TRI_DMR_state_2013_v2.0.0_a52db57.parquet"
+    StaticFile: "flowsa/FlowBySector/TRI_DMR_state_2012_v2.0.0_a52db57.parquet"
     DataYears:
       - *Year
     OriginalFlowSource: "FEDEFLv1.0.9"
@@ -185,7 +185,7 @@ SatelliteTable:
     <<: *flowsa
     FullName: "Employment"
     Abbreviation: "EMP"
-    StaticFile: "flowsa/FlowBySector/Employment_state_2013_v2.0.0_c31283d.parquet"
+    StaticFile: "flowsa/FlowBySector/Employment_state_2012_v2.0.0_c31283d.parquet"
     DataYears: 
       - *Year
     OriginalFlowSource: "National Employment Matrix"

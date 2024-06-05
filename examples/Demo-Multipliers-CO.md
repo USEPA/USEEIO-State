@@ -22,7 +22,7 @@ library(kableExtra)
 
 Then we build a custom state EEIO model for Colorado using *useeior* and
 a [new custom model specification
-file](model_specs/COEEIOv1.0-s-JGV-20.yml). All the raw files including
+file](model_specs/COEEIOv1.0-JGV-20.yml). All the raw files including
 the relevant StateIO models and National totals of Employment and [GHGs
 by sector](https://doi.org/10.23719/1529805), and Indicators (for GHGs
 to convert to kg CO2e) tables are retrieved from the EPA Data Commons
@@ -36,10 +36,10 @@ load the stored RDS version.
 
 ``` r
 dir <- file.path("output")
-local_model_RDS <- "COEEIOv1.0-s-JGV-20.rds"
+local_model_RDS <- "COEEIOv1.0-JGV-20.rds"
 dir_local_model_RDS <- file.path(dir,local_model_RDS)
 if (!file.exists(dir_local_model_RDS)) {
-  CO <- buildModel("COEEIOv1.0-s-JGV-20","model_specs/COEEIOv1.0-s-JGV-20.yml")  
+  CO <- buildModel("COEEIOv1.0-JGV-20", "model_specs/CO/COEEIOv1.0-JGV-20.yml")  
   if (!dir.exists(dir)) dir.create(dir)
   saveRDS(CO,dir_local_model_RDS)
   writeModeltoXLSX(CO,outputfolder=dir)

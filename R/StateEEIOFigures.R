@@ -122,7 +122,7 @@ twoRegionTimeSeriesPlot <- function(df,
   colnames(df_agg)[colnames(df_agg)=="ValueAgg"] <- "Value"
   df_agg$State <- gsub("US-", "", df_agg$modelname)
   df_agg$Value <- df_agg$Value / 10^scale
-  
+
   # Load visualization elements
   vizElements <- loadVisualizationElementsForTimeSeriesPlot()
   ColorLabelMapping <- vizElements$ColorLabelMapping
@@ -161,12 +161,12 @@ twoRegionTimeSeriesPlot <- function(df,
 # Taken from VisualizeStateIOresults.R global objects
 loadVisualizationElementsForTimeSeriesPlot <- function(){
   vizElements <- list()
-  
+
   configfile <- system.file("extdata", "VisualizationEssentials.yml", package = "useeior")
   vizElements$VisualizationEssentials <- configr::read.config(configfile)
   vizElements$ColorLabelMapping <- as.data.frame(t(cbind.data.frame(vizElements$VisualizationEssentials$BEASectorLevel$ColorLabelMapping)))
   vizElements$ColorLabelMapping$color <- rownames(vizElements$ColorLabelMapping)
-  
+
   # Define bar plot common theme
   vizElements$barplot_theme <- theme_linedraw() +
     theme(
