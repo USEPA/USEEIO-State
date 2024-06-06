@@ -87,9 +87,17 @@ aggregateStateResultMatrix <- function(model, matrix, RoUS=FALSE) {
   } else {
     matrix <- subset(matrix, !(endsWith(rownames(matrix), "RoUS")))
   }
-  
   matrix <- useeior:::aggregateResultMatrixbyRow(matrix, "Sector", model$crosswalk)
   colnames(matrix) <- name
+  if (!("F010" %in% rownames(matrix))) {
+    mat <- matrix(0, nrow=1, ncol=1)
+    rownames(mat) <- "F010"
+    matrix <- rbind(matrix, mat)
+  }
+  # reorder matrix rows
+  rows <- subset(unique(model$crosswalk$BEA_Sector), unique(model$crosswalk$BEA_Sector) %in% rownames(matrix))
+  matrix <- matrix[rows,,drop=FALSE]
+  
   return(matrix)
 }
 
