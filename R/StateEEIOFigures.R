@@ -47,43 +47,32 @@ stackedBarChartResult <- function(model_list, indicator, scale=0, demand="Consum
   return(df)
 }
 
-#' Stacked bar chart showing location of impact as SoI or RoUS or RoW
-#' @param df, processed from stackedBarChartResult()
-#' @param x_title A string specifying desired title on the x-axis
-#' @param sector_to_remove Code of one or more BEA sectors that will be removed from the plot. Can be "". 
-#' @param sector, str options are "sector" for model sectors or "group" to use "GroupName"
-stackedBarChartResultFigure <- function(df, x_title, sector_to_remove="",
-                                        level="sector") {
-  df <- df[order(df$Sector, df$region),]
-  # Remove certain sectors
-  df <- df[!df$Sector%in%sector_to_remove, ]  
+#' Stacked bar chart (e.g., for showing location of impact as SoI or RoUS or RoW)
+#' @param df, must include "Sector", "Value" and "ID" columns
+stackedBarChartResultFigure <- function(df) {
 
-  if(level == "sector") {
-    sector = "SectorName"
-  } else if(level == "group") {
-    sector = "GroupName"
-    df <- aggregate(Value ~ modelname + region + Type + color + GroupName,
-                    data = df, FUN=sum)
-  }
-  df <- subset(df, df$Value >= 0)
+  mapping <- useeior:::getBEASectorColorMapping(model)
+  # mapping$SummaryCode <- toupper(mapping$SummaryCode)
+  # mapping$GroupName <- mapping$SectorName
   
-  label_colors <- rev(unique(df[, c(sector, "color")])[, "color"])
+  df <- merge(df, unique(mapping[, c("Sector", "color", "SectorName")]), by = "Sector")
+ 
+  label_colors <- rev(unique(df[, c("Sector", "color")])[, "color"])
 
-  p <- ggplot(df, aes(x = Value, fill = region,
-                      y = factor(.data[[sector]], levels = unique(.data[[sector]])))) +
+  p <- ggplot(df, aes(x = Value, fill = ID,
+                      y = factor(.data[["SectorName"]], levels = unique(.data[["SectorName"]])))) +
           geom_col() + 
           guides(fill = guide_legend(reverse = TRUE)) + # Swap legend order
           scale_y_discrete(limits=rev) + # Reverse Y-axis
-          xlab(x_title) + # Set X-axis title
           scale_x_continuous(expand = c(0, 0)) +
        theme_bw() +
         theme(
                 axis.text = element_text(color = "black", size = 12),
                 axis.text.y = element_text(size = 10, color = label_colors),
-                axis.title.x = element_text(size = 20),
+                axis.title.x = element_text(size = 12),
                 axis.title.y = element_blank(),
-                legend.text = element_text(size = 20),
-                legend.title = element_text(size = 20),
+                legend.text = element_text(size = 12),
+                legend.title = element_text(size = 12),
                 )
 
   return(p)

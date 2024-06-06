@@ -124,6 +124,20 @@ getStateGHGI <- function(model) {
   return(GHGI)  
 }
 
+# Combine two or more results vectors passed in a named vector; sets the ID equal
+# to the name used in the named vector
+# Returns a dataframe
+combineResults <- function(dfNames) {
+  df <- do.call(rbind, lapply(dfNames, function(x) {
+    data.frame(ID=x, Sector=rownames(get(x)), get(x))
+  }))
+  df <- setNames(df, c("ID", "Sector", "Value"))
+  y <- setNames(names(dfNames), dfNames)
+  df$ID <- stringr::str_replace_all(df$ID, y)
+  rownames(df) <- NULL
+  
+  return (df)
+}
 
 #' Prepare a dataframe for graphing from list of two-region models
 #' @param model_list List of completed EEIO models
