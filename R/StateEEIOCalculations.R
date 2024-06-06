@@ -71,7 +71,7 @@ reformatStatebyYearLongtoWide <- function(df, value.var) {
 }
 
 
-convertStateCBEResultFormatToStatebyYear <- function(df, value.var) {
+convertStateResultFormatToStatebyYear <- function(df, value.var) {
   df_names <- t(data.frame(strsplit(row.names(df),'-')))
   df <- cbind(df,df_names)
   df <- reformatStatebyYearLongtoWide(df, value.var=value.var)
