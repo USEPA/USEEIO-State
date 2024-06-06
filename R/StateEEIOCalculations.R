@@ -1,6 +1,111 @@
 # StateEEIOCalculations.R
 
 
+## Primary State CBE function. 
+## Returns by default a vector with GHG in CO2e totals by sector (rows)
+calculateStateCBE <- function(model, CO2e=TRUE, perspective="FINAL",
+                              domestic=FALSE, RoUS=FALSE) {
+  if (RoUS) {
+    loc <- "RoUS"
+  } else {
+    loc <- model$specs$ModelRegionAcronyms[1]
+  }
+  r <- useeior::calculateEEIOModel(model,
+                                   perspective = perspective,
+                                   demand = "Consumption",
+                                   location = loc,
+                                   use_domestic_requirements = domestic)
+                                   # household_emissions = TRUE)
+  # Note this function requires a model with only a single indicator
+  if(CO2e) {
+    r<-r$LCIA_f
+  } else {
+    r<-r$LCI_f
+  }
+  return(r)
+}
+
+## Returns a vector of demand in dollars by type with sectors as rows
+#' @param type, str, "Household", "Federal Government", "State Government", "Investment", "final", or "intermediate"
+getStateUsebyType <- function(model, type="final", domestic=FALSE, RoUS=FALSE) {
+  if (RoUS) {
+    loc <- "RoUS"
+  } else {
+    loc <- model$specs$ModelRegionAcronyms[1]
+  }
+  if (type=="final") {
+    code_loc <- model$FinalDemandMeta[endsWith(model$FinalDemandMeta$Code_Loc,loc),][["Code_Loc"]]
+  } else if (type=="intermediate") {
+    code_loc <- model$Commodities$Code_Loc[endsWith(model$Commodities$Code_Loc,loc)]
+  } else {
+    code_loc <- model$FinalDemandMeta[model$FinalDemandMeta$Group == type &
+                                      endsWith(model$FinalDemandMeta$Code_Loc,loc),][["Code_Loc"]]
+  }
+  ## TODO: FURTHER HANDLE STATE VS FEDERAL GOVT
+  if (domestic) {
+    U <- model$U_d
+  } else {
+    U <- model$U
+  }
+  name <- paste0(substr(loc,4,5),"-",model$specs$IOYear,"-",type)
+  # Sum across demand columns, drop the Value Add rows
+  usebytype <- as.matrix(rowSums(U[-(which(startsWith(rownames(U), "V00"))), code_loc, drop=FALSE]))
+  colnames(usebytype) <- name
+  
+  return(usebytype)
+}
+
+
+reformatStatebyYearLongtoWide <- function(df, value.var) {
+  colnames(df) <- c(value.var, "State", "Year")
+  df_wide <- reshape(df,
+                     v.names = value.var,
+                     idvar = "State",
+                     timevar = "Year",
+                     direction = "wide")
+  row.names(df_wide) <- df_wide$State # Make row names the states
+  df_wide <- df_wide[,-1] # Remove the column with state names
+  colnames(df_wide) <- years
+  df_wide <- df_wide[order(rownames(df_wide)), order(colnames(df_wide))]
+  return(df_wide)
+}
+
+
+convertStateCBEResultFormatToStatebyYear <- function(df, value.var) {
+  df_names <- t(data.frame(strsplit(row.names(df),'-')))
+  df <- cbind(df,df_names)
+  df <- reformatStatebyYearLongtoWide(df, value.var=value.var)
+  return(df)
+}
+
+
+# Returns the territorial inventory in Result format
+# constructed from the model's Total by Sector amounts and indicator GWPs
+getStateGHGI <- function(model) {
+  loc <- model$specs$ModelRegionAcronyms[1]
+  fields <- c("Sector","Flowable","FlowAmount",   "Location")
+  GHGI <- useeior:::collapseTBS(model$TbS, model)[,fields] 
+  # filter out other regions (RoUS)
+  GHGI <- GHGI[GHGI$Location==loc,]
+  GWPs <- model$Indicators$factors[,c("Flowable","Amount")]
+  GWPs <- unique(GWPs)
+  GHGI <- merge(GHGI, GWPs, all.x=TRUE,)
+  ## ^^ TODO not capturing kg CO2e flows like HFCs and PFCs unspecified
+  
+  GHGI$`Greenhouse Gases` <- GHGI$FlowAmount*GHGI$Amount
+  GHGI <- aggregate(`Greenhouse Gases` ~ Sector, GHGI, sum)
+  # Merge in sectors in case some are missing
+  comms_in_m <- list(Sector=unique(model$Commodities$Code))
+  GHGI <- merge(GHGI, comms_in_m, all.y=TRUE)   
+  row.names(GHGI) <-  apply(cbind(GHGI['Sector'], loc), 1, FUN = joinStringswithSlashes)
+  GHGI <- matrix(GHGI[,c("Greenhouse Gases")],
+                 dimnames=list(rownames(GHGI), c("Greenhouse Gases")))
+  ## TODO update order of sectors before returning
+  
+  return(GHGI)  
+}
+
+
 #' Prepare a dataframe for graphing from list of two-region models
 #' @param model_list List of completed EEIO models
 #' @param matrix_name Name of model matrix to extract data from, e.g. "B", set to NULL to use result vector
