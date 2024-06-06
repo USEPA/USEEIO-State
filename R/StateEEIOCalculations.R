@@ -5,17 +5,13 @@
 ## Returns by default a vector with GHG in CO2e totals by sector (rows)
 calculateStateCBE <- function(model, CO2e=TRUE, perspective="FINAL",
                               domestic=FALSE, RoUS=FALSE) {
-  if (RoUS) {
-    loc <- "RoUS"
-  } else {
-    loc <- model$specs$ModelRegionAcronyms[1]
-  }
+  loc <- getLocation(RoUS, model)
   r <- useeior::calculateEEIOModel(model,
                                    perspective = perspective,
                                    demand = "Consumption",
                                    location = loc,
-                                   use_domestic_requirements = domestic)
-                                   # household_emissions = TRUE)
+                                   use_domestic_requirements = domestic,
+                                   household_emissions = TRUE)
   # Note this function requires a model with only a single indicator
   if(CO2e) {
     r<-r$LCIA_f
@@ -28,11 +24,7 @@ calculateStateCBE <- function(model, CO2e=TRUE, perspective="FINAL",
 ## Returns a vector of demand in dollars by type with sectors as rows
 #' @param type, str, "Household", "Federal Government", "State Government", "Investment", "final", or "intermediate"
 getStateUsebyType <- function(model, type="final", domestic=FALSE, RoUS=FALSE) {
-  if (RoUS) {
-    loc <- "RoUS"
-  } else {
-    loc <- model$specs$ModelRegionAcronyms[1]
-  }
+  loc <- getLocation(RoUS, model)
   if (type=="final") {
     code_loc <- model$FinalDemandMeta[endsWith(model$FinalDemandMeta$Code_Loc,loc),][["Code_Loc"]]
   } else if (type=="intermediate") {
@@ -77,6 +69,30 @@ convertStateResultFormatToStatebyYear <- function(df, value.var) {
   df <- reformatStatebyYearLongtoWide(df, value.var=value.var)
   return(df)
 }
+
+
+getLocation <- function(RoUS, model) {
+  if (RoUS) {
+    loc <- "RoUS"
+  } else {
+    loc <- model$specs$ModelRegionAcronyms[1]
+  }
+  return(loc)
+}
+
+aggregateStateResultMatrix <- function(model, matrix, RoUS=FALSE) {
+  name <- colnames(matrix)
+  if (RoUS) {
+    matrix <- subset(matrix, endsWith(rownames(matrix), "RoUS"))  
+  } else {
+    matrix <- subset(matrix, !(endsWith(rownames(matrix), "RoUS")))
+  }
+  
+  matrix <- useeior:::aggregateResultMatrixbyRow(matrix, "Sector", model$crosswalk)
+  colnames(matrix) <- name
+  return(matrix)
+}
+
 
 
 # Returns the territorial inventory in Result format
