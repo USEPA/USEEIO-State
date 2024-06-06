@@ -91,24 +91,40 @@ p
 
 
 ```{r time_series_demand, echo=FALSE, fig.width=9, fig.height=4}
-demand <- data.frame()
-demand_by_source <- data.frame()
-for (y in c(2012:2019)) {
-  modelname <- paste0(state, modelstub,substr(y,3,4))
-  file_path <- download_model_RDS(modelname)
-  model <- readRDS(file_path)
-  demands <- calculateDemandVectors(model, price_year = "2019")
-  # ^^ change price_year to y to get current year price figures
-  demand <- rbind(demand, demands$demand)
-  demand_by_source <- rbind(demand_by_source, demands$demand_by_source)
+
+models <- list()
+
+for(y in c(2012:2019)) {
+   modelname <- paste0(state, modelstub, substr(y,3,4))
+   name_for_list <- paste0(state,"-",toString(y))
+   file_path <- download_model_RDS(modelname)
+   models[[name_for_list]] <- readRDS(file_path)
 }
 
-p1 <- lineChartDemand(demand)
-p1 <- p1 + ylab("Billion $ (2019)")
-p1
-p2 <- lineChartDemand(demand_by_source)
-p2 <- p2 + ylab("Billion $ (2019)")
-p2
+d <- sapply(models,calculateDemandBySource)
+rownames(d) <- rownames(calculateDemandBySource(models[[1]]))
+d <- reformatWidetoLong(d)
+lineChartFigure(d)
+
+
+# demand <- data.frame()
+# demand_by_source <- data.frame()
+# for (y in c(2012:2019)) {
+#   modelname <- paste0(state, modelstub,substr(y,3,4))
+#   file_path <- download_model_RDS(modelname)
+#   model <- readRDS(file_path)
+#   demands <- calculateDemandVectors(model, price_year = "2019")
+#   # ^^ change price_year to y to get current year price figures
+#   demand <- rbind(demand, demands$demand)
+#   demand_by_source <- rbind(demand_by_source, demands$demand_by_source)
+# }
+# 
+# p1 <- lineChartDemand(demand)
+# p1 <- p1 + ylab("Billion $ (2019)")
+# p1
+# p2 <- lineChartDemand(demand_by_source)
+# p2 <- p2 + ylab("Billion $ (2019)")
+# p2
 
 
 ```

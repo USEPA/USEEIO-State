@@ -39,12 +39,27 @@ getStateUsebyType <- function(model, type="final", domestic=FALSE, RoUS=FALSE) {
   } else {
     U <- model$U
   }
-  name <- paste0(substr(loc,4,5),"-",model$specs$IOYear,"-",type)
+  name <- type
   # Sum across demand columns, drop the Value Add rows
   usebytype <- as.matrix(rowSums(U[-(which(startsWith(rownames(U), "V00"))), code_loc, drop=FALSE]))
   colnames(usebytype) <- name
   
   return(usebytype)
+}
+
+
+# Calculate demand by sector by source
+calculateDemandBySource <- function(model) {
+  demand_by_source <- data.frame(sapply(c("Household", "Investment", "Federal Government", "State Government"),
+                                        getStateUsebyType, model=model,
+                                        simplify=FALSE, USE.NAMES=FALSE))
+  demand_by_source <- cbind(demand_by_source, Total = rowSums(demand_by_source))
+  
+  # if desired, adjust price type before summing
+  
+  total_demand_by_source <- as.matrix(colSums(demand_by_source))
+  colnames(total_demand_by_source) <- "Demand"
+  return(total_demand_by_source)
 }
 
 
@@ -60,6 +75,14 @@ reformatStatebyYearLongtoWide <- function(df, value.var) {
   colnames(df_wide) <- years
   df_wide <- df_wide[order(rownames(df_wide)), order(colnames(df_wide))]
   return(df_wide)
+}
+
+reformatWidetoLong <- function(df) {
+  df <- melt(df, varnames=c('variable', 'ID'))
+  x <- do.call('rbind', (strsplit(as.character(df$ID), "-", fixed=TRUE)))
+  colnames(x) <- c("State", "Year")
+  df <- cbind(x, df)
+  return(df)
 }
 
 

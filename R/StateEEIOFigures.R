@@ -78,10 +78,9 @@ stackedBarChartResultFigure <- function(df) {
   return(p)
 }
 
-lineChartDemand <- function(demand) {
-  demand_figure <- melt(demand, id.vars=c('Year'))
-  demand_figure$value <- demand_figure$value / 1000000000
-  p <- ggplot(demand_figure, aes(x = Year, y = value, group=variable, color=variable))+
+lineChartFigure <- function(df) {
+  df_figure <- reformatWidetoLong(df)
+  p <- ggplot(df_figure, aes(x = Year, y = value, group=variable, color=variable))+
     geom_line(size=3) +
     ylab("Billion $") +
     xlab("Year") +
