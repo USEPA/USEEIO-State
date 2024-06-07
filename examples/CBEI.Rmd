@@ -100,22 +100,21 @@ p
 ## 
 ```{r time_series_demand, echo=FALSE, fig.width=9, fig.height=4}
 
-
+ylabel <- "Billion $"
 
 d <- sapply(models, calculateDemandByType)
 rownames(d) <- rownames(calculateDemandByType(models[[1]]))
-lineChartFigure(d / 10^9)
+lineChartFigure(d / 10^9,ylabel)
 
+ylabel <- "Billion $ (2019)"
 d <- sapply(models, calculateDemandByType, price_year=2019)
 rownames(d) <- rownames(calculateDemandByType(models[[1]]))
-p1 <- lineChartFigure(d / 10^9)
-p1 <- p1 + ylab("Billion $ (2019)")
+p1 <- lineChartFigure(d / 10^9,ylabel)
 p1
 
 d <- sapply(models, calculateDemandByRegion, price_year=2019)
 rownames(d) <- rownames(calculateDemandByRegion(models[[1]]))
-p2 <- lineChartFigure(d / 10^9)
-p2 <- p2 + ylab("Billion $ (2019)")
+p2 <- lineChartFigure(d / 10^9,ylabel)
 p2
 
 ```

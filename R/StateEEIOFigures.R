@@ -76,11 +76,14 @@ stackedBarChartResultFigure <- function(df, model) {
   return(p)
 }
 
-lineChartFigure <- function(df) {
-  df_figure <- reformatWidetoLong(df)
+
+#Plots a line chart for a StateResult where x is time in years and y is variable
+# ylabel
+lineChartFigure <- function(result,ylabel) {
+  df_figure <- reformatWidetoLong(result)
   p <- ggplot(df_figure, aes(x = Year, y = value, group=variable, color=variable))+
     geom_line(size=3) +
-    ylab("Billion $") +
+    ylab(ylabel) +
     xlab("Year") +
     scale_colour_hue(name='Source') +
     theme_bw() +
