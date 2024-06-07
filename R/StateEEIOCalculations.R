@@ -201,11 +201,11 @@ getStateGHGI <- function(model) {
   GHGI <- useeior:::collapseTBS(model$TbS, model)[,fields] 
   # filter out other regions (RoUS)
   GHGI <- GHGI[GHGI$Location==loc,]
-  GWPs <- model$Indicators$factors[,c("Flowable","Amount")]
-  GWPs <- unique(GWPs)
+  GWPs <- data.frame("Flowable" = row.names(t(model$C)), t(model$C))
+  GWPs$Flowable <- gsub("/.*", "", GWPs$Flowable)
+  colnames(GWPs) <- c("Flowable", "Amount")
   GHGI <- merge(GHGI, GWPs, all.x=TRUE,)
-  ## ^^ TODO not capturing kg CO2e flows like HFCs and PFCs unspecified
-  
+
   GHGI$`Greenhouse Gases` <- GHGI$FlowAmount*GHGI$Amount
   GHGI <- aggregate(`Greenhouse Gases` ~ Sector, GHGI, sum)
   # Merge in sectors in case some are missing
