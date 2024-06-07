@@ -134,3 +134,17 @@ p2 <- p2 + labs(y = "MMT CO2e")
 p2
 
 ```
+```{r cbe_territorial}
+ghgi_all <- sapply(models, getStateGHGI, simplify=TRUE, USE.NAMES=TRUE)
+
+# Compare CBE to Territorial for Focal state
+terr <- t(as.matrix(colSums(ghgi_all, na.rm = TRUE)))
+cbe <- t(as.matrix(colSums(ghgs_all, na.rm = TRUE)))
+combined <- as.matrix(rbind(terr, cbe))
+rownames(combined) <- c("Territorial", "CBE")
+p <- lineChartFigure(combined / 10^9)
+p <- p + ylab("MMT CO2e") +
+     scale_y_continuous(limits = c(0, NA))
+p
+
+```
