@@ -50,7 +50,6 @@ stackedBarChartResult <- function(model_list, indicator, scale=0, demand="Consum
 #' Stacked bar chart (e.g., for showing location of impact as SoI or RoUS or RoW)
 #' @param df, must include "Sector", "Value" and "ID" columns
 stackedBarChartResultFigure <- function(df) {
-
   mapping <- useeior:::getBEASectorColorMapping(model)
   # mapping$SummaryCode <- toupper(mapping$SummaryCode)
   # mapping$GroupName <- mapping$SectorName
@@ -58,7 +57,6 @@ stackedBarChartResultFigure <- function(df) {
   df <- merge(df, unique(mapping[, c("Sector", "color", "SectorName")]), by = "Sector")
  
   label_colors <- rev(unique(df[, c("Sector", "color")])[, "color"])
-
   p <- ggplot(df, aes(x = Value, fill = ID,
                       y = factor(.data[["SectorName"]], levels = unique(.data[["SectorName"]])))) +
           geom_col() + 
@@ -93,34 +91,28 @@ lineChartFigure <- function(df) {
 #' Plot time series for two region models
 #' @param df
 #' @param plottype, str, "line" or "bar"
-#' @param scale, int, number of digits to remove from y-axis
 #' @param legend_ncol
 twoRegionTimeSeriesPlot <- function(df,
                                     plottype, # bar or line
-                                    scale = 0,
-                                    legend_ncol = 1) {
-
-  # Aggregate SoI and RoUS
-  df_agg <- dplyr::group_by(df, modelname, Year, Indicator, color, GroupName)
-  df_agg <- dplyr::summarize(
-    df_agg,
-    ValueAgg = sum(Value),
-    .groups = 'drop'
-  )
-  colnames(df_agg)[colnames(df_agg)=="ValueAgg"] <- "Value"
-  df_agg$State <- gsub("US-", "", df_agg$modelname)
-  df_agg$Value <- df_agg$Value / 10^scale
+                                    legend_ncol = 2) {
+  df_figure <- reformatWidetoLong(df)
+  mapping <- useeior:::getBEASectorColorMapping(model)
+  # mapping$SummaryCode <- toupper(mapping$SummaryCode)
+  # mapping$GroupName <- mapping$SectorName
+  
+  df_figure <- merge(df_figure, unique(mapping[, c("Sector", "color", "SectorName")]),
+                     by.x = "variable", by.y = "Sector")
 
   # Load visualization elements
   vizElements <- loadVisualizationElementsForTimeSeriesPlot()
   ColorLabelMapping <- vizElements$ColorLabelMapping
   barplot_theme <- vizElements$barplot_theme
   
-  df_agg <- subset(df_agg, df_agg$Value >= 0)
+  df_figure <- subset(df_figure, df_figure$value >= 0)
   # Plot
-  plotparameters <- ColorLabelMapping[ColorLabelMapping$V1 %in% df$GroupName, ]
+  plotparameters <- ColorLabelMapping[ColorLabelMapping$V1 %in% df_figure$SectorName, ]
   if (plottype == "bar") {
-    p <- ggplot(df_agg, aes(x = Year, y = Value, fill = GroupName))
+    p <- ggplot(df_figure, aes(x = Year, y = value, fill = SectorName))
     p <- p + geom_bar(stat = "identity", width = 0.8, color = "white") +
       scale_fill_manual(name = "", values = plotparameters$color) +
       labs(x = "", y = "") +
@@ -129,7 +121,7 @@ twoRegionTimeSeriesPlot <- function(df,
       guides(fill = guide_legend(ncol = legend_ncol))
 
   } else if (plottype == "line") {
-    p <- ggplot(df_agg, aes(x = Year, y = Value, group = GroupName, color = GroupName)) +
+    p <- ggplot(df_figure, aes(x = Year, y = value, group = SectorName, color = SectorName)) +
       geom_line(stat = "identity", size=2) +
       # geom_point(stat = "identity", size=2) +
       scale_color_manual(name = "", values = plotparameters$color) +

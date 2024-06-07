@@ -70,7 +70,6 @@ ghg_agg_row <- aggregateStateResultMatrix(model, ghg_RoW, RoUS=FALSE) + aggregat
 
 colSums(ghg_agg_dom + ghg_agg_rous + ghg_agg_row) == colSums(ghg_total)
 
-
 ```
 
 
@@ -121,27 +120,16 @@ p2
 
 
 ```{r ghg_time_series, echo=FALSE, fig.width=8, fig.height=6}
-results <- data.frame()
+ghgs_all <- sapply(models, calculateStateCBE)
+rownames(ghgs_all) <- rownames(calculateStateCBE(models[[1]]))
+ghgs_all <- (aggregateStateResultMatrix(models[[1]], ghgs_all, RoUS=FALSE) +
+               aggregateStateResultMatrix(models[[1]], ghgs_all, RoUS=TRUE))
 
-for (y in c(2012:2019)) {
-  modelname <- paste0(state, modelstub,substr(y,3,4))
-  file_path <- download_model_RDS(modelname)
-  model <- readRDS(file_path)
-  model_list <- list()
-  model_list[[paste0("US-", state)]] <- model
-  
-  df <- prepareDFforFigure(model_list=model_list, matrix_name=NULL, perspective="FINAL",
-                           indicator="Greenhouse Gases", sector_to_remove="", demand="Consumption",
-                           combine_SoIRoUS=TRUE, household_emissions=FALSE)
-  df$Year <- as.character(y)
-  results <- rbind(results, df)
-}
-
-p1 <- twoRegionTimeSeriesPlot(results, plottype = "bar", legend_ncol = 2, scale=9)
+p1 <- twoRegionTimeSeriesPlot(ghgs_all / 10^9, plottype = "bar")
 p1 <- p1 + labs(y = "MMT CO2e")
 p1
 
-p2 <- twoRegionTimeSeriesPlot(results, plottype = "line", legend_ncol = 2, scale=9)
+p2 <- twoRegionTimeSeriesPlot(ghgs_all/ 10^9, plottype = "line")
 p2 <- p2 + labs(y = "MMT CO2e")
 p2
 
