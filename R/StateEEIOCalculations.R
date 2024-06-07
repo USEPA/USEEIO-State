@@ -33,11 +33,18 @@ getStateUsebyType <- function(model, type="final", domestic=FALSE, RoUS=FALSE) {
     code_loc <- model$FinalDemandMeta[endsWith(model$FinalDemandMeta$Code_Loc,loc),][["Code_Loc"]]
   } else if (type=="intermediate") {
     code_loc <- model$Commodities$Code_Loc[endsWith(model$Commodities$Code_Loc,loc)]
+  } else if (type=="State Government") {
+    code_loc <- model$FinalDemandMeta[model$FinalDemandMeta$Group == "Government" &
+                                        endsWith(model$FinalDemandMeta$Code_Loc,loc) &
+                                        startsWith(model$FinalDemandMeta$Code, "F10"),][["Code_Loc"]]
+  } else if (type=="Federal Government") {
+    code_loc <- model$FinalDemandMeta[model$FinalDemandMeta$Group == "Government" &
+                                        endsWith(model$FinalDemandMeta$Code_Loc,loc) &
+                                        !startsWith(model$FinalDemandMeta$Code, "F10"),][["Code_Loc"]]
   } else {
     code_loc <- model$FinalDemandMeta[model$FinalDemandMeta$Group == type &
                                       endsWith(model$FinalDemandMeta$Code_Loc,loc),][["Code_Loc"]]
   }
-  ## TODO: FURTHER HANDLE STATE VS FEDERAL GOVT
   if (domestic) {
     U <- model$U_d
   } else {
