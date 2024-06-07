@@ -7,5 +7,6 @@ output/*
 examples/*.md
 !examples/README.md
 examples/GenerateResults_files*
+examples/CBEI_files*
 models/*
 .idea/*

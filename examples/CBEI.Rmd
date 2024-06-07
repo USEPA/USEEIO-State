@@ -32,7 +32,7 @@ params:
 source("../R/StateEEIOFigures.R")
 source("../R/StateEEIOCalculations.R")
 #library(useeior)
-devtools::load_all("../../useeior/")
+devtools::load_all("../../useeior/") # Requires develop branch (to be v1.6.0)
 
 # Stop execution of Rmd if params not selected
 if (params$state=="") {
