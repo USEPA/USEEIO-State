@@ -203,7 +203,7 @@ getStateGHGI <- function(model) {
   GHGI <- aggregate(`Greenhouse Gases` ~ Sector, GHGI, sum)
   # Merge in sectors in case some are missing
   comms_in_m <- list(Sector=unique(model$Commodities$Code))
-  GHGI <- merge(GHGI, comms_in_m, all.y=TRUE)   
+  GHGI <- merge(GHGI, comms_in_m, all=TRUE)   
   row.names(GHGI) <-  apply(cbind(GHGI['Sector'], loc), 1, FUN = joinStringswithSlashes)
   GHGI <- matrix(GHGI[,c("Greenhouse Gases")],
                  dimnames=list(rownames(GHGI), c("Greenhouse Gases")))
