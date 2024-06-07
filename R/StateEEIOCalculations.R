@@ -135,7 +135,13 @@ reformatStatebyYearLongtoWide <- function(df, value.var) {
 reformatWidetoLong <- function(df) {
   df <- melt(df, varnames=c('variable', 'ID'))
   x <- do.call('rbind', (strsplit(as.character(df$ID), "-", fixed=TRUE)))
-  colnames(x) <- c("State", "Year")
+  if(ncol(x) == 2) {
+    colnames(x) <- c("State", "Year")
+  } else if (ncol(x) == 1) {
+    colnames(x) <- c("Year")
+  } else {
+    stop("Error in reformatting")
+  }
   df <- cbind(x, df)
   return(df)
 }
