@@ -9,7 +9,7 @@ params:
     value: "v1.1"
     input: select
     choices: ["v1.1-GHG","v1.1-GHGc"]
-  year:
+  years:
     label: "Model Year"
     value: [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019]
     input: select
@@ -82,12 +82,13 @@ ghg_agg_rous <- aggregateStateResultMatrix(model, ghg_domestic, RoUS=TRUE)
 ghg_agg_row <- aggregateStateResultMatrix(model, ghg_RoW, RoUS=FALSE) + aggregateStateResultMatrix(model, ghg_RoW, RoUS=TRUE)
 
 ```
+
 ```{r ghg_results, echo=FALSE, fig.width=9, fig.height=4}
 v <- c(RoUS='ghg_agg_rous', RoW='ghg_agg_row')
 v[state] <- 'ghg_agg_soi'
 ghgs <- combineResults(v)
 ghgs$Value <- ghgs$Value / 10^9
-p <- stackedBarChartResultFigure(ghgs)
+p <- stackedBarChartResultFigure(ghgs, model)
 p <- p + 
   xlab('Greenhouse Gases (million tonnes)') +
   labs(fill = 'Region')
@@ -103,17 +104,17 @@ p
 
 d <- sapply(models, calculateDemandByType)
 rownames(d) <- rownames(calculateDemandByType(models[[1]]))
-lineChartFigure(d / 1000000000)
+lineChartFigure(d / 10^9)
 
 d <- sapply(models, calculateDemandByType, price_year=2019)
 rownames(d) <- rownames(calculateDemandByType(models[[1]]))
-p1 <- lineChartFigure(d / 1000000000)
+p1 <- lineChartFigure(d / 10^9)
 p1 <- p1 + ylab("Billion $ (2019)")
 p1
 
 d <- sapply(models, calculateDemandByRegion, price_year=2019)
 rownames(d) <- rownames(calculateDemandByRegion(models[[1]]))
-p2 <- lineChartFigure(d / 1000000000)
+p2 <- lineChartFigure(d / 10^9)
 p2 <- p2 + ylab("Billion $ (2019)")
 p2
 

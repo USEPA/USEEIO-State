@@ -49,7 +49,7 @@ stackedBarChartResult <- function(model_list, indicator, scale=0, demand="Consum
 
 #' Stacked bar chart (e.g., for showing location of impact as SoI or RoUS or RoW)
 #' @param df, must include "Sector", "Value" and "ID" columns
-stackedBarChartResultFigure <- function(df) {
+stackedBarChartResultFigure <- function(df, model) {
   mapping <- useeior:::getBEASectorColorMapping(model)
   # mapping$SummaryCode <- toupper(mapping$SummaryCode)
   # mapping$GroupName <- mapping$SectorName
