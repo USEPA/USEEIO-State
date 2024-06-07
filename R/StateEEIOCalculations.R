@@ -181,6 +181,10 @@ aggregateStateResultMatrix <- function(model, matrix, RoUS=FALSE) {
 }
 
 
+subsetColumnsByString <- function(matrix, s) {
+  m <- matrix[, stringr::str_detect(colnames(matrix), s)]
+  return(m)
+}
 
 # Returns the territorial inventory in Result format
 # constructed from the model's Total by Sector amounts and indicator GWPs
