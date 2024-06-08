@@ -24,7 +24,7 @@ calculateStateCBE <- function(model, CO2e=TRUE, perspective="FINAL",
 ## Returns a vector of demand in dollars by type with sectors as rows
 #' @param type, str, "Household", "Federal Government", "State Government", "Investment", "final", or "intermediate"
 getStateUsebyType <- function(model, type="final", domestic=FALSE, RoUS=FALSE) {
-  opt <- c("Household", "Federal Government", "State Government", "Investment", "Export","Import","ChangeInventories", "final", "intermediate")
+  opt <- c("Household", "Federal Government", "State Government", "Government", "Investment", "Export","Import","ChangeInventories", "final", "intermediate")
   if (!type %in% opt) {
     stop(paste0("'type' options are ", paste(opt, collapse=", ")))
   }
