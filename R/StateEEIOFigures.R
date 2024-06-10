@@ -140,6 +140,14 @@ twoRegionTimeSeriesPlot <- function(df,
   return(p)
 }
 
+# extract a legend, for use in multi-pane figures
+# see https://stackoverflow.com/a/13650878
+g_legend<-function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)
+}
 
 # Taken from VisualizeStateIOresults.R global objects
 loadVisualizationElementsForTimeSeriesPlot <- function(){
