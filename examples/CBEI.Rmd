@@ -65,13 +65,9 @@ for(y in years) {
 }
 
 
-#modelname <- paste0(state, modelstub, substr(year,3,4))
-#file_path <- file.path("..","models",paste0(modelname,".rds"))
-#model <- readRDS(file_path) # Test that it loads correctly
-
 ```
 
-```{r }
+```{r results}
 model <- models[[paste0(state,"-",toString(focal_year))]]
 ghg_total <- calculateStateCBE(model)
 ghg_domestic <- calculateStateCBE(model, domestic=TRUE)
@@ -85,9 +81,10 @@ ghg_agg_row <- aggregateStateResultMatrix(model, ghg_RoW, RoUS=FALSE) + aggregat
 
 ```{r ghg_results, echo=FALSE, fig.width=9, fig.height=4}
 v <- c(RoUS='ghg_agg_rous', RoW='ghg_agg_row')
-v[state] <- 'ghg_agg_soi'
+v[state] <- 'ghg_agg_soi' # Set state specific name for this vector
 ghgs <- combineResults(v)
 ghgs$Value <- ghgs$Value / 10^9
+ghgs <- subset(ghgs, !(ghgs$Sector %in% c("Used", "Other")))
 p <- stackedBarChartResultFigure(ghgs, model)
 p <- p + 
   xlab('Greenhouse Gases (million tonnes)') +
@@ -95,9 +92,8 @@ p <- p +
 p
 
 ```
-![GHG emissions, Final perspective.](`r knitr::fig_chunk('ghg_results', 'png')`){#fig:ghg_results}
 
-## 
+
 ```{r time_series_demand, echo=FALSE, fig.width=9, fig.height=4}
 
 ylabel <- "Billion $"
@@ -145,8 +141,8 @@ terr <- t(as.matrix(colSums(ghgi_all, na.rm = TRUE)))
 cbe <- t(as.matrix(colSums(ghgs_all, na.rm = TRUE)))
 combined <- as.matrix(rbind(terr, cbe))
 rownames(combined) <- c("Territorial", "CBE")
-p <- lineChartFigure(combined / 10^9)
-p <- p + ylab("MMT CO2e") +
+p <- lineChartFigure(combined / 10^9, ylabel="MMT CO2e")
+p <- p +
      scale_y_continuous(limits = c(0, NA))
 p
 
