@@ -56,6 +56,10 @@ stackedBarChartResultFigure <- function(df, model) {
   
   df <- merge(df, unique(mapping[, c("Sector", "color", "SectorName")]), by = "Sector")
  
+  # Extract primary code in order to set figure stack alignment
+  state <- unique(df$ID)[!(unique(df$ID) %in% c("RoUS", "RoW"))]
+  df$ID <- factor(df$ID, levels=c("RoW", "RoUS", state))
+
   label_colors <- rev(unique(df[, c("Sector", "color")])[, "color"])
   p <- ggplot(df, aes(x = Value, fill = ID,
                       y = factor(.data[["SectorName"]], levels = unique(.data[["SectorName"]])))) +
