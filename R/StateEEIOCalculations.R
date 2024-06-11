@@ -4,11 +4,11 @@ library(reshape2)
 ## Primary State CBE function. 
 ## Returns by default a vector with GHG in CO2e totals by sector (rows)
 calculateStateCBE <- function(model, CO2e=TRUE, perspective="FINAL",
-                              domestic=FALSE, RoUS=FALSE) {
+                              demand="Consumption",domestic=FALSE, RoUS=FALSE) {
   loc <- getLocation(RoUS, model)
   r <- useeior::calculateEEIOModel(model,
                                    perspective = perspective,
-                                   demand = "Consumption",
+                                   demand = demand,
                                    location = loc,
                                    use_domestic_requirements = domestic,
                                    household_emissions = TRUE)
