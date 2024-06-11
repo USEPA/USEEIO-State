@@ -1,6 +1,6 @@
 # StateEEIOFigures.R
 library(ggplot2)
-
+library(dplyr)
 
 #' Stacked bar chart (e.g., for showing location of impact as SoI or RoUS or RoW)
 #' @param df, must include "Sector", "Value" and "ID" columns
@@ -96,6 +96,86 @@ twoRegionTimeSeriesPlot <- function(df,
     print('Error not an available plottype')
     return()
   }
+  return(p)
+}
+
+
+contributionToImpactBySectorChart <- function(model, sector, indicator, state) {
+
+  if(is.null(model$N)) { stop("Can't calculate a model without an N matrix")}
+  df0 <- useeior::disaggregateTotalToDirectAndTier1(model, indicator)
+  
+  sector_codes <- c(paste0(sector, "/US-", state), paste0(sector, "/RoUS"))
+  df <- subset(df0, df0$sector_code %in% sector_codes)
+  
+  # Reaggregate ignoring location of purchased commodity
+  df_agg <- df %>%
+    group_by(purchased_commodity) %>%
+    summarize(
+      impact_per_purchase = sum(impact_per_purchase),
+      .groups = 'drop'
+    )
+  
+  # Identify the top 5 sectors being purchases
+  top5 <- df_agg %>% top_n(5)
+  if("Direct" %in% top5$purchased_commodity) {
+    top5 <- df_agg %>%
+      top_n(6) %>%
+      filter(purchased_commodity!='Direct') %>%
+      arrange(impact_per_purchase)
+  }
+  sectors_to_show <- top5[["purchased_commodity"]]
+  sectors_to_show <- c(sectors_to_show, "Imports", "Direct")
+  
+  df <- df %>% 
+    mutate(
+      tag = case_when(
+        purchased_commodity %in% sectors_to_show ~ 1,
+        !(purchased_commodity %in% sectors_to_show) ~ 0
+      )
+    )
+  ## Aggregate all other sectors and recombine
+  others <- subset(df, df$tag == 0)
+  others <- aggregate(impact_per_purchase ~ sector_code, data = others, FUN=sum)
+  others$purchased_commodity <- "Other"
+  others$purchased_commodity_code <- "Other"
+  df <- subset(df, df$tag == 1)
+  df[is.na(df)] <- "Direct"
+  common_cols <- intersect(colnames(df), colnames(others))
+  df <- rbind(df[, common_cols], others[, common_cols])
+  
+  # Reaggregate ignoring location of purchased commodity
+  df <- df %>%
+    group_by(sector_code, purchased_commodity) %>%
+    summarize(
+      impact_per_purchase = sum(impact_per_purchase),
+      .groups = 'drop'
+    )
+  
+  import_row <- data.frame(sector_code = "RoW", purchased_commodity = "Imports",
+                           impact_per_purchase = model$N_m[indicator, paste0(sector, "/US-", state)])
+  df <- rbind(df, import_row)    
+
+  name <- model$Commodities[model$Commodities$Code == sector, "Name"][1]
+  # Rename sectors to states
+  df['sector_code'] <- data.frame(lapply(df['sector_code'], function(x) {
+    gsub(sector_codes[1], state, x)}))
+  df['sector_code'] <- data.frame(lapply(df['sector_code'], function(x) {
+    gsub(sector_codes[2], "RoUS", x)}))
+  
+  ## Order sectors for figure
+  df$sector_code <- factor(df$sector_code, levels=c(state, "RoUS", "RoW"))
+  df$purchased_commodity <- factor(df$purchased_commodity, levels=c("Other", sectors_to_show))
+  p <- ggplot(df, aes(fill=purchased_commodity, x = sector_code, y=impact_per_purchase)) +
+    geom_bar(position="stack", stat = "identity") +
+    # xlab(paste0("Purchases by Region: ", name)) +
+    xlab(element_blank()) +
+    ylab("kg CO2e / $ produced") + 
+    theme_bw() + 
+    labs(fill="Source") +
+    theme(text = element_text(size=18)) +
+    scale_y_continuous(expand = c(0, 0))
+  
   return(p)
 }
 
