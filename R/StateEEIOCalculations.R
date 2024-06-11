@@ -32,7 +32,7 @@ getStateUsebyType <- function(model, type="final", domestic=FALSE, RoUS=FALSE) {
   if (type=="final") {
     code_loc <- model$FinalDemandMeta[endsWith(model$FinalDemandMeta$Code_Loc,loc),][["Code_Loc"]]
   } else if (type=="intermediate") {
-    code_loc <- model$Commodities$Code_Loc[endsWith(model$Commodities$Code_Loc,loc)]
+    code_loc <- model$Industries$Code_Loc[endsWith(model$Industries$Code_Loc,loc)]
   } else if (type=="State Government") {
     code_loc <- model$FinalDemandMeta[model$FinalDemandMeta$Group == "Government" &
                                         endsWith(model$FinalDemandMeta$Code_Loc,loc) &
@@ -52,7 +52,7 @@ getStateUsebyType <- function(model, type="final", domestic=FALSE, RoUS=FALSE) {
   }
   name <- type
   # Sum across demand columns, drop the Value Add rows
-  usebytype <- as.matrix(rowSums(U[-(which(startsWith(rownames(U), "V00"))), code_loc, drop=FALSE]))
+  usebytype <- as.matrix(rowSums(U[-startsWith(rownames(U), "V00"), code_loc, drop=FALSE]))
   colnames(usebytype) <- name
   
   return(usebytype)
