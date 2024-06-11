@@ -52,7 +52,7 @@ getStateUsebyType <- function(model, type="final", domestic=FALSE, RoUS=FALSE) {
   }
   name <- type
   # Sum across demand columns, drop the Value Add rows
-  usebytype <- as.matrix(rowSums(U[-startsWith(rownames(U), "V00"), code_loc, drop=FALSE]))
+  usebytype <- as.matrix(rowSums(U[-which(startsWith(rownames(U), "V00")), code_loc, drop=FALSE]))
   colnames(usebytype) <- name
   
   return(usebytype)
