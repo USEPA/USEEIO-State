@@ -4,14 +4,15 @@ library(reshape2)
 ## Primary State CBE function. 
 ## Returns by default a vector with GHG in CO2e totals by sector (rows)
 calculateStateCBE <- function(model, CO2e=TRUE, perspective="FINAL",
-                              demand="Consumption",domestic=FALSE, RoUS=FALSE) {
+                              demand="Consumption",domestic=FALSE, RoUS=FALSE,
+                              household_emissions=TRUE) {
   loc <- getLocation(RoUS, model)
   r <- useeior::calculateEEIOModel(model,
                                    perspective = perspective,
                                    demand = demand,
                                    location = loc,
                                    use_domestic_requirements = domestic,
-                                   household_emissions = TRUE)
+                                   household_emissions = household_emissions)
   # Note this function requires a model with only a single indicator
   if(CO2e) {
     r<-r$LCIA_f
@@ -233,4 +234,49 @@ combineResults <- function(dfNames) {
   
   return (df)
 }
+
+#Calculate CBE in exports to RoUS, exports to RoW, imports from RoUS, imports from ROW
+#Add trade balance as exports - imports
+calculateCBETradeBalance <- function(model) {
+  ##Exports
+  # Get exports to RoW
+  export_RoW <- getStateUsebyType(model,type="Export")
+  # Get exports to RoUS
+  RoUS_uses_intermediate <-  getStateUsebyType(model,type="intermediate", domestic=TRUE, RoUS=TRUE)
+  RoUS_uses_final <-  getStateUsebyType(model,type="final", domestic=TRUE, RoUS=TRUE)
+  RoUS_uses <- RoUS_uses_intermediate+RoUS_uses_final
+  #Set uses by RoUS of RoUS commodities to 0 to not count them
+  RoUS_uses[grep("RoUS",rownames(RoUS_uses)),] <- 0
+  export_RoUS <- RoUS_uses
+  ##Imports
+  
+  # Get imports from RoUS
+  SoI_uses_intermediate <- getStateUsebyType(model,type="intermediate", domestic=TRUE, RoUS=FALSE)
+  SoI_uses_final <- getStateUsebyType(model,type="final", domestic=TRUE, RoUS=FALSE)
+  SoI_uses <- SoI_uses_intermediate + SoI_uses_final
+  soi_loc <- getLocation(model,RoUS=FALSE)
+  #Remove SoI uses of SoI commodities
+  SoI_uses[grep(soi_loc,rownames(SoI_uses)),] <- 0
+  import_RoUS <- SoI_uses
+  
+  # Must be named vector to be used as model demand
+  export_RoW<- setNames(export_RoW[,1],row.names(export_RoW))
+  export_RoUS <- setNames(export_RoUS[,1],row.names(export_RoUS))
+  import_RoUS <- setNames(import_RoUS[,1],row.names(import_RoUS))
+  
+  CBE_export_RoUS <- calculateStateCBE(model,demand=export_RoUS,domestic=TRUE,RoUS=FALSE, household_emissions=FALSE)
+  CBE_export_RoW <- calculateStateCBE(model,demand=export_RoW,domestic=FALSE,RoUS=FALSE, household_emissions=FALSE)
+  
+  CBE_import_RoUS <- calculateStateCBE(model,demand=import_RoUS,domestic=FALSE,RoUS=FALSE, household_emissions=FALSE)
+  
+  CBE_SoI <-  calculateStateCBE(model,demand="Consumption",domestic=FALSE,RoUS=FALSE, household_emissions=FALSE)
+  CBE_SoI_domestic <-  calculateStateCBE(model,demand="Consumption",domestic=TRUE,RoUS=FALSE, household_emissions=FALSE)
+  CBE_import_RoW <- CBE_SoI - CBE_SoI_domestic
+  
+  CBE_trade <- data.frame(cbind(CBE_export_RoUS,CBE_export_RoW,CBE_import_RoUS,CBE_import_RoW))
+  colnames(CBE_trade) <- c("export_RoUS","export_RoW","import_RoUS","import_RoW")
+  CBE_trade$Balance <- CBE_trade[,c("export_RoUS")] + CBE_trade[,c("export_RoW")] - CBE_trade[,c("import_RoUS")]-CBE_trade[,("import_RoW")]
+  return(CBE_trade)
+}
+
 
