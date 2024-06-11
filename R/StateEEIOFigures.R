@@ -1,51 +1,6 @@
 # StateEEIOFigures.R
 library(ggplot2)
 
-#' Stacked bar chart showing location of impact as SoI or RoUS
-#' @param model
-#' @param indicator A vector of indicators to plot
-#' @param scale, int, number of digits to remove from x-axis
-#' @param demand, str, "Consumption" or "Production"
-#' @param perspective, str, "FINAL" or "DIRECT"
-#' @param household_emissions, pass through to calculateEEIOModel
-stackedBarChartResult <- function(model_list, indicator, scale=0, demand="Consumption",
-                                  perspective, household_emissions=FALSE) {
-  
-  state <- model$specs$ModelRegionAcronyms[[1]]
-  model_list <- list()
-  model_list[[state]] <- model
-
-  df1 <- prepareDFforFigure(model_list=model_list, matrix_name=NULL, perspective=perspective,
-                            indicator=indicator, sector_to_remove="",
-                            combine_SoIRoUS=FALSE, demand=demand,
-                            household_emissions=household_emissions)
-  df1$Type <- "Total"
-  df1d <- prepareDFforFigure(model_list=model_list, matrix_name=NULL, perspective=perspective,
-                             indicator=indicator, sector_to_remove="",
-                             combine_SoIRoUS=FALSE, domestic=TRUE, demand=demand,
-                             household_emissions=household_emissions)
-  df1d$Type <- "Domestic"
-  df1 <- rbind(df1, df1d)
-  df <- reshape2::dcast(data = df1, formula = GroupName+Sector+modelname+region+color+SectorName ~ Type,
-                         fun.aggregate = mean, value.var = "Value")
-  df$Type <- perspective
-  
-  df <- subset(df, df$modelname == state)
-  # Calculate contribution from RoW
-  df$Imports <- df$Total - df$Domestic
-  df <- reshape2::melt(subset(df, select = -c(Total)),
-                       id.vars = c("Sector", "modelname", "region", "Type", "color", "SectorName", "GroupName"),
-                       value.name='Value')
-  df$region <- ifelse(df$variable == "Imports", "RoW", df$region)
-  df <- aggregate(Value ~ Sector + modelname + region + Type + color + SectorName + GroupName,
-                  data = df, FUN=sum)
-
-  # reorder stacked bars
-  df$region <- factor(df$region, levels = c("RoW", "RoUS", state))
-
-  df$Value = df$Value / 10^scale
-  return(df)
-}
 
 #' Stacked bar chart (e.g., for showing location of impact as SoI or RoUS or RoW)
 #' @param df, must include "Sector", "Value" and "ID" columns
