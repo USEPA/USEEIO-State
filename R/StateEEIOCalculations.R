@@ -268,14 +268,19 @@ calculateCBETradeBalance <- function(model) {
   CBE_export_RoW <- calculateStateCBE(model,demand=export_RoW,domestic=FALSE,RoUS=FALSE, household_emissions=FALSE)
   
   CBE_import_RoUS <- calculateStateCBE(model,demand=import_RoUS,domestic=FALSE,RoUS=FALSE, household_emissions=FALSE)
-  
+
+  # CBE for RoW imports is calculated differently - its done as the difference between total CBE and domestic CBE
   CBE_SoI <-  calculateStateCBE(model,demand="Consumption",domestic=FALSE,RoUS=FALSE, household_emissions=FALSE)
   CBE_SoI_domestic <-  calculateStateCBE(model,demand="Consumption",domestic=TRUE,RoUS=FALSE, household_emissions=FALSE)
   CBE_import_RoW <- CBE_SoI - CBE_SoI_domestic
   
+  # Make CBE from imports negative
+  CBE_import_RoUS <- -CBE_import_RoUS
+  CBE_import_RoW <- -CBE_import_RoW
+  
   CBE_trade <- data.frame(cbind(CBE_export_RoUS,CBE_export_RoW,CBE_import_RoUS,CBE_import_RoW))
   colnames(CBE_trade) <- c("export_RoUS","export_RoW","import_RoUS","import_RoW")
-  CBE_trade$Balance <- CBE_trade[,c("export_RoUS")] + CBE_trade[,c("export_RoW")] - CBE_trade[,c("import_RoUS")]-CBE_trade[,("import_RoW")]
+  CBE_trade$Balance <- rowSums(CBE_trade)
   return(CBE_trade)
 }
 
