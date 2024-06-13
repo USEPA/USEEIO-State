@@ -198,8 +198,8 @@ subsetColumnsByString <- function(matrix, s) {
 
 # Returns the territorial inventory in Result format
 # constructed from the model's Total by Sector amounts and indicator GWPs
-getStateGHGI <- function(model) {
-  loc <- model$specs$ModelRegionAcronyms[1]
+getStateGHGI <- function(model,RoUS=FALSE) {
+  loc <- getLocation(RoUS, model)
   fields <- c("Sector","Flowable","FlowAmount",   "Location")
   GHGI <- useeior:::collapseTBS(model$TbS, model)[,fields] 
   # filter out other regions (RoUS)
