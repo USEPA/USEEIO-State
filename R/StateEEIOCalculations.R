@@ -1,5 +1,7 @@
 # StateEEIOCalculations.R
 library(reshape2)
+library(stringr)
+#library(useeior) #will require once version is set
 
 ## Primary State CBE function. 
 ## Returns by default a vector with GHG in CO2e totals by sector (rows)
