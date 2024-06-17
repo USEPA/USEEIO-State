@@ -61,6 +61,13 @@ getStateUsebyType <- function(model, type="final", domestic=FALSE, RoUS=FALSE) {
   return(usebytype)
 }
 
+# Adjusts a matrix of dollar values in a given IO year to the target price year
+adjustDollarMatrixPriceYear <- function (model,matrix,io_year,price_year) {
+  rho <- model$Rho[, toString(io_year)] / model$Rho[, toString(price_year)]
+  matrix <- t(t(matrix) %*% diag(rho))
+  return(matrix)
+}
+
 
 # Calculate demand by sector by type
 calculateDemandByType <- function(model, price_year=NULL) {
