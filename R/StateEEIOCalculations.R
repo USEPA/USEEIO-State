@@ -293,4 +293,41 @@ calculateCBETradeBalance <- function(model) {
   return(CBE_trade)
 }
 
+# Calculate the share of household emissions for mobile and stationary applications
+# Returns a matrix with 1 column and 2 rows (sum to 1)
+calculateHouseholdShares <- function(model, indicator) {
+  # extract the satellite spec based on the indicator name
+  for (s in model$specs$SatelliteTable) {
+    if (s$FullName == indicator) {
+      sat_spec <- s
+    }
+  }
+  code_loc <- model$specs$ModelRegionAcronyms[[1]]
+  ### Regenerate tbs for households to obtain MetaSources
+  tbs <- generateTbSfromSatSpec(sat_spec, model)
+  tbs <- conformTbStoStandardSatTable(tbs)
+  tbs <- conformTbStoIOSchema(tbs, sat_spec, model, agg_metasources=FALSE)
+  tbs$Flow <- apply(tbs[, c("Flowable", "Context", "Unit")], 1, FUN = joinStringswithSlashes)
+  
+  df <- subset(tbs, (startsWith(tbs$Sector, "F010") & 
+                       tbs$Location == code_loc))
+  # unique(df$MetaSources)
+  df <- df %>% 
+    mutate(
+      Sector = case_when(
+        grepl('transport', MetaSources) ~ "F010-Mobile",
+        grepl('mobile', MetaSources) ~ "F010-Mobile",
+        .default = "F010-Stationary"
+      )
+    )
+  # reshape as matrix and convert to LCIA  
+  matrix <- reshape2::dcast(df, Flow ~ Sector, fun.aggregate = sum, value.var = "FlowAmount")
+  rownames(matrix) <- matrix$Flow
+  matrix$Flow <- NULL
+  matrix[setdiff(rownames(model$B), rownames(matrix)), ] <- 0
+  matrix <- matrix[rownames(model$B), ]
+  lcia <- t(model$C %*% as.matrix(matrix))
+  lcia <- sweep(lcia, 2, colSums(lcia), `/`)
+  return(lcia)
+}
 
