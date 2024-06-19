@@ -167,9 +167,9 @@ contributionToImpactBySectorChart <- function(model, sector, indicator, state) {
   ## Order sectors for figure
   df$sector_code <- factor(df$sector_code, levels=c(state, "RoUS", "RoW"))
   df$purchased_commodity <- factor(df$purchased_commodity, levels=c("Other", sectors_to_show))
+  levels(df$purchased_commodity) <- str_wrap(levels(df$purchased_commodity), 40)
   p <- ggplot(df, aes(fill=purchased_commodity, x = sector_code, y=impact_per_purchase)) +
     geom_bar(position="stack", stat = "identity") +
-    # xlab(paste0("Purchases by Region: ", name)) +
     xlab(element_blank()) +
     ylab("kg CO2e / $ produced") + 
     theme_bw() + 
