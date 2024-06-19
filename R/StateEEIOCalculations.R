@@ -331,3 +331,28 @@ calculateHouseholdShares <- function(model, indicator) {
   return(lcia)
 }
 
+# Calculate N matrix, not created by default w/ import factors
+calculateNMatrix <- function(model, state) {
+  loc <- paste0("US-", state)
+  year <- toString(model$specs$IOYear)
+  result <- calculateEEIOModel(model, demand = "Consumption", perspective="FINAL", location = loc)
+  N_df <- as.data.frame(reshape2::melt(t(result[[2]])))
+  colnames(N_df) <- c("Indicator", "Sector", "Value")
+  demand_total <- model[["DemandVectors"]][["vectors"]][[paste0(year, "_", loc, "_Consumption_Complete")]]
+  demand_domestic <- model[["DemandVectors"]][["vectors"]][[paste0(year, "_", loc, "_Consumption_Domestic")]]
+  demand_imports <- demand_total - demand_domestic
+  ## Note demand_imports only has values assigned to SoI
+  
+  N_df <- merge(N_df, demand_total, by.x = "Sector", by.y=0)
+  N_df <- merge(N_df, demand_domestic, by.x = "Sector", by.y=0, suffixes=c("", "_d"))
+  N_df <- merge(N_df, demand_imports, by.x = "Sector", by.y=0, suffixes=c("", "_m"))
+  N_df["N_coeff"] <- N_df["Value"] / N_df["y"]
+  N_df["N_coeff"][is.na(N_df["N_coeff"])] <- 0
+  mat <- as.matrix(N_df["N_coeff"])
+  rownames(mat) <- N_df[["Sector"]]
+  mat <- t(as.matrix(mat[match(colnames(model[["D"]]), rownames(mat)),]))
+  rownames(mat) <- "Greenhouse Gases"
+  model[["N"]] <- mat
+  model[["N_m"]] <- model$C %*% model$Q_t
+  return(model)
+}
