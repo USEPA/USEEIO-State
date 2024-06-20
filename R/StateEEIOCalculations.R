@@ -317,6 +317,8 @@ calculateHouseholdShares <- function(model, indicator) {
       Sector = case_when(
         grepl('transport', MetaSources) ~ "F010-Mobile",
         grepl('mobile', MetaSources) ~ "F010-Mobile",
+        grepl('EPA_GHGI_T_A_97', MetaSources) ~ "F010-Mobile", # HFCs from Transportation
+        grepl('EPA_GHGI_T_3_1', MetaSources) ~ "F010-Mobile", # 3-13, 3-14, and 3-15 for mobile emissions
         .default = "F010-Stationary"
       )
     )
