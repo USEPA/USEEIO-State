@@ -46,6 +46,8 @@ spec <- params$model
 
 focal_year <- max(years)
 
+indicator <- "Greenhouse Gases"
+
 if (spec == "v1.1-GHG") {
   modelstub <- 'EEIOv1.1-GHG-'
 } else if (spec == "v1.1-GHGc") {
@@ -113,20 +115,22 @@ p
 
 ylabel <- "Billion $"
 
+demand_types <- c("Household", "Investment", "Federal Government", "State Government", "Total")
+
 d <- sapply(models, calculateDemandByType)
-rownames(d) <- rownames(calculateDemandByType(models[[1]]))
+rownames(d) <- demand_types
 lineChartFigure(d / 10^9,ylabel)
 
-ylabel <- "Billion $ (2019)"
-d <- sapply(models, calculateDemandByType, price_year=2019)
-rownames(d) <- rownames(calculateDemandByType(models[[1]]))
-p1 <- lineChartFigure(d / 10^9,ylabel)
-p1
+ylabel <- paste0("Billion $ (",focal_year,")")
+d <- sapply(models, calculateDemandByType, price_year=focal_year)
+rownames(d) <- demand_types
+lineChartFigure(d / 10^9,ylabel)
 
-d <- sapply(models, calculateDemandByRegion, price_year=2019)
-rownames(d) <- rownames(calculateDemandByRegion(models[[1]]))
-p2 <- lineChartFigure(d / 10^9,ylabel)
-p2
+
+#d <- sapply(models, calculateDemandByRegion, price_year=2019)
+#rownames(d) <- rownames(calculateDemandByRegion(models[[1]]))
+#p2 <- lineChartFigure(d / 10^9,ylabel)
+#p2
 
 ```
 
