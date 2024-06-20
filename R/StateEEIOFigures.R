@@ -48,7 +48,7 @@ stackedBarChartResultFigure <- function(df, model) {
 lineChartFigure <- function(result,ylabel) {
   df_figure <- reformatWidetoLong(result)
   p <- ggplot(df_figure, aes(x = Year, y = value, group=variable, color=variable))+
-    geom_line(size=3) +
+    geom_line(linewidth=1) +
     ylab(ylabel) +
     xlab("Year") +
     scale_colour_hue(name='Source') +
