@@ -9,15 +9,22 @@ stackedBarChartResultFigure <- function(df, model) {
   # mapping$SummaryCode <- toupper(mapping$SummaryCode)
   # mapping$GroupName <- mapping$SectorName
   
+  mapping <- rbind(mapping,
+                   data.frame(Sector = c("F010-Mobile", "F010-Stationary"),
+                              SummaryCode = c("F010-Mobile", "F010-Stationary"),
+                              color = mapping$color[mapping$Sector=="F010"], 
+                              SectorName = c("Households - Mobile", "Households - Stationary"))
+  )
+  
   df <- merge(df, unique(mapping[, c("Sector", "color", "SectorName")]), by = "Sector")
  
   # Extract primary code in order to set figure stack alignment
   state <- unique(df$ID)[!(unique(df$ID) %in% c("RoUS", "RoW"))]
   df$ID <- factor(df$ID, levels=c("RoW", "RoUS", state))
-
+  df$SectorName <- factor(df$SectorName, levels=unique(mapping$SectorName))
+  df <- df[order(df$SectorName),]
   label_colors <- rev(unique(df[, c("Sector", "color")])[, "color"])
-  p <- ggplot(df, aes(x = Value, fill = ID,
-                      y = factor(.data[["SectorName"]], levels = unique(.data[["SectorName"]])))) +
+  p <- ggplot(df, aes(x = Value, fill = ID, y = SectorName)) +
           geom_col() + 
           guides(fill = guide_legend(reverse = TRUE)) + # Swap legend order
           scale_y_discrete(limits=rev) + # Reverse Y-axis
@@ -101,8 +108,9 @@ twoRegionTimeSeriesPlot <- function(df,
 
 
 contributionToImpactBySectorChart <- function(model, sector, indicator, state) {
-
-  if(is.null(model$N)) { stop("Can't calculate a model without an N matrix")}
+  if(is.null(model[["N"]])) {
+    model <- calculateNMatrix(model, state)
+  }
   df0 <- useeior::disaggregateTotalToDirectAndTier1(model, indicator)
   
   sector_codes <- c(paste0(sector, "/US-", state), paste0(sector, "/RoUS"))
@@ -166,9 +174,9 @@ contributionToImpactBySectorChart <- function(model, sector, indicator, state) {
   ## Order sectors for figure
   df$sector_code <- factor(df$sector_code, levels=c(state, "RoUS", "RoW"))
   df$purchased_commodity <- factor(df$purchased_commodity, levels=c("Other", sectors_to_show))
+  levels(df$purchased_commodity) <- str_wrap(levels(df$purchased_commodity), 40)
   p <- ggplot(df, aes(fill=purchased_commodity, x = sector_code, y=impact_per_purchase)) +
     geom_bar(position="stack", stat = "identity") +
-    # xlab(paste0("Purchases by Region: ", name)) +
     xlab(element_blank()) +
     ylab("kg CO2e / $ produced") + 
     theme_bw() + 

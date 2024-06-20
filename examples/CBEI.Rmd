@@ -85,6 +85,21 @@ v[state] <- 'ghg_agg_soi' # Set state specific name for this vector
 ghgs <- combineResults(v)
 ghgs$Value <- ghgs$Value / 10^9
 ghgs <- subset(ghgs, !(ghgs$Sector %in% c("Used", "Other")))
+
+# Split Household Shares before developing figure
+households <- as.data.frame(calculateHouseholdShares(model, indicator))
+households <- cbind(newSector = rownames(households), households)
+households$Sector <- "F010"
+ghgs2 <- merge(ghgs, households, by = "Sector", all.x=TRUE)
+idx <- !is.na(ghgs2$newSector)
+ghgs2$Sector[idx] <- ghgs2$newSector[idx]
+ghgs2$Value[idx] <- ghgs2$Value[idx] * ghgs2$`Greenhouse Gases`[idx]
+ghgs <- ghgs2[c("ID", "Sector", "Value")]
+
+# households <-  sapply(models, calculateHouseholdShares, indicator="Greenhouse Gases", simplify=TRUE, USE.NAMES=TRUE)
+# rownames(households) <-  rownames(calculateHouseholdShares(models[[1]], indicator="Greenhouse Gases"))
+
+
 p <- stackedBarChartResultFigure(ghgs, model)
 p <- p + 
   xlab('Greenhouse Gases (million tonnes)') +
