@@ -70,18 +70,11 @@ adjustDollarMatrixPriceYear <- function (model,matrix,io_year,price_year) {
 
 
 # Calculate demand by sector by type
-calculateDemandByType <- function(model, price_year=NULL) {
+calculateDemandByType <- function(model, RoUS=FALSE) {
   demand_by_type <- data.frame(sapply(c("Household", "Investment", "Federal Government", "State Government"),
-                                        getStateUsebyType, model=model,
+                                        getStateUsebyType, model=model,RoUS = RoUS,
                                         simplify=FALSE, USE.NAMES=FALSE))
   demand_by_type <- cbind(demand_by_type, Total = rowSums(demand_by_type))
-  
-  # if desired, adjust price type before summing
-  if(is.null(price_year)) {
-    price_year <- model$specs$IOYear
-  }
-  rho <- model$Rho[, toString(model$specs$IOYear)] / model$Rho[, toString(price_year)]
-  demand_by_type <- demand_by_type * rho
   
   total_demand_by_type <- as.matrix(colSums(demand_by_type))
   colnames(total_demand_by_type) <- "Demand"
