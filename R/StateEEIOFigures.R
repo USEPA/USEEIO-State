@@ -9,15 +9,22 @@ stackedBarChartResultFigure <- function(df, model) {
   # mapping$SummaryCode <- toupper(mapping$SummaryCode)
   # mapping$GroupName <- mapping$SectorName
   
+  mapping <- rbind(mapping,
+                   data.frame(Sector = c("F010-Mobile", "F010-Stationary"),
+                              SummaryCode = c("F010-Mobile", "F010-Stationary"),
+                              color = mapping$color[mapping$Sector=="F010"], 
+                              SectorName = c("Households - Mobile", "Households - Stationary"))
+  )
+  
   df <- merge(df, unique(mapping[, c("Sector", "color", "SectorName")]), by = "Sector")
  
   # Extract primary code in order to set figure stack alignment
   state <- unique(df$ID)[!(unique(df$ID) %in% c("RoUS", "RoW"))]
   df$ID <- factor(df$ID, levels=c("RoW", "RoUS", state))
-
+  df$SectorName <- factor(df$SectorName, levels=unique(mapping$SectorName))
+  df <- df[order(df$SectorName),]
   label_colors <- rev(unique(df[, c("Sector", "color")])[, "color"])
-  p <- ggplot(df, aes(x = Value, fill = ID,
-                      y = factor(.data[["SectorName"]], levels = unique(.data[["SectorName"]])))) +
+  p <- ggplot(df, aes(x = Value, fill = ID, y = SectorName)) +
           geom_col() + 
           guides(fill = guide_legend(reverse = TRUE)) + # Swap legend order
           scale_y_discrete(limits=rev) + # Reverse Y-axis
