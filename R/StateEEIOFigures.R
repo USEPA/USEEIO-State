@@ -62,6 +62,7 @@ lineChartFigure <- function(result,ylabel) {
 #' @param plottype, str, "line" or "bar"
 #' @param legend_ncol
 twoRegionTimeSeriesPlot <- function(df,
+                                    model,
                                     plottype, # bar or line
                                     legend_ncol = 2) {
   df_figure <- reformatWidetoLong(df)
@@ -91,8 +92,7 @@ twoRegionTimeSeriesPlot <- function(df,
 
   } else if (plottype == "line") {
     p <- ggplot(df_figure, aes(x = Year, y = value, group = SectorName, color = SectorName)) +
-      geom_line(stat = "identity", size=2) +
-      # geom_point(stat = "identity", size=2) +
+      geom_line(stat = "identity", linewidth=1) +
       scale_color_manual(name = "", values = plotparameters$color) +
       labs(x = "", y = "") +
       barplot_theme +

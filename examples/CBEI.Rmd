@@ -62,7 +62,7 @@ models <- list()
 for(y in years) {
    modelname <- paste0(state, modelstub, substr(y,3,4))
    name_for_list <- paste0(state,"-",toString(y))
-   file_path <- file.path("..","models",paste0(modelname,".rds"))#file_path <- download_model_RDS(modelname)
+   file_path <- file.path("..","models",paste0(modelname,".rds"))
    models[[name_for_list]] <- readRDS(file_path)
 }
 
@@ -142,11 +142,11 @@ rownames(ghgs_all) <- rownames(calculateStateCBE(models[[1]]))
 ghgs_all <- (aggregateStateResultMatrix(models[[1]], ghgs_all, RoUS=FALSE) +
                aggregateStateResultMatrix(models[[1]], ghgs_all, RoUS=TRUE))
 
-p1 <- twoRegionTimeSeriesPlot(ghgs_all / 10^9, plottype = "bar")
+p1 <- twoRegionTimeSeriesPlot(ghgs_all / 10^9, model = models[[1]], plottype = "bar")
 p1 <- p1 + labs(y = "MMT CO2e")
 p1
 
-p2 <- twoRegionTimeSeriesPlot(ghgs_all/ 10^9, plottype = "line")
+p2 <- twoRegionTimeSeriesPlot(ghgs_all/ 10^9, model = models[[1]], plottype = "line")
 p2 <- p2 + labs(y = "MMT CO2e")
 p2
 
