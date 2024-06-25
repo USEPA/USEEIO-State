@@ -4,7 +4,7 @@ library(dplyr)
 
 #' Stacked bar chart (e.g., for showing location of impact as SoI or RoUS or RoW)
 #' @param df, must include "Sector", "Value" and "ID" columns
-stackedBarChartResultFigure <- function(df, model) {
+stackedBarChartResultFigure <- function(df, model, grouping="Sector") {
   mapping <- useeior:::getBEASectorColorMapping(model)
   # mapping$SummaryCode <- toupper(mapping$SummaryCode)
   # mapping$GroupName <- mapping$SectorName
@@ -15,9 +15,17 @@ stackedBarChartResultFigure <- function(df, model) {
                               color = mapping$color[mapping$Sector=="F010"], 
                               SectorName = c("Households - Mobile", "Households - Stationary"))
   )
-  
+  if (grouping == "Summary") {
+    SectorName <- unique(model$Commodities[, c("Code", "Name")])
+    # mapping$id  <- 1:nrow(mapping)
+    mapping <- merge(mapping, SectorName, by.x = "SummaryCode", by.y = "Code", all.x=TRUE)
+    mapping$Name <- ifelse(is.na(mapping$Name), as.character(mapping$SectorName), mapping$Name)
+    mapping$Sector <- mapping$SummaryCode
+    mapping$SectorName <- mapping$Name
+    # mapping <- mapping[order(mapping$id), ]
+  }
   df <- merge(df, unique(mapping[, c("Sector", "color", "SectorName")]), by = "Sector")
- 
+
   # Extract primary code in order to set figure stack alignment
   state <- unique(df$ID)[!(unique(df$ID) %in% c("RoUS", "RoW"))]
   df$ID <- factor(df$ID, levels=c("RoW", "RoUS", state))
