@@ -350,6 +350,5 @@ calculateNMatrix <- function(model, state) {
   mat <- t(as.matrix(mat[match(colnames(model[["D"]]), rownames(mat)),]))
   rownames(mat) <- "Greenhouse Gases"
   model[["N"]] <- mat
-  model[["N_m"]] <- model$C %*% model$Q_t
   return(model)
 }
