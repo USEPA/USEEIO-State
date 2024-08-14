@@ -299,10 +299,10 @@ calculateHouseholdShares <- function(model, indicator) {
   }
   code_loc <- model$specs$ModelRegionAcronyms[[1]]
   ### Regenerate tbs for households to obtain MetaSources
-  tbs <- generateTbSfromSatSpec(sat_spec, model)
-  tbs <- conformTbStoStandardSatTable(tbs)
-  tbs <- conformTbStoIOSchema(tbs, sat_spec, model, agg_metasources=FALSE)
-  tbs$Flow <- apply(tbs[, c("Flowable", "Context", "Unit")], 1, FUN = joinStringswithSlashes)
+  tbs <- useeior:::generateTbSfromSatSpec(sat_spec, model)
+  tbs <- useeior:::conformTbStoStandardSatTable(tbs)
+  tbs <- useeior:::conformTbStoIOSchema(tbs, sat_spec, model, agg_metasources=FALSE)
+  tbs$Flow <- apply(tbs[, c("Flowable", "Context", "Unit")], 1, FUN = useeior:::joinStringswithSlashes)
   
   df <- subset(tbs, (startsWith(tbs$Sector, "F010") & 
                        tbs$Location == code_loc))
