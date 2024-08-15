@@ -63,5 +63,5 @@ DemandVectors:
 # Additional demand vectors beyond useeior defaults
 
 ImportFactors:
-  StaticFile: "useeior/US_summary_import_factors_exio_2017_17sch.csv"
+  StaticFile: "useeior/US_summary_import_factors_exio_2017_12sch.csv"
   FileLocation: "DataCommons"
