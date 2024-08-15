@@ -83,16 +83,18 @@ twoRegionTimeSeriesPlot <- function(df,
 
   # Load visualization elements
   vizElements <- loadVisualizationElementsForTimeSeriesPlot()
-  ColorLabelMapping <- vizElements$ColorLabelMapping
   barplot_theme <- vizElements$barplot_theme
   
   df_figure <- subset(df_figure, df_figure$value >= 0)
   # Plot
-  plotparameters <- ColorLabelMapping[ColorLabelMapping$V1 %in% df_figure$SectorName, ]
+  label_colors <- unique(df_figure[, c("variable", "SectorName", "color")])
+  label_colors <- na.omit(label_colors[match(levels(df_figure$SectorName),
+                                             label_colors$SectorName),][, "color"])
+
   if (plottype == "bar") {
     p <- ggplot(df_figure, aes(x = Year, y = value, fill = SectorName))
     p <- p + geom_bar(stat = "identity", width = 0.8, color = "white") +
-      scale_fill_manual(name = "", values = plotparameters$color) +
+      scale_fill_manual(name = "", values = label_colors) +
       labs(x = "", y = "") +
       barplot_theme +
       theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
@@ -101,7 +103,7 @@ twoRegionTimeSeriesPlot <- function(df,
   } else if (plottype == "line") {
     p <- ggplot(df_figure, aes(x = Year, y = value, group = SectorName, color = SectorName)) +
       geom_line(stat = "identity", linewidth=1) +
-      scale_color_manual(name = "", values = plotparameters$color) +
+      scale_color_manual(name = "", values = label_colors) +
       labs(x = "", y = "") +
       barplot_theme +
       theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
