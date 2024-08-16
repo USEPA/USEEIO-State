@@ -75,8 +75,11 @@ twoRegionTimeSeriesPlot <- function(df,
                                     legend_ncol = 2) {
   df_figure <- reformatWidetoLong(df)
   mapping <- useeior:::getBEASectorColorMapping(model)
-  # mapping$SummaryCode <- toupper(mapping$SummaryCode)
-  # mapping$GroupName <- mapping$SectorName
+  mapping <- rbind(mapping,
+                   data.frame(Sector=c("F010-Mobile", "F010-Stationary"),
+                              SummaryCode=c("F010-Mobile", "F010-Stationary"),
+                              color=c("#818589", "#899499"),
+                              SectorName=c("Households - Mobile", "Households - Stationary")))
   
   df_figure <- merge(df_figure, unique(mapping[, c("Sector", "color", "SectorName")]),
                      by.x = "variable", by.y = "Sector")
