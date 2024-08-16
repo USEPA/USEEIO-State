@@ -177,19 +177,13 @@ getLocation <- function(RoUS, model) {
   return(loc)
 }
 
-aggregateStateResultMatrix <- function(model, matrix, RoUS=FALSE) {
+aggregateStateResultMatrix <- function(model, matrix, region) {
   name <- colnames(matrix)
-  if (RoUS) {
-    matrix <- subset(matrix, endsWith(rownames(matrix), "RoUS"))  
-  } else {
-    matrix <- subset(matrix, !(endsWith(rownames(matrix), "RoUS")))
-  }
+  matrix <- subset(matrix, endsWith(rownames(matrix), region))  
   matrix <- useeior:::aggregateResultMatrixbyRow(matrix, "Sector", model$crosswalk)
-  colnames(matrix) <- name
   # reorder matrix rows
   rows <- subset(unique(model$crosswalk$BEA_Sector), unique(model$crosswalk$BEA_Sector) %in% rownames(matrix))
   matrix <- matrix[rows,,drop=FALSE]
-  
   return(matrix)
 }
 
