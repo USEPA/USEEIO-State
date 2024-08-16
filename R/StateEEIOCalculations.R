@@ -7,14 +7,15 @@ library(stringr)
 ## Returns by default a vector with GHG in CO2e totals by sector (rows)
 calculateStateCBE <- function(model, CO2e=TRUE, perspective="FINAL",
                               demand="Consumption",domestic=FALSE, RoUS=FALSE,
-                              household_emissions=TRUE) {
+                              household_emissions=TRUE, show_RoW=TRUE) {
   loc <- getLocation(RoUS, model)
   r <- useeior::calculateEEIOModel(model,
                                    perspective = perspective,
                                    demand = demand,
                                    location = loc,
                                    use_domestic_requirements = domestic,
-                                   household_emissions = household_emissions)
+                                   household_emissions = household_emissions,
+                                   show_RoW=show_RoW)
   # Note this function requires a model with only a single indicator
   if(CO2e) {
     r<-r$LCIA_f
