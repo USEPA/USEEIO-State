@@ -1,4 +1,4 @@
-Model: "StateEEIOv1.0-s-20" # 2020 Summary, Commodity
+Model: "StateEEIOv1.0-20" # 2020 Summary, Commodity
 BaseIOSchema: 2012
 BaseIOLevel: &BaseIOLevel "Summary"
 IOYear: &Year 2020 # Year for IO data

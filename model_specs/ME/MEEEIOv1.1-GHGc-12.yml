@@ -1,8 +1,8 @@
-Model: "StateEEIOv1.1-GHG-17" # 2017 Summary, Commodity
+Model: "MEEEIOv1.1-GHGc-12" # 2012 Summary, Commodity
 BaseIOSchema: 2012
 BaseIOLevel: "Summary"
-IOYear: 2017 # Year for IO data
-ModelRegionAcronyms: ["US-CT", "RoUS"]
+IOYear: 2012 # Year for IO data
+ModelRegionAcronyms: ["US-ME", "RoUS"]
 ModelType: "EEIO"
 IODataSource: "stateior"
 IODataVersion: "0.2.1"
@@ -18,9 +18,9 @@ SatelliteTable:
     FullName: "Greenhouse Gases"
     Abbreviation: "GHG"
     StaticSource: TRUE
-    StaticFile: "flowsa/FlowBySector/GHG_state_2017_m1_v2.0.0_a8c5929.parquet"
+    StaticFile: "flowsa/FlowBySector/GHGc_state_ME_2012_v2.0.3_32c23ef.parquet"
     FileLocation: "DataCommons"
-    DataYears: [2017]
+    DataYears: [2012]
     Locations: ["US"]
     SectorListSource: "NAICS"
     SectorListYear: 2012
@@ -32,7 +32,7 @@ SatelliteTable:
       USEPA_GHG_2022:
         Title: "GHG Disaggregated State Inventory"
         Author: "USEPA"
-        DataYear: 2017
+        DataYear: 2012
         URL: ""
         Primary: TRUE
 
@@ -63,5 +63,5 @@ DemandVectors:
 # Additional demand vectors beyond useeior defaults
 
 ImportFactors:
-  StaticFile: "useeior/US_summary_import_factors_exio_2017_12sch.csv"
+  StaticFile: "useeior/US_summary_import_factors_exio_2012_12sch.csv"
   FileLocation: "DataCommons"
