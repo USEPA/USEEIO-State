@@ -247,14 +247,19 @@ calculateCBETradeBalance <- function(model) {
   E_x_RoUS <- calculateEEIOModel(model, perspective="DIRECT", demand="Consumption", location="RoUS",
                                  use_domestic_requirements=TRUE, show_RoW=TRUE)[["LCIA_d"]]
   E_x_RoUS <- E_x_RoUS[grepl(paste0('/*', SoI), row.names(E_x_RoUS)), , drop=FALSE]
+  
   # Emissions exported from SoI to RoW (uses SoI export demand vector)
   E_x_RoW <- calculateEEIOModel(model, perspective="DIRECT", demand=export_RoW, location=SoI,
                                 use_domestic_requirements=TRUE, show_RoW=TRUE)[["LCIA_d"]]
+  E_x_RoW_RoUS <-  E_x_RoW[grepl('/RoUS', row.names(E_x_RoW)), , drop=FALSE] ## Add this in E_m_RoUS below
   E_x_RoW <- E_x_RoW[grepl(paste0('/*', SoI), row.names(E_x_RoW)), , drop=FALSE]
+  
   # Emissions imported to SoI from RoUS
   E_m_RoUS <- calculateEEIOModel(model, perspective="DIRECT", demand="Consumption", location=SoI,
                                  use_domestic_requirements=TRUE, show_RoW=TRUE)[["LCIA_d"]]
   E_m_RoUS <- E_m_RoUS[grepl('/RoUS', row.names(E_m_RoUS)), , drop=FALSE]
+  E_m_RoUS <- E_m_RoUS + E_x_RoW_RoUS ## Add in SoI export emissions occurring in RoUS
+  
   # Emissions imported to SoI from RoW
   # To get at 2nd and 3rd term, subtract domestic from Total
   E_m_RoW <- (calculateEEIOModel(model, perspective="DIRECT", demand="Consumption", location=SoI,
@@ -265,6 +270,7 @@ calculateCBETradeBalance <- function(model) {
     
   CBE_trade <- data.frame(cbind(E_x_RoUS, E_x_RoW, -E_m_RoUS, -E_m_RoW))
   colnames(CBE_trade) <- c("export_RoUS","export_RoW","import_RoUS","import_RoW")
+  rownames(CBE_trade) <- gsub("/.*","",rownames(CBE_trade))
   CBE_trade$Balance <- rowSums(CBE_trade)
   return(CBE_trade)
 
