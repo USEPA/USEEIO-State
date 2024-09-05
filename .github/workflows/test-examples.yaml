@@ -31,9 +31,9 @@ jobs:
 
       # - uses: r-lib/actions/setup-renv@v2
       
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: devtools
+      # - uses: r-lib/actions/setup-r-dependencies@v2
+      #   with:
+      #     extra-packages: devtools
         
       - name: Install packages and render Rmarkdown files
         run: |
