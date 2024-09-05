@@ -38,7 +38,7 @@ jobs:
       - name: Install packages and render Rmarkdown files
         run: |
           echo "Rendering the page..."
-          Rscript -e 'install.packages(c("knitr", "rmarkdown"))'
+          Rscript -e 'install.packages(c("knitr", "rmarkdown", "kableExtra"))'
           Rscript -e 'rmarkdown::render(input = "examples/DownloadandSaveModelLocally.Rmd",
                                         params = list(model = "v1.0", state = "AR", year = 2020))'
           Rscript -e 'rmarkdown::render(input = "examples/Demo-Multipliers-CO.Rmd")'
