@@ -44,6 +44,7 @@ jobs:
           Rscript -e 'rmarkdown::render(input = "examples/Demo-Multipliers-CO.Rmd")'
 
       - name: Upload results
+        if: always()
         uses: actions/upload-artifact@main
         with:
           name: example_files

@@ -1,3 +1,5 @@
+useeior_ver = "1.6.0"
+
 #' Install useeior (via remotes).
 install_useeior <- function() {
   installed_pkg <- installed.packages()
@@ -5,8 +7,8 @@ install_useeior <- function() {
     install.packages("remotes")
   }
   if (!"useeior" %in% installed_pkg[, "Package"]) {
-    cli::cli_alert_info("Installing useeior v{useeior_ver} (tag @{useeior_tag}) from GitHub...")
-    remotes::install_github(paste0("USEPA/useeior@v1.5.1"))
+    cli::cli_alert_info("Installing useeior v{useeior_ver} from GitHub...")
+    remotes::install_github(paste0("USEPA/useeior@v", useeior_ver))
   }
 }
 
