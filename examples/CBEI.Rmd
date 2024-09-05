@@ -6,12 +6,12 @@ output:
 params:
   model:
     label: "Model Type"
-    value: "v1.1"
+    value: "v1.1-GHG"
     input: select
     choices: ["v1.1-GHG","v1.1-GHGc"]
   years:
     label: "Model Year"
-    value: [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019]
+    value: [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020]
     input: select
     multiple: TRUE
     choices: [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020]
@@ -69,84 +69,85 @@ for(y in years) {
 
 ```
 
-```{r results}
-model <- models[[paste0(state,"-",toString(focal_year))]]
-ghg_total <- calculateStateCBE(model)
-ghg_domestic <- calculateStateCBE(model, domestic=TRUE)
-ghg_RoW <- ghg_total - ghg_domestic
+```{r calculate_results}
 
-ghg_agg_soi <- aggregateStateResultMatrix(model, ghg_domestic, RoUS=FALSE)
-ghg_agg_rous <- aggregateStateResultMatrix(model, ghg_domestic, RoUS=TRUE)
-ghg_agg_row <- aggregateStateResultMatrix(model, ghg_RoW, RoUS=FALSE) + aggregateStateResultMatrix(model, ghg_RoW, RoUS=TRUE)
+cbe_all <- sapply(models,calculateStateCBE,simplify=TRUE,USE.NAMES=TRUE)
+row.names(cbe_all) <- row.names(calculateStateCBE(models[[1]]))
+
+cbe_agg_soi <- aggregateStateResultMatrix(models[[1]], cbe_all, region=state)
+cbe_agg_rous <- aggregateStateResultMatrix(models[[1]], cbe_all, region='RoUS')
+cbe_agg_row <- aggregateStateResultMatrix(models[[1]], cbe_all, region='RoW')
+
+households_all <- sapply(models, calculateHouseholdShares, indicator=indicator, simplify=TRUE, USE.NAMES=TRUE)
+rownames(households_all) <- rownames(calculateHouseholdShares(models[[1]], indicator))
+
 
 ```
 
-```{r ghg_results, echo=FALSE, fig.width=9, fig.height=4}
-v <- c(RoUS='ghg_agg_rous', RoW='ghg_agg_row')
-v[state] <- 'ghg_agg_soi' # Set state specific name for this vector
-ghgs <- combineResults(v)
-ghgs$Value <- ghgs$Value / 10^9
-ghgs <- subset(ghgs, !(ghgs$Sector %in% c("Used", "Other")))
+```{r cbe_results, echo=FALSE, fig.width=9, fig.height=4}
 
-# Split Household Shares before developing figure
-households <- as.data.frame(calculateHouseholdShares(model, indicator))
-households <- cbind(newSector = rownames(households), households)
-households$Sector <- "F010"
-ghgs2 <- merge(ghgs, households, by = "Sector", all.x=TRUE)
-idx <- !is.na(ghgs2$newSector)
-ghgs2$Sector[idx] <- ghgs2$newSector[idx]
-ghgs2$Value[idx] <- ghgs2$Value[idx] * ghgs2$`Greenhouse Gases`[idx]
-ghgs <- ghgs2[c("ID", "Sector", "Value")]
+for(y in years) {
+  col <- paste0(state, "-", y)
+  cbe_agg_soi_year <- as.matrix(cbe_agg_soi[, col])
+  cbe_agg_rous_year <- as.matrix(cbe_agg_rous[, col])
+  cbe_agg_row_year <- as.matrix(cbe_agg_row[, col])
 
-# households <-  sapply(models, calculateHouseholdShares, indicator="Greenhouse Gases", simplify=TRUE, USE.NAMES=TRUE)
-# rownames(households) <-  rownames(calculateHouseholdShares(models[[1]], indicator="Greenhouse Gases"))
-
-
-p <- stackedBarChartResultFigure(ghgs, model)
-p <- p + 
-  xlab('Greenhouse Gases (million tonnes)') +
-  labs(fill = 'Region')
-p
-
+  v <- c(RoUS='cbe_agg_rous_year', RoW='cbe_agg_row_year')
+  v[state] <- 'cbe_agg_soi_year' # Set state specific name for this vector
+  ghgs <- combineResults(v)
+  ghgs$Value <- ghgs$Value / 10^9
+  ghgs <- subset(ghgs, !(ghgs$Sector %in% c("Used", "Other")))
+  
+  # Split Household Shares before developing figure
+  households <- as.data.frame(households_all[, col, drop=FALSE])
+  households <- cbind(newSector= rownames(households), households)
+  households$Sector <- "F010"
+  ghgs2 <- merge(ghgs, households, by = "Sector", all.x=TRUE)
+  idx <- !is.na(ghgs2$newSector)
+  ghgs2$Sector[idx] <- ghgs2$newSector[idx]
+  ghgs2$Value[idx] <- ghgs2$Value[idx] * ghgs2[idx, col]
+  ghgs <- ghgs2[c("ID", "Sector", "Value")]
+  
+  p <- stackedBarChartResultFigure(ghgs, models[[col]])
+  p <- p + 
+    xlab('Greenhouse Gases (million tonnes)') +
+    labs(fill = 'Region') +
+    ggtitle(col)
+  p
+}
 ```
 
 
 ```{r time_series_demand, echo=FALSE, fig.width=9, fig.height=4}
 
-ylabel <- "Billion $"
-
-demand_types <- c("Household", "Investment", "Federal Government", "State Government", "Total")
-
-d <- sapply(models, calculateDemandByType)
+demand_types <- c(state, "RoUS", "RoW", "Total")
+ylabel <- paste0("Billion $ (",focal_year,")")
+d <- sapply(models, calculateDemandByRegion, price_year=focal_year)
 rownames(d) <- demand_types
 lineChartFigure(d / 10^9,ylabel)
 
+demand_types <- c("Household", "Investment", "Federal Government", "State Government", "Total")
 ylabel <- paste0("Billion $ (",focal_year,")")
 d <- sapply(models, calculateDemandByType, price_year=focal_year)
 rownames(d) <- demand_types
 lineChartFigure(d / 10^9,ylabel)
-
-
-#d <- sapply(models, calculateDemandByRegion, price_year=2019)
-#rownames(d) <- rownames(calculateDemandByRegion(models[[1]]))
-#p2 <- lineChartFigure(d / 10^9,ylabel)
-#p2
 
 ```
 
 
 
 ```{r ghg_time_series, echo=FALSE, fig.width=8, fig.height=6}
-ghgs_all <- sapply(models, calculateStateCBE)
-rownames(ghgs_all) <- rownames(calculateStateCBE(models[[1]]))
-ghgs_all <- (aggregateStateResultMatrix(models[[1]], ghgs_all, RoUS=FALSE) +
-               aggregateStateResultMatrix(models[[1]], ghgs_all, RoUS=TRUE))
+cbe_agg <- (aggregateStateResultMatrix(models[[1]], cbe_all, region=state) +
+              aggregateStateResultMatrix(models[[1]], cbe_all, region='RoUS') +
+              aggregateStateResultMatrix(models[[1]], cbe_all, region='RoW'))
+households <- sweep(households_all, 2, cbe_agg['F010', ], "*") # convert from pct to mass
+cbe_agg <- rbind(cbe_agg[rownames(cbe_agg) != 'F010', ], households)
 
-p1 <- twoRegionTimeSeriesPlot(ghgs_all / 10^9, model = models[[1]], plottype = "bar")
+p1 <- twoRegionTimeSeriesPlot(cbe_agg / 10^9, model = models[[1]], plottype = "bar")
 p1 <- p1 + labs(y = "MMT CO2e")
 p1
 
-p2 <- twoRegionTimeSeriesPlot(ghgs_all/ 10^9, model = models[[1]], plottype = "line")
+p2 <- twoRegionTimeSeriesPlot(cbe_agg/ 10^9, model = models[[1]], plottype = "line")
 p2 <- p2 + labs(y = "MMT CO2e")
 p2
 
@@ -157,7 +158,7 @@ ghgi_all <- sapply(models, getStateGHGI, simplify=TRUE, USE.NAMES=TRUE)
 
 # Compare CBE to Territorial for Focal state
 terr <- t(as.matrix(colSums(ghgi_all, na.rm = TRUE)))
-cbe <- t(as.matrix(colSums(ghgs_all, na.rm = TRUE)))
+cbe <- t(as.matrix(colSums(cbe_agg, na.rm = TRUE)))
 combined <- as.matrix(rbind(terr, cbe))
 rownames(combined) <- c("Territorial", "CBE")
 p <- lineChartFigure(combined / 10^9, ylabel="MMT CO2e")
