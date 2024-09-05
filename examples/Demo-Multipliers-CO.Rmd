@@ -9,7 +9,7 @@ output:
 
 This script builds a Colorado USEEIO State model for 2020 with extensions for Jobs, Greenhouse Gas Emissions, and Value Added components.
 
-It requires _useeior_ >= v1.5.1 which will be installed from github using the remotes library if _useeior_ doesn't exist already in your R environment. The kableExtra package is used for formatting the tables for output here.
+It requires _useeior_ >= v1.5.1 which will be installed from github using the pak library if _useeior_ doesn't exist already in your R environment. The kableExtra package is used for formatting the tables for output here.
 
 Your R environment needs to be setup to use the Project directory to knit this file (usually from RStudio).
 
