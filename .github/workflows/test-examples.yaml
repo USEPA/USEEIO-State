@@ -29,12 +29,6 @@ jobs:
           r-version: release
           use-public-rspm: true
 
-      # - uses: r-lib/actions/setup-renv@v2
-      
-      # - uses: r-lib/actions/setup-r-dependencies@v2
-      #   with:
-      #     extra-packages: devtools
-        
       - name: Install packages and render Rmarkdown files
         run: |
           echo "Rendering the page..."
@@ -42,6 +36,13 @@ jobs:
           Rscript -e 'rmarkdown::render(input = "examples/DownloadandSaveModelLocally.Rmd",
                                         params = list(model = "v1.0", state = "AR", year = 2020))'
           Rscript -e 'rmarkdown::render(input = "examples/Demo-Multipliers-CO.Rmd")'
+
+          Rscript -e 'rmarkdown::render(input = "examples/BuildandSaveModelLocally.Rmd",
+                                        params = list(model = "v1.1-GHG", state = "CT",
+                                        year = c(2017, 2018, 2019, 2020)))'
+          Rscript -e 'rmarkdown::render(input = "examples/CalculateStateCBE.Rmd",
+                                        params = list(model = "v1.1-GHG", state = "CT",
+                                        year = c(2017, 2018, 2019, 2020)))'
 
       - name: Upload results
         if: always()
