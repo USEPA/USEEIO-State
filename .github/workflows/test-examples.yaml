@@ -41,10 +41,10 @@ jobs:
           Rscript -e 'install.packages(c("knitr", "rmarkdown"))'
           Rscript -e 'rmarkdown::render(input = "examples/DownloadandSaveModelLocally.Rmd",
                                         params = list(model = "v1.0", state = "AR", year = 2020))'
+          Rscript -e 'rmarkdown::render(input = "examples/Demo-Multipliers-CO.Rmd")'
 
-      - name: Upload check results
-        if: failure()  # if any of the previous steps fail, export a log
+      - name: Upload results
         uses: actions/upload-artifact@main
         with:
-          name: results
-          path: check
+          name: example_files
+          path: examples/*.md
