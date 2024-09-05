@@ -39,7 +39,8 @@ jobs:
         run: |
           echo "Rendering the page..."
           Rscript -e 'install.packages(c("knitr", "rmarkdown"))'
-          Rscript -e 'rmarkdown::render(input = "examples/DownloadandSaveModelLocally.Rmd")'
+          Rscript -e 'rmarkdown::render(input = "examples/DownloadandSaveModelLocally.Rmd",
+                                        params = list(model = "v1.0", state = "AR", year = 2020))'
 
       - name: Upload check results
         if: failure()  # if any of the previous steps fail, export a log
