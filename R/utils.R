@@ -1,4 +1,5 @@
-useeior_ver = "1.6.0"
+# useeior_ver = "v1.6.0"
+useeio_ver = "develop"
 
 #' Install useeior (via pak).
 install_useeior <- function() {
@@ -7,8 +8,8 @@ install_useeior <- function() {
     install.packages("pak")
   }
   if (!"useeior" %in% installed_pkg[, "Package"]) {
-    cli::cli_alert_info("Installing useeior v{useeior_ver} from GitHub...")
-    pak::pkg_install(paste0("USEPA/useeior@v", useeior_ver))
+    cli::cli_alert_info("Installing useeior {useeior_ver} from GitHub...")
+    pak::pkg_install(paste0("USEPA/useeior@", useeior_ver))
   }
 }
 
