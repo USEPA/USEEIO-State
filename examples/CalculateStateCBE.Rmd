@@ -27,12 +27,12 @@ params:
 ---
 
 ```{r setup, include=FALSE}
-#source("../R/utils.R")
-#install_useeior()
+source("../R/utils.R")
+install_useeior()
 source("../R/StateEEIOFigures.R")
 source("../R/StateEEIOCalculations.R")
-#library(useeior)
-devtools::load_all("../../useeior/") # Requires develop branch (to be v1.6.0)
+library(useeior)
+# devtools::load_all("../../useeior/") # Requires develop branch (to be v1.6.0)
 
 # Stop execution of Rmd if params not selected
 if (params$state=="") {

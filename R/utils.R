@@ -1,12 +1,15 @@
-#' Install useeior (via remotes).
+# useeior_ver = "v1.6.0"
+useeior_ver = "develop"
+
+#' Install useeior (via pak).
 install_useeior <- function() {
   installed_pkg <- installed.packages()
-  if (!"remotes"%in%installed_pkg[, "Package"]) {
-    install.packages("remotes")
+  if (!"pak"%in%installed_pkg[, "Package"]) {
+    install.packages("pak")
   }
   if (!"useeior" %in% installed_pkg[, "Package"]) {
-    cli::cli_alert_info("Installing useeior v{useeior_ver} (tag @{useeior_tag}) from GitHub...")
-    remotes::install_github(paste0("USEPA/useeior@v1.5.1"))
+    cli::cli_alert_info("Installing useeior {useeior_ver} from GitHub...")
+    pak::pkg_install(paste0("USEPA/useeior@", useeior_ver))
   }
 }
 
