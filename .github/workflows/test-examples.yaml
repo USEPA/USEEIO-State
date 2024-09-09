@@ -49,4 +49,6 @@ jobs:
         uses: actions/upload-artifact@main
         with:
           name: example_files
-          path: examples/*.md
+          path: | 
+            examples/*.md
+            examples/*.docx
