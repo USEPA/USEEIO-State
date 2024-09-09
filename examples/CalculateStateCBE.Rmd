@@ -1,8 +1,10 @@
 ---
-title: Consumption-Based Emissions Results Using a State EEIO Model"
+title: Consumption-Based Emissions Results Using a State EEIO Model
+date: '`r format(Sys.time(), "%B %d, %Y")`'
 output:
-  md_document:
-    variant: gfm
+  officedown::rdocx_document:
+    fig_caption: true
+
 params:
   model:
     label: "Model Type"
@@ -69,7 +71,7 @@ for(y in years) {
 
 ```
 
-```{r calculate_results}
+```{r calculate_results, include=FALSE}
 
 cbe_all <- sapply(models,calculateStateCBE,simplify=TRUE,USE.NAMES=TRUE)
 row.names(cbe_all) <- row.names(calculateStateCBE(models[[1]]))
@@ -84,8 +86,8 @@ rownames(households_all) <- rownames(calculateHouseholdShares(models[[1]], indic
 
 ```
 
-```{r cbe_results, echo=FALSE, fig.width=9, fig.height=4}
-
+```{r cbe_results, echo=FALSE, results='hide', fig.keep='all', fig.height=4, fig.width=6.5, message=FALSE, warning=FALSE}
+p_list <- c()
 for(y in years) {
   col <- paste0(state, "-", y)
   cbe_agg_soi_year <- as.matrix(cbe_agg_soi[, col])
@@ -113,12 +115,14 @@ for(y in years) {
     xlab('Greenhouse Gases (million tonnes)') +
     labs(fill = 'Region') +
     ggtitle(col)
-  p
+  p_list[[toString(y)]] <- p
 }
+p_list
 ```
 
+Text goes here to describe 
 
-```{r time_series_demand, echo=FALSE, fig.width=9, fig.height=4}
+```{r time_series_demand, echo=FALSE, fig.width=6.5, fig.height=4, fig.cap=c("This is my first caption", "This is my second caption")}
 
 demand_types <- c(state, "RoUS", "RoW", "Total")
 ylabel <- paste0("Billion $ (",focal_year,")")
@@ -136,7 +140,7 @@ lineChartFigure(d / 10^9,ylabel)
 
 
 
-```{r ghg_time_series, echo=FALSE, fig.width=8, fig.height=6}
+```{r ghg_time_series, echo=FALSE, fig.width=6.5, fig.height=8.5, fig.cap=c("This is my first caption", "This is my second caption")}
 cbe_agg <- (aggregateStateResultMatrix(models[[1]], cbe_all, region=state) +
               aggregateStateResultMatrix(models[[1]], cbe_all, region='RoUS') +
               aggregateStateResultMatrix(models[[1]], cbe_all, region='RoW'))
@@ -153,7 +157,7 @@ p2
 
 ```
 
-```{r cbe_territorial}
+```{r cbe_territorial, echo=FALSE, fig.width=6.5, fig.height=4, fig.cap="this is my caption"}
 ghgi_all <- sapply(models, getStateGHGI, simplify=TRUE, USE.NAMES=TRUE)
 
 # Compare CBE to Territorial for Focal state
@@ -167,3 +171,5 @@ p <- p +
 p
 
 ```
+
+Here is my figure reference Figure \@ref(fig:cbe_territorial).
