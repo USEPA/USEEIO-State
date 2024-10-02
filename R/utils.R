@@ -5,7 +5,7 @@ useeior_ver = "develop"
 install_useeior <- function() {
   installed_pkg <- installed.packages()
   if (!"pak"%in%installed_pkg[, "Package"]) {
-    install.packages("pak")
+    install.packages("pak", repos = "http://cran.us.r-project.org") # see issue #22
   }
   if (!"useeior" %in% installed_pkg[, "Package"]) {
     cli::cli_alert_info("Installing useeior {useeior_ver} from GitHub...")
