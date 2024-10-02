@@ -32,7 +32,7 @@ jobs:
       - name: Install packages and render Rmarkdown files
         run: |
           echo "Rendering the page..."
-          Rscript -e 'install.packages(c("knitr", "rmarkdown", "kableExtra"))'
+          Rscript -e 'install.packages(c("knitr", "rmarkdown", "kableExtra", "officedown", "pak"))'
           Rscript -e 'rmarkdown::render(input = "examples/DownloadandSaveModelLocally.Rmd",
                                         params = list(model = "v1.0", state = "AR", year = 2020))'
           Rscript -e 'rmarkdown::render(input = "examples/Demo-Multipliers-CO.Rmd")'
@@ -49,4 +49,6 @@ jobs:
         uses: actions/upload-artifact@main
         with:
           name: example_files
-          path: examples/*.md
+          path: | 
+            examples/*.md
+            examples/*.docx

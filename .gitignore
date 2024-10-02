@@ -8,5 +8,6 @@ examples/*.md
 !examples/README.md
 examples/GenerateResults_files*
 examples/CBEI_files*
+examples/CalculateStateCBE.docx
 models/*
 .idea/*

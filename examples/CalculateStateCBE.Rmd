@@ -1,8 +1,10 @@
 ---
-title: Consumption-Based Emissions Results Using a State EEIO Model"
+title: Consumption-Based Emissions Results Using a State EEIO Model
+date: '`r format(Sys.time(), "%B %d, %Y")`'
 output:
-  md_document:
-    variant: gfm
+  officedown::rdocx_document:
+    fig_caption: true
+
 params:
   model:
     label: "Model Type"
@@ -69,7 +71,17 @@ for(y in years) {
 
 ```
 
-```{r calculate_results}
+*Table of Figures*
+```{r echo=FALSE}
+library(officedown)
+library(officer)
+block_toc(seq_id = "fig") # or "tab" for tables
+# block_toc(style = "Image Caption") # or "Table Caption" for tables
+```
+
+Add introductory text here.
+
+```{r calculate_results, include=FALSE}
 
 cbe_all <- sapply(models,calculateStateCBE,simplify=TRUE,USE.NAMES=TRUE)
 row.names(cbe_all) <- row.names(calculateStateCBE(models[[1]]))
@@ -83,9 +95,8 @@ rownames(households_all) <- rownames(calculateHouseholdShares(models[[1]], indic
 
 
 ```
-
-```{r cbe_results, echo=FALSE, fig.width=9, fig.height=4}
-
+```{r cbe_results, echo=FALSE, results='asis', fig.height=4, fig.width=6.5, warning=FALSE}
+cbe_by_year_list <- c()
 for(y in years) {
   col <- paste0(state, "-", y)
   cbe_agg_soi_year <- as.matrix(cbe_agg_soi[, col])
@@ -112,31 +123,49 @@ for(y in years) {
   p <- p + 
     xlab('Greenhouse Gases (million tonnes)') +
     labs(fill = 'Region') +
-    ggtitle(col)
-  p
+    ggtitle(col) +
+    theme(axis.text.y = element_text(size = 7))
+  cbe_by_year_list[[toString(y)]] <- p
 }
+
 ```
 
+Text goes here to describe the demand. (Figure \@ref(fig:demand-1) and also Figure \@ref(fig:demand-2)).
 
-```{r time_series_demand, echo=FALSE, fig.width=9, fig.height=4}
+```{r time_series_demand, echo=FALSE, fig.width=6.5, fig.height=4}
 
 demand_types <- c(state, "RoUS", "RoW", "Total")
 ylabel <- paste0("Billion $ (",focal_year,")")
 d <- sapply(models, calculateDemandByRegion, price_year=focal_year)
 rownames(d) <- demand_types
-lineChartFigure(d / 10^9,ylabel)
+p <- lineChartFigure(d / 10^9,ylabel)
+p <- p + theme(text = element_text(size=12))
+p
+fig_num <- run_autonum(seq_id = "fig", pre_label = "Figure ", bkm = "demand-1")
+block_caption("Demand by region",
+              style = "Image Caption",
+              autonum = fig_num
+              )
 
 demand_types <- c("Household", "Investment", "Federal Government", "State Government", "Total")
 ylabel <- paste0("Billion $ (",focal_year,")")
 d <- sapply(models, calculateDemandByType, price_year=focal_year)
 rownames(d) <- demand_types
-lineChartFigure(d / 10^9,ylabel)
+p <- lineChartFigure(d / 10^9,ylabel)
+p <- p + theme(text = element_text(size=12))
+p
+fig_num <- run_autonum(seq_id = "fig", pre_label = "Figure ", bkm = "demand-2")
+block_caption("Demand by source",
+              style = "Image Caption",
+              autonum = fig_num
+              )
+
 
 ```
 
+Time series results are shown in Figure \@ref(fig:tsghg-1) and also Figure \@ref(fig:tsghg-2).
 
-
-```{r ghg_time_series, echo=FALSE, fig.width=8, fig.height=6}
+```{r ghg_time_series, echo=FALSE, fig.width=6.5, fig.height=8.5}
 cbe_agg <- (aggregateStateResultMatrix(models[[1]], cbe_all, region=state) +
               aggregateStateResultMatrix(models[[1]], cbe_all, region='RoUS') +
               aggregateStateResultMatrix(models[[1]], cbe_all, region='RoW'))
@@ -146,14 +175,26 @@ cbe_agg <- rbind(cbe_agg[rownames(cbe_agg) != 'F010', ], households)
 p1 <- twoRegionTimeSeriesPlot(cbe_agg / 10^9, model = models[[1]], plottype = "bar")
 p1 <- p1 + labs(y = "MMT CO2e")
 p1
+fig_num <- run_autonum(seq_id = "fig", pre_label = "Figure. ", bkm = "tsghg-1")
+block_caption("CBE by sector (bar)",
+              style = "Image Caption",
+              autonum = fig_num
+              )
 
 p2 <- twoRegionTimeSeriesPlot(cbe_agg/ 10^9, model = models[[1]], plottype = "line")
 p2 <- p2 + labs(y = "MMT CO2e")
 p2
+fig_num <- run_autonum(seq_id = "fig", pre_label = "Figure ", bkm = "tsghg-2")
+block_caption("CBE by sector (line)",
+              style = "Image Caption",
+              autonum = fig_num
+              )
 
 ```
 
-```{r cbe_territorial}
+Here is my figure reference Figure \@ref(fig:cbe_territorial).
+
+```{r cbe_territorial, echo=FALSE, fig.width=6.5, fig.height=4}
 ghgi_all <- sapply(models, getStateGHGI, simplify=TRUE, USE.NAMES=TRUE)
 
 # Compare CBE to Territorial for Focal state
@@ -163,7 +204,27 @@ combined <- as.matrix(rbind(terr, cbe))
 rownames(combined) <- c("Territorial", "CBE")
 p <- lineChartFigure(combined / 10^9, ylabel="MMT CO2e")
 p <- p +
-     scale_y_continuous(limits = c(0, NA))
+     scale_y_continuous(limits = c(0, NA)) +
+     theme(text = element_text(size=12))
 p
+fig_num <- run_autonum(seq_id = "fig", pre_label = "Figure ", bkm = "cbe_territorial")
+block_caption("Comparison to territorial",
+              style = "Image Caption",
+              autonum = fig_num
+              )
 
+```
+
+Additional CBE figures by year are shown below.
+
+```{r cbe_by_year, echo=FALSE, results='asis', fig.height=4, fig.width=6.5, warning=FALSE}
+for(i in 1:length(cbe_by_year_list)) {
+  print(cbe_by_year_list[[toString(years[i])]])
+  fig_num <- run_autonum(seq_id = "fig", pre_label = "Figure ", bkm = paste0("CBE-", i))
+  block_caption("CBE Results",
+                style = "Image Caption",
+                autonum = fig_num
+                )
+  ## Can't get captions to work inside the loop
+}
 ```

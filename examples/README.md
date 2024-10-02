@@ -21,4 +21,9 @@ Uses are exemplified in separate combination .Rmd (for code) and, when applicabl
 
 3. **Demo-Multipliers-CO**. Build an original Colorado model with jobs, GHG, and value added satellite tables for use in demonstrating the calculation of economic and environmental Type I multipliers using a USEEIO State model. [Code](Demo-Multipliers-CO.Rmd).  [Output](Demo-Multipliers-CO.md)  
 
-4. **CalculateStateCBE**. Calculate and display consumption based GHG emissions for a selected state. [Code](CalculateStateCBE.Rmd).
+4. **CalculateStateCBE**. Calculate and display consumption based GHG emissions for a selected state, rendered as a Microsoft Word file. [Code](CalculateStateCBE.Rmd).
+Requires additional packages:
+
+```{r}
+install.packages(c("officedown"))
+```
