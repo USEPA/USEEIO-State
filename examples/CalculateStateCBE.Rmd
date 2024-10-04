@@ -1,5 +1,5 @@
 ---
-title: Consumption-Based Emissions Results Using a State EEIO Model
+title: Consumption-Based Greenhouse Gas Emissions Results Using a State EEIO Model
 date: '`r format(Sys.time(), "%B %d, %Y")`'
 output:
   officedown::rdocx_document:
@@ -34,7 +34,7 @@ install_useeior()
 source("../R/StateEEIOFigures.R")
 source("../R/StateEEIOCalculations.R")
 library(useeior)
-# devtools::load_all("../../useeior/") # Requires develop branch (to be v1.6.0)
+# devtools::load_all("../../useeior/") # Requires develop branch (to be v1.6.1)
 
 # Stop execution of Rmd if params not selected
 if (params$state=="") {
@@ -79,7 +79,11 @@ block_toc(seq_id = "fig") # or "tab" for tables
 # block_toc(style = "Image Caption") # or "Table Caption" for tables
 ```
 
-Add introductory text here.
+A consumption-based emissions inventory (CBEI) is an accounting method that can be applied to a region, including a state, that quantifies emissions associated with all goods and services consumed by a state, regardless of their origin.
+This approach allows these regions to account for more complete emissions caused by the consumption of goods in their region.
+
+This document presents results for **`r state`** for the years **`r paste0(head(years, 1), "-", tail(years,1 ))`**.
+Further details on the methods for calculating consumption based emissions (CBE) and interpreting CBEI results can be found in the associated EPA Report, [Consumption-Based Greenhouse Gas Inventories for Northeastern States](https://cfpub.epa.gov/si/si_public_search_results.cfm?simpleSearch=0&showCriteria=2&sortBy=pubDate&searchAll=consumption-based&TIMSType=Published+Report).
 
 ```{r calculate_results, include=FALSE}
 
@@ -93,8 +97,8 @@ cbe_agg_row <- aggregateStateResultMatrix(models[[1]], cbe_all, region='RoW')
 households_all <- sapply(models, calculateHouseholdShares, indicator=indicator, simplify=TRUE, USE.NAMES=TRUE)
 rownames(households_all) <- rownames(calculateHouseholdShares(models[[1]], indicator))
 
-
 ```
+
 ```{r cbe_results, echo=FALSE, results='asis', fig.height=4, fig.width=6.5, warning=FALSE}
 cbe_by_year_list <- c()
 for(y in years) {
@@ -129,70 +133,52 @@ for(y in years) {
 }
 
 ```
+Many U.S. states compile regular annual greenhouse gas inventories (GHGIs) that are used as a benchmark in measuring progress toward greenhouse gas (GHG) emissions reduction goals.
+These territorial (also called sector-based) inventories typically cover GHG emissions occurring within the state’s borders.
+They typically include emissions associated with transportation, electricity production, industry, land use and forestry, commercial and residential buildings, and waste disposal.
+CBEs include emissions occurring upstream of the point of consumption; when those emissions occur out of state, they would not appear in the state’s territorial inventory.
+The CBEI results are contrasted with the state territorial emissions in Figure \@ref(fig:cbe_territorial).
 
-Text goes here to describe the demand. (Figure \@ref(fig:demand-1) and also Figure \@ref(fig:demand-2)).
 
-```{r time_series_demand, echo=FALSE, fig.width=6.5, fig.height=4}
+A CBE increase can be driven by an increase in the consumption of goods and services or in the embodied carbon intensity, measured in GHG emissions per dollar spent on goods and services, or by increases in both.
+Changes in consumption as measured in current U.S. dollars, which are the dollar value for the year in which goods are consumed, can be influenced by the changing value of the dollar when inflation or deflation are present.
+Changes in real consumption are better measured by using a constant dollar value across time to control for this effect.
+State level consumption in constant dollars are shown by source region and by final consumer type in Figure \@ref(fig:demand-1) and Figure \@ref(fig:demand-2), respectively.
+
+
+```{r time_series_demand, echo=FALSE}
 
 demand_types <- c(state, "RoUS", "RoW", "Total")
 ylabel <- paste0("Billion $ (",focal_year,")")
 d <- sapply(models, calculateDemandByRegion, price_year=focal_year)
 rownames(d) <- demand_types
-p <- lineChartFigure(d / 10^9,ylabel)
-p <- p + theme(text = element_text(size=12))
-p
-fig_num <- run_autonum(seq_id = "fig", pre_label = "Figure ", bkm = "demand-1")
-block_caption("Demand by region",
-              style = "Image Caption",
-              autonum = fig_num
-              )
+demand1 <- lineChartFigure(d / 10^9,ylabel)
+demand1 <- demand1 + theme(text = element_text(size=12))
 
 demand_types <- c("Household", "Investment", "Federal Government", "State Government", "Total")
 ylabel <- paste0("Billion $ (",focal_year,")")
 d <- sapply(models, calculateDemandByType, price_year=focal_year)
 rownames(d) <- demand_types
-p <- lineChartFigure(d / 10^9,ylabel)
-p <- p + theme(text = element_text(size=12))
-p
-fig_num <- run_autonum(seq_id = "fig", pre_label = "Figure ", bkm = "demand-2")
-block_caption("Demand by source",
-              style = "Image Caption",
-              autonum = fig_num
-              )
-
+demand2 <- lineChartFigure(d / 10^9,ylabel)
+demand2 <- demand2 + theme(text = element_text(size=12))
 
 ```
 
-Time series results are shown in Figure \@ref(fig:tsghg-1) and also Figure \@ref(fig:tsghg-2).
-
-```{r ghg_time_series, echo=FALSE, fig.width=6.5, fig.height=8.5}
+```{r ghg_time_series, echo=FALSE}
 cbe_agg <- (aggregateStateResultMatrix(models[[1]], cbe_all, region=state) +
               aggregateStateResultMatrix(models[[1]], cbe_all, region='RoUS') +
               aggregateStateResultMatrix(models[[1]], cbe_all, region='RoW'))
 households <- sweep(households_all, 2, cbe_agg['F010', ], "*") # convert from pct to mass
 cbe_agg <- rbind(cbe_agg[rownames(cbe_agg) != 'F010', ], households)
 
-p1 <- twoRegionTimeSeriesPlot(cbe_agg / 10^9, model = models[[1]], plottype = "bar")
-p1 <- p1 + labs(y = "MMT CO2e")
-p1
-fig_num <- run_autonum(seq_id = "fig", pre_label = "Figure. ", bkm = "tsghg-1")
-block_caption("CBE by sector (bar)",
-              style = "Image Caption",
-              autonum = fig_num
-              )
+tsghg1 <- twoRegionTimeSeriesPlot(cbe_agg / 10^9, model = models[[1]], plottype = "bar")
+tsghg1 <- tsghg1 + labs(y = "MMT CO2e")
 
-p2 <- twoRegionTimeSeriesPlot(cbe_agg/ 10^9, model = models[[1]], plottype = "line")
-p2 <- p2 + labs(y = "MMT CO2e")
-p2
-fig_num <- run_autonum(seq_id = "fig", pre_label = "Figure ", bkm = "tsghg-2")
-block_caption("CBE by sector (line)",
-              style = "Image Caption",
-              autonum = fig_num
-              )
+tsghg2 <- twoRegionTimeSeriesPlot(cbe_agg/ 10^9, model = models[[1]], plottype = "line")
+tsghg2 <- tsghg2 + labs(y = "MMT CO2e")
 
 ```
 
-Here is my figure reference Figure \@ref(fig:cbe_territorial).
 
 ```{r cbe_territorial, echo=FALSE, fig.width=6.5, fig.height=4}
 ghgi_all <- sapply(models, getStateGHGI, simplify=TRUE, USE.NAMES=TRUE)
@@ -208,7 +194,59 @@ p <- p +
      theme(text = element_text(size=12))
 p
 fig_num <- run_autonum(seq_id = "fig", pre_label = "Figure ", bkm = "cbe_territorial")
-block_caption("Comparison to territorial",
+block_caption("Comparison of CBEI and territorial inventory totals across time.",
+              style = "Image Caption",
+              autonum = fig_num
+              )
+
+```
+
+```{r time_series_demand_figure, echo=FALSE, fig.width=6.5, fig.height=4}
+demand1
+fig_num <- run_autonum(seq_id = "fig", pre_label = "Figure ", bkm = "demand-1")
+block_caption("Consumption in constant dollars. Consumption of commodities sourced in the three regions are shown on separate lines, along with a total consumption line.",
+              style = "Image Caption",
+              autonum = fig_num
+              )
+demand2
+fig_num <- run_autonum(seq_id = "fig", pre_label = "Figure ", bkm = "demand-2")
+block_caption("Trends in consumption by consumer category in constant dollars.",
+              style = "Image Caption",
+              autonum = fig_num
+              )
+```
+
+
+Table \@ref(tab:cbe_table) presents the embodied carbon intensity of total consumption in `r state` from `r paste0(head(years, 1), "-", tail(years,1 ))`.
+<!--Maine embodied carbon consumption intensity increases in the initial study years and then decreases from 2015–2020 from 428 g CO2e per dollar spent to 345, approximately a 19% decrease over the time period -->
+
+```{r cbe_table, echo=FALSE}
+per_dollar <- round(cbe / d["Total", ] * 1000,1)
+table <- round(rbind(cbe, d["Total", ]) / 10^9, 1)
+table <- rbind(table, per_dollar)
+colnames(table) <- years
+rownames(table) <- c("CBE (MMT CO2e)", paste0("Spending (Billion USD ", focal_year, ")"), "CBE / $ (grams per $)")
+knitr::kable(table, format='markdown')
+tab_num <- run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "cbe_table")
+block_caption("Trends in CBE, demand, and CBE per dollar spent.",
+              style = "Image Caption",
+              autonum = tab_num
+              )
+```
+
+Figure \@ref(fig:tsghg-1) shows the trend in CBE broken down by the category of goods and services purchased.
+Figure \@ref(fig:tsghg-2) also depicts the trends in these categories as a line graph to increase the ability to detect changes in categories.
+
+```{r ghg_time_series_figures, echo=FALSE, fig.width=6.5, fig.height=8}
+tsghg1
+fig_num <- run_autonum(seq_id = "fig", pre_label = "Figure. ", bkm = "tsghg-1")
+block_caption("CBE broken down by aggregate purchase category (bar).",
+              style = "Image Caption",
+              autonum = fig_num
+              )
+tsghg2
+fig_num <- run_autonum(seq_id = "fig", pre_label = "Figure ", bkm = "tsghg-2")
+block_caption("CBE broken down by aggregate purchase category (line).",
               style = "Image Caption",
               autonum = fig_num
               )
