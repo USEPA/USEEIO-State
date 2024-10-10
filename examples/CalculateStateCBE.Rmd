@@ -68,7 +68,7 @@ for(y in years) {
    modelname <- paste0(state, modelstub, substr(y,3,4))
    name_for_list <- paste0(state,"-",toString(y))
    file_path <- file.path("..","models",paste0(modelname,".rds"))
-   if(!exists(file_path)) {
+   if(!file.exists(file_path)) {
      stop("Please first build or download the requested model.")
    }
    models[[name_for_list]] <- readRDS(file_path)
