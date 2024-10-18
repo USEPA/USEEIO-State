@@ -281,6 +281,31 @@ block_caption("CBE broken down by aggregate purchase category (line).",
 
 ```
 
+```{r cbe_trade_balance, include=FALSE}
+cbe_trade_all <- sapply(models, calculateCBETradeBalance, simplify=FALSE, USE.NAMES=TRUE)
+cbe_trade_all_df <- sapply(cbe_trade_all, matricizeandflip)
+rownames(cbe_trade_all_df) <- c("Exports to RoUS", "Exports to RoW", "Imports from RoUS",
+                                "Imports from RoW", "Balance")
+trade_balance <- lineChartFigure(cbe_trade_all_df / 10^9, "Greenhouse Gases (million tonnes)")
+trade_balance <- trade_balance + theme(text = element_text(size=12))
+```
+
+A balance of emissions is another way of assessing emissions from a consumption-based perspective.
+A trade balance in economics is typically defined as exports from a region minus the imports into the region, where a trade surplus indicates more goods and services leaving the region that coming in from outside the region.
+Analogously, trade balance information can be used to derive a trade emissions balance for each region.
+Emissions are exported from the SoI when they occur in the SoI but are associated with a commodity that is consumed outside the state, either in the RoUS or RoW.
+Imported emissions are those occurring out of state but associated with a commodity consumed by the SoI.
+Figure \@ref(fig:trade_balance) shows the trend balance of emissions for the time series.
+
+```{r cbe_trade_balance_fig, echo=FALSE, fig.width=6.5, fig.height=4}
+trade_balance
+fig_num <- run_autonum(seq_id = "fig", pre_label = "Figure ", bkm = "trade_balance")
+block_caption("CBE trade balance.",
+              style = "Image Caption",
+              autonum = fig_num
+              )
+
+```
 Additional CBE figures by year are shown below.
 
 ```{r cbe_by_year, echo=FALSE, results='asis', fig.height=4, fig.width=6.5, warning=FALSE}

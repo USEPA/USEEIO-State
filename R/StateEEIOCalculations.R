@@ -340,3 +340,9 @@ calculateNMatrix <- function(model, state) {
   model[["N"]] <- mat
   return(model)
 }
+
+#make into a matrix and transpose
+matricizeandflip <- function(StateResult) {
+  m <- t(as.matrix(colSums(StateResult, na.rm = TRUE)))
+  return(m)
+}
