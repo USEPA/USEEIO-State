@@ -34,3 +34,16 @@ download_model_RDS <- function(modelname) {
   }
   return(file_path)
 }
+
+#' Load state population table.
+load_state_population <- function(path=NULL) {
+  if (is.null(path)) {
+    path <- file.path("../data/state_population.csv")
+  } else {
+    path <- file.path(path, "state_population.csv")
+  }
+  pop <- read.csv(path, header=TRUE)
+  pop <- pop[,c("FlowAmount","Abbreviation","Year")]
+  colnames(pop) <- c("Population","State","Year")
+  return(pop)
+}
