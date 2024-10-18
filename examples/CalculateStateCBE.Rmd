@@ -150,6 +150,7 @@ A CBE increase can be driven by an increase in the consumption of goods and serv
 Changes in consumption as measured in current U.S. dollars, which are the dollar value for the year in which goods are consumed, can be influenced by the changing value of the dollar when inflation or deflation are present.
 Changes in real consumption are better measured by using a constant dollar value across time to control for this effect.
 State level consumption in constant dollars are shown by source region and by final consumer type in Figure \@ref(fig:demand-1) and Figure \@ref(fig:demand-2), respectively.
+To account for changes in population growth, CBE per person is shown in Figure \@ref(fig:per_person).
 
 
 ```{r time_series_demand, echo=FALSE}
@@ -222,6 +223,23 @@ block_caption("Trends in consumption by consumer category in constant dollars.",
               )
 ```
 
+```{r per_person, echo=FALSE}
+pop <- load_state_population()
+pop <- pop[which(pop$Year %in% years),]
+pop_wide <- reformatStatebyYearLongtoWide(pop, value.var="Population")
+pop_wide <- as.matrix(pop_wide[which(rownames(pop_wide) == state),])
+per_p <- (cbe /1000) / pop_wide
+rownames(per_p) <- "CBE / person"
+per_person <- lineChartFigure(per_p, "tonnes CO2e per person")
+per_person <- per_person + theme(text = element_text(size=12),
+                                 legend.position="none")
+per_person
+fig_num <- run_autonum(seq_id = "fig", pre_label = "Figure ", bkm = "per_person")
+block_caption("Per person consumption based emissions.",
+              style = "Image Caption",
+              autonum = fig_num
+              )
+```
 
 Table \@ref(tab:cbe_table) presents the embodied carbon intensity of total consumption in `r state` from `r paste0(head(years, 1), "-", tail(years,1 ))`.
 <!--Maine embodied carbon consumption intensity increases in the initial study years and then decreases from 2015–2020 from 428 g CO2e per dollar spent to 345, approximately a 19% decrease over the time period -->
@@ -230,8 +248,12 @@ Table \@ref(tab:cbe_table) presents the embodied carbon intensity of total consu
 per_dollar <- round(cbe / d["Total", ] * 1000,1)
 table <- round(rbind(cbe, d["Total", ]) / 10^9, 1)
 table <- rbind(table, per_dollar)
+table <- rbind(table, round(per_p, 1))
 colnames(table) <- years
-rownames(table) <- c("CBE (MMT CO2e)", paste0("Spending (Billion USD ", focal_year, ")"), "CBE / $ (grams per $)")
+rownames(table) <- c("CBE (MMT CO2e)",
+                     paste0("Spending (Billion USD ", focal_year, ")"),
+                     "CBE / $ (grams per $)",
+                     "CBE per person (tonnes)")
 knitr::kable(table, format='markdown')
 tab_num <- run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "cbe_table")
 block_caption("Trends in CBE, demand, and CBE per dollar spent.",
