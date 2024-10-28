@@ -268,7 +268,7 @@ calculateCBETradeBalance <- function(model) {
                                    use_domestic_requirements=TRUE, show_RoW=TRUE)[["LCIA_d"]])
   E_m_RoW <- E_m_RoW[grepl('/RoW', row.names(E_m_RoW)), , drop=FALSE]
     
-  CBE_trade <- data.frame(cbind(E_x_RoUS, E_x_RoW, -E_m_RoUS, -E_m_RoW))
+  CBE_trade <- data.frame(cbind(-E_x_RoUS, -E_x_RoW, E_m_RoUS, E_m_RoW))
   colnames(CBE_trade) <- c("export_RoUS","export_RoW","import_RoUS","import_RoW")
   rownames(CBE_trade) <- gsub("/.*","",rownames(CBE_trade))
   CBE_trade$Balance <- rowSums(CBE_trade)

@@ -286,7 +286,12 @@ cbe_trade_all <- sapply(models, calculateCBETradeBalance, simplify=FALSE, USE.NA
 cbe_trade_all_df <- sapply(cbe_trade_all, matricizeandflip)
 rownames(cbe_trade_all_df) <- c("Exports to RoUS", "Exports to RoW", "Imports from RoUS",
                                 "Imports from RoW", "Balance")
-trade_balance <- lineChartFigure(cbe_trade_all_df / 10^9, "Greenhouse Gases (million tonnes)")
+cbe_trade_summary_df <- rbind(colSums(cbe_trade_all_df[c(1, 2),]),
+                              colSums(cbe_trade_all_df[c(3, 4),]),
+                              cbe_trade_all_df[c(5),])
+rownames(cbe_trade_summary_df) <- c("Exports", "Imports", "Balance")
+# Alternatively can chart "cbe_trade_all_df" to differentiate RoW and RoUS
+trade_balance <- lineChartFigure(cbe_trade_summary_df / 10^9, "Greenhouse Gases (million tonnes)")
 trade_balance <- trade_balance + theme(text = element_text(size=12))
 ```
 
