@@ -82,6 +82,7 @@ for(state in states) {
     m <- useeior:::loadandbuildIndicators(m)
     m <- useeior:::loadDemandVectors(m)
     m <- useeior:::constructEEIOMatrices(m)
+    printValidationResults(m)
    saveRDS(m, file.path("..","models",paste0(modelname,".rds")))
    
    if(params$write) {

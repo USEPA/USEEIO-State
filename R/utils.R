@@ -1,4 +1,4 @@
-# useeior_ver = "v1.6.0"
+# useeior_ver = "v1.6.1"
 useeior_ver = "develop"
 
 #' Install useeior (via pak).

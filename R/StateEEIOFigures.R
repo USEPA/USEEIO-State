@@ -121,9 +121,6 @@ twoRegionTimeSeriesPlot <- function(df,
 
 
 contributionToImpactBySectorChart <- function(model, sector, indicator, state) {
-  if(is.null(model[["N"]])) {
-    model <- calculateNMatrix(model, state)
-  }
   df0 <- useeior::disaggregateTotalToDirectAndTier1(model, indicator)
   
   sector_codes <- c(paste0(sector, "/US-", state), paste0(sector, "/RoUS"))
