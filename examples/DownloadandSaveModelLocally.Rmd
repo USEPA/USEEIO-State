@@ -8,7 +8,7 @@ params:
     label: "Model Type"
     value: "v1.0"
     input: select
-    choices: ["v1.0"] 
+    choices: ["v1.0", "v1.1-GHG", "v1.1-GHGc"]
   year:
     label: "Model Year"
     value: 2012
