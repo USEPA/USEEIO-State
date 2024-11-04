@@ -1,5 +1,5 @@
-# useeior_ver = "v1.6.1"
-useeior_ver = "develop"
+useeior_ver = "v1.6.1"
+# useeior_ver = "develop"
 
 #' Install useeior (via pak).
 install_useeior <- function() {
