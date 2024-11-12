@@ -34,7 +34,7 @@ jobs:
           echo "Rendering the page..."
           Rscript -e 'install.packages(c("knitr", "rmarkdown", "kableExtra", "officedown", "pak"))'
           Rscript -e 'rmarkdown::render(input = "examples/DownloadandSaveModelLocally.Rmd",
-                                        params = list(model = "v1.0", state = "AR", year = 2020))'
+                                        params = list(model = "v1.0", states = c("AR"), years = c(2019,2020))'
           Rscript -e 'rmarkdown::render(input = "examples/Demo-Multipliers-CO.Rmd")'
 
           Rscript -e 'rmarkdown::render(input = "examples/BuildandSaveModelsLocally.Rmd",
