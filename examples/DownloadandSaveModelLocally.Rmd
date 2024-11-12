@@ -9,16 +9,17 @@ params:
     value: "v1.0"
     input: select
     choices: ["v1.0", "v1.1-GHG", "v1.1-GHGc"]
-  year:
-    label: "Model Year"
+  years:
+    label: "Model Year(s)"
     value: 2012
     input: select
-    multiple: FALSE
+    multiple: TRUE
     choices: [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020]
-  state:
-    label: "State"
+  states:
+    label: "State(s)"
     value: ""
     input: select
+    multiple: TRUE
     choices: ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL",
               "IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT",
               "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI",
@@ -31,43 +32,45 @@ params:
 ```{r setup, include=FALSE}
 source("../R/utils.R")
 
-# Stop execution of Rmd if params not selected
-if (params$state=="") {
-  stop("You must select a state and a year.")
-}
-
 ## Select model build parameters
-state <- params$state
-year <- params$year
+states <- params$states
+years <- params$years
 spec <- params$model
 
 if (spec == "v1.0") {
   modelstub <- 'EEIOv1.0-s-'
 } else if (spec == "v1.1-GHG") {
   modelstub <- 'EEIOv1.1-GHG-'
+} else if (spec == "v1.1-GHGc") {
+  modelstub <- 'EEIOv1.1-GHGc-'
 }
-
-modelname <- paste0(state, modelstub,substr(year,3,4)) 
 
 ```
 
 ```{r load-model, echo=FALSE}
+if (params$write) {
+  install_useeior()
+  # prepare output directory
+  output_dir <- file.path('../output')
+  dir.create(output_dir, showWarnings = FALSE)
+}
 
-file_path <- download_model_RDS(modelname)
+for(state in states) {
+  if((modelstub == 'EEIOv1.1-GHGc-') & (!state %in% c("VT", "NY", "ME"))) {
+    stop(paste0(state, " not available with a customized GHG Inventory, please use v1.1-GHG."))
+  } else if ((modelstub == 'EEIOv1.1-GHG-') & (state %in% c("VT", "NY", "ME"))) {
+    stop(paste0(state, " is only available with a customized GHG Inventory, please use v1.1-GHGc."))
+  }
+  for(year in years) {
+    modelname <- paste0(state, modelstub,substr(year,3,4)) 
+    file_path <- download_model_RDS(modelname)
 
-model <- readRDS(file_path) # Test that it loads correctly
+    model <- readRDS(file_path) # Test that it loads correctly
+    if(params$write) {
+      useeior::writeModeltoXLSX(model, output_dir)
+      print(paste0("Model for ", state, " in ", year, " written to Excel at ", output_dir, "."))
+    }
+  }
+}
 
 ```
-
-
-```{r write_model, eval=params$write, echo=FALSE}
-install_useeior()
-# write model to Excel
-output_dir <- file.path('../output')
-dir.create(output_dir, showWarnings = FALSE)
-
-useeior::writeModeltoXLSX(model, output_dir)
-
-print(paste0("Model for ", state, " in ", year, " written to Excel at ", output_dir, "."))
-```
-

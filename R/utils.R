@@ -28,7 +28,7 @@ download_model_RDS <- function(modelname) {
     # Download file
     utils::download.file(file_url,file_path,
                          mode = "wb", quiet = TRUE)
-    print(paste0("Downloading model for ", substr(modelname,0,2), " in 20", year, " to ", file_path, "."))
+    print(paste0("Downloaded model for ", substr(modelname,0,2), " in 20", year, " to ", file_path, "."))
   } else {
     print(paste("File already exists at", file_path))
   }

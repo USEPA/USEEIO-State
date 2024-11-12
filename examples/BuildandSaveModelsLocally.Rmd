@@ -10,13 +10,13 @@ params:
     input: select
     choices: ["v1.0","v1.1-GHG","v1.1-GHGc"]
   years:
-    label: "Model Year"
+    label: "Model Year(s)"
     value: 2012
     input: select
     multiple: TRUE
     choices: [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020]
   states:
-    label: "State"
+    label: "State(s)"
     value: "AL"
     input: select
     multiple: TRUE
