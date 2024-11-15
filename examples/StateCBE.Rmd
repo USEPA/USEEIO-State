@@ -2,9 +2,10 @@
 title: Consumption-Based Greenhouse Gas Emissions Results for `r params$state` for `r min(params$years)`- `r max(params$years)`
 date: '`r format(Sys.time(), "%B %d, %Y")`'
 output:
+  bookdown::html_document2: 
+    default
   officedown::rdocx_document:
     fig_caption: true
-
 params:
   model:
     label: "Model Type"
