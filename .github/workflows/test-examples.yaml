@@ -40,7 +40,7 @@ jobs:
           Rscript -e 'rmarkdown::render(input = "examples/BuildandSaveModelsLocally.Rmd",
                                         params = list(model = "v1.1-GHG", states = "CT",
                                         years = c(2017, 2018, 2019, 2020)))'
-          Rscript -e 'rmarkdown::render(input = "examples/CalculateStateCBE.Rmd",
+          Rscript -e 'rmarkdown::render(input = "examples/StateCBE.Rmd",
                                         params = list(model = "v1.1-GHG", state = "CT",
                                         years = c(2017, 2018, 2019, 2020)))'
 
