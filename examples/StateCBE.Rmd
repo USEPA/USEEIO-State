@@ -78,18 +78,19 @@ for(y in years) {
 
 ```
 
-*List of Figures*
-```{r echo=FALSE}
-library(officedown)
-library(officer)
-block_toc(seq_id = "fig") # or "tab" for tables
-# block_toc(style = "Image Caption") # or "Table Caption" for tables
+#
+#*List of Figures*
+#```{r echo=FALSE}
+#library(officedown)
+#library(officer)
+#block_toc(seq_id = "fig") # or "tab" for #ables
+# block_toc(style = "Image Caption") # or #"Table Caption" for tables
 ```
 
-*List of Tables*
+#*List of Tables*
 ```{r echo=FALSE}
 block_toc(seq_id = "tab") 
-```
+#```
 
 A consumption-based emissions inventory (CBEI) is an accounting method that can be applied to a region, including a state, that quantifies emissions associated with all goods and services consumed by a state, regardless of their origin.
 This approach allows these regions to account for more complete emissions caused by the consumption of goods in their region.
