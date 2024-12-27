@@ -115,7 +115,8 @@ result_code_loc <- gsub(models[[1]]$specs$ModelRegionAcronyms[1], "SoI", row.nam
 cbe_all_total <- matrix(unlist(cbe_all), ncol=length(cbe_all), dimnames=list(result_code_loc,names(cbe_all))) 
 
 cbe_all_totals <- data.frame(CBE=colSums(cbe_all))
-cbe_all_wide_MMT <- convertStateResultFormatToStatebyYear(cbe_all_totals, value.var="CBE")/1E9
+cbe_all_wide <- convertStateResultFormatToStatebyYear(cbe_all_totals, value.var="CBE")
+cbe_all_wide_MMT <- cbe_all_wide/1E9
 
 cbe_all_wide_MMT <- rbind(cbe_all_wide_MMT,cbe_rous_wide_MMT)
 
