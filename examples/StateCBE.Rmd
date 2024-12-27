@@ -4,6 +4,7 @@ date: '`r format(Sys.time(), "%B %d, %Y")`'
 output:
   bookdown::html_document2:
     fig_caption: yes
+    number_sections: no
 params:
   model:
     label: "Model Type"
@@ -124,17 +125,13 @@ cbe_all_wide_MMT <- rbind(cbe_all_wide_MMT,cbe_rous_wide_MMT)
 ```
 
 
-```{r cbe_total, echo=FALSE}
+```{r cbetotal, echo=FALSE}
 
 kable(cbe_all_wide_MMT, digits=1, caption = 'Consumption-based emissions in million metric tons.')
 
 ```
 
-\\@ref(tab:cbe_total) shows the total consumption based emissions for `r state` and the for the rest of the United States (RoUS) in million metric tons. 
-
-(\#tab:cbe_total) tries another way to cross-reference
-
-[@tab:cbe_total] tries another way to cross-reference
+Table \@ref(tab:cbetotal) shows the total consumption based emissions for `r state` and the for the rest of the United States (RoUS) in million metric tons. 
 
 # Comparison to Territorial Inventory
 
@@ -142,9 +139,9 @@ Many U.S. states compile regular annual greenhouse gas inventories (GHGIs) that 
 These territorial (also called sector-based) inventories typically cover GHG emissions occurring within the state’s borders.
 They typically include emissions associated with transportation, electricity production, industry, land use and forestry, commercial and residential buildings, and waste disposal.
 CBEs include emissions occurring upstream of the point of consumption; when those emissions occur out of state, they would not appear in the state’s territorial inventory.
-The CBEI results are contrasted with the state territorial emissions in Figure \\@ref(fig:cbe_territorial). 
+The CBEI results are contrasted with the state territorial emissions in Figure \@ref(fig:cbeterritorial). 
 
-```{r cbe_territorial, echo=FALSE, fig.width=6.5, fig.height=4, fig.cap="Comparison of consumption-based and territorial GHG emissions." }
+```{r cbeterritorial, echo=FALSE, fig.width=6.5, fig.height=4, fig.cap="Comparison of consumption-based and territorial GHG emissions." }
 ghgi_all <- sapply(models, getStateGHGI, simplify=TRUE, USE.NAMES=TRUE)
 
 # Compare CBE to Territorial for Focal state
@@ -167,10 +164,10 @@ The consumption-based emissions are between `r round(min(cbe_divided_by_terr),1)
 # Consumption-Based Emissions Intensity
 Consumption-based emission intensity can be measured as GHGs emitted per dollar spent by final consumers as well as GHGs emitted per resident.
 
-\@ref(fig:per_dollar) shows `r state`'s consumption-based emissions per dollar spent.
+Figure \@ref(fig:perdollar) shows `r state`'s consumption-based emissions per dollar spent.
 This metric is also shown for the rest of the U.S. to provide where `r state`'s CBE per dollar are in context. These metric is shown using a constant dollar to remove the influence of inflation over this measure.
 
-```{r per_dollar, fig.caption="Consumption-based emissions per dollar consumed by state residents.", echo=FALSE}
+```{r perdollar, fig.cap="Consumption-based emissions per dollar consumed by state residents.", echo=FALSE}
 d_SoI <- sapply(models, calculateDemandByRegion, price_year=focal_year, USE.NAMES = TRUE)
 d_SoI <- colSums(d_SoI)
 d_RoUS <- sapply(models, calculateDemandByType,RoUS=TRUE,price_year=focal_year, USE.NAMES = TRUE)
@@ -187,12 +184,9 @@ per_d_fig <- per_d_fig + theme(text = element_text(size=12))
 per_d_fig
 
 ```
-
 A CBE change can be driven by an change in the consumption of goods and services or in the embodied carbon intensity, measured in GHG emissions per dollar spent on goods and services, or by changes in both.
 
-If the relative increase in consumption is outpacing the relative decrease in embodied carbon intensity, then consumption-based emissions will increase. 
-
-```{r rel_change_consumption_v_intensity, fig.caption="Relative change in consumption in the state contrasted with relative change in consumption intensity, measured in GHGs per constant dollar", echo=FALSE}
+```{r relchangeconsumptionvintensity, fig.cap="Relative change in consumption in the state contrasted with relative change in consumption intensity, measured in GHGs per constant dollar", echo=FALSE}
 
 # Convert into a percentage relative to first year
 d_SoI_rel <- (d_SoI-d_SoI[1])/d_SoI[1]*100
@@ -212,11 +206,11 @@ rel_d_w_per_d_fig
 
 ```
 
+If the relative increase in consumption is outpacing the relative decrease in embodied carbon intensity, then consumption-based emissions will increase. Figure 
+\@ref(fig:relchangeconsumptionvintensity) compares the relative change in consumption in `r state` with the relative change in the embodied carbon intensity of the items consumed.
 
-Consumption-based emissions intensity can also be measured in consumption-based emissions per resident. The CBE per `r state` resident is shown in  \@ref(fig:per_person). This metric is also shown for the rest of the U.S. to provide where `r state`'s CBE per resident are in context.
 
-
-```{r per_person, echo=FALSE, fig.cap="CBE per state resident."}
+```{r perperson, echo=FALSE, fig.cap="CBE per state resident."}
 pop <- load_state_population()
 pop <- pop[which(pop$Year %in% years),]
 pop_wide <- reformatStatebyYearLongtoWide(pop, value.var="Population")
@@ -231,12 +225,15 @@ per_person <- lineChartFigure(as.matrix(per_p), "tonnes CO2e per person")
 per_person <- per_person + theme(text = element_text(size=12))
 per_person
 ```
+
+Consumption-based emissions intensity can also be measured in consumption-based emissions per resident. The CBE per `r state` resident is shown in Figure  \@ref(fig:perperson). This metric is also shown for the rest of the U.S. to provide where `r state`'s CBE per resident are in context.
+
 # Consumption-Based Emissions By Category of Goods or Service Consumed and Region of Origin
 The consumption of goods and services drives consumption-based emissions. 
 The total CBE is a sum of GHG emissions associated with all goods and services consumed, along with final household emissions.
-\@ref(fig:cbe_by_sector) shows the CBE of `r state` by aggregate sector that the GHGs are associated with and the region of origin of the goods and services for year `r focal_year`.
+Figure \@ref(fig:cbebysector) shows the CBE of `r state` by aggregate sector that the GHGs are associated with and the region of origin of the goods and services for year `r focal_year`.
 
-```{r cbe_by_sector, echo=FALSE, fig.cap="CBE by aggregate sector and good/service origin. RoUS = Rest of US; RoW = Rest of World", warning=FALSE}
+```{r cbebysector, echo=FALSE, fig.cap="CBE by aggregate sector and good/service origin. RoUS = Rest of US; RoW = Rest of World", warning=FALSE}
 
 col <- paste0(state, "-", focal_year)
 cbe_agg_soi_year <- as.matrix(cbe_agg_soi[, col])
@@ -267,10 +264,11 @@ p <- p +
   theme(axis.text.y = element_text(size = 7))
 p
 ```
-Within the manufacturing sector, the contributions of categories of goods and their sources can be examined in greater depth. 
-\@ref(fig:cbe_by_sector_man) shows the CBE of `r state` for manufactured goods consumed and by region of origin of the goods for year `r focal_year`.
 
-```{r cbe_by_sector_man, echo=FALSE, fig.cap="CBE for manufactured goods consumed in the state. RoUS = Rest of US; RoW = Rest of World", warning=FALSE}
+Within the manufacturing sector, the contributions of categories of goods and their sources can be examined in greater depth. 
+Figure \@ref(fig:cbebysectorman) shows the CBE of `r state` for manufactured goods consumed and by region of origin of the goods for year `r focal_year`.
+
+```{r cbebysectorman, echo=FALSE, fig.cap="CBE for manufactured goods consumed in the state. RoUS = Rest of US; RoW = Rest of World", warning=FALSE}
 cbe_all_year <- as.matrix(cbe_all[, col])
 
 sectors <- cbind(str_split_fixed(rownames(cbe_all_year),"/",2))
@@ -297,11 +295,11 @@ A trade balance in economics is typically defined as exports from a region minus
 Analogously, trade balance information can be used to derive a trade emissions balance for each region.
 Emissions are exported from the SoI when they occur in the SoI but are associated with a commodity that is consumed outside the state, either in the RoUS or RoW.
 Imported emissions are those occurring out of state but associated with a commodity consumed by the SoI.
-Figure \@ref(fig:trade_balance) shows the trend balance of emissions for the time series.
+Figure \@ref(fig:trade) shows the trend balance of emissions for the time series.
 A positive value of the balance represents net positive emissions from trade, meaning that a state's consumption results in more emissions than it makes to produce exports.
 
 
-```{r trade_balance, echo=FALSE, fig.cap="Trade emissions trade balance", fig.width=6.5, fig.height=4, warning=FALSE}
+```{r trade_balance_calc, echo=FALSE, warning=FALSE, include=FALSE}
 cbe_trade_all <- sapply(models, calculateCBETradeBalance, simplify=FALSE, USE.NAMES=TRUE)
 cbe_trade_all_df <- sapply(cbe_trade_all, matricizeandflip)
 rownames(cbe_trade_all_df) <- c("Exports to RoUS", "Exports to RoW", "Imports from RoUS",
@@ -310,6 +308,9 @@ cbe_trade_summary_df <- rbind(colSums(cbe_trade_all_df[c(1, 2),]),
                               colSums(cbe_trade_all_df[c(3, 4),]),
                               cbe_trade_all_df[c(5),])
 rownames(cbe_trade_summary_df) <- c("Exports", "Imports", "Balance")
+
+```
+```{r trade, echo=FALSE, warning=FALSE, fig.cap="Trade emissions balance"}
 # Alternatively can chart "cbe_trade_all_df" to differentiate RoW and RoUS
 trade_balance <- lineChartFigure(cbe_trade_summary_df / 10^9, "Greenhouse Gases (million tonnes)")
 trade_balance <- trade_balance + theme(text = element_text(size=12))
