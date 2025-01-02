@@ -101,7 +101,7 @@ Further details on the methods for calculating consumption based emissions and i
 
 cbe_all <- sapply(models,calculateStateCBE,simplify=TRUE,USE.NAMES=TRUE)
 row.names(cbe_all) <- row.names(calculateStateCBE(models[[1]]))
-colnames(cbe_all) <- years
+#colnames(cbe_all) <- years
 
 cbe_agg_soi <- aggregateStateResultMatrix(models[[1]], cbe_all, region=state)
 cbe_agg_rous <- aggregateStateResultMatrix(models[[1]], cbe_all, region='RoUS')
@@ -278,7 +278,7 @@ Within the manufacturing sector, the contributions of categories of goods and th
 Figure \@ref(fig:cbebysectorman) shows the CBE of `r state_name` for manufactured goods consumed and by region of origin of the goods for year `r focal_year`.
 
 ```{r cbebysectorman, echo=FALSE, fig.cap="CBE for manufactured goods consumed in the state. RoUS = Rest of US; RoW = Rest of World", warning=FALSE}
-cbe_all_year <- as.matrix(cbe_all[, as.character(focal_year)])
+cbe_all_year <- as.matrix(cbe_all[, col])
 
 sectors <- cbind(str_split_fixed(rownames(cbe_all_year),"/",2))
 cbe_all_year <- data.frame(cbind(sectors,cbe_all_year))
