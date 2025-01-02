@@ -321,3 +321,23 @@ matricizeandflip <- function(StateResult) {
   m <- t(as.matrix(colSums(StateResult, na.rm = TRUE)))
   return(m)
 }
+
+## Splits results in StateResult for household emissions into stationary and mobile emissions
+applyHouseholdSharestoResult <- function(StateResult, shares) {
+  # Get existing household result
+  h_results <- StateResult[grep("F010",row.names(StateResult)),]
+  # Drop existing household result from StateResult
+  StateResult <- StateResult[-grep("F010",row.names(StateResult)),]
+  # Create rows for stationary emissions by multiplying old result by stationary shares
+  h1 <- h_results*shares["F010-Stationary",]
+  rownames(h1) <- stringr::str_replace_all(rownames(h1),pattern="F010",replacement="F010-Stationary") 
+  # Create rows for mobile emissions by multiplying old result by stationary shares
+  h2 <- h_results*shares["F010-Mobile",]
+  rownames(h2) <- stringr::str_replace_all(rownames(h2),pattern="F010",replacement="F010-Mobile") 
+  # Add new stationary and mobile shares to the result
+  StateResult <- rbind(StateResult,h1,h2)
+  return(StateResult)
+}
+
+
+
