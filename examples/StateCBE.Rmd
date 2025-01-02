@@ -26,6 +26,11 @@ params:
               "IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT",
               "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI",
               "SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"]
+  saveresultdata:
+    label: "Save result data to csv?"
+    value: FALSE
+    choices: [TRUE, FALSE]
+    input: radio
 ---
 ```{r setup, include=FALSE}
 source("../R/utils.R")
@@ -48,8 +53,8 @@ spec <- params$model
 # Use R's state dataset to get the state name
 state_name <- state.name[state.abb == state]
 
-#state <- "WA"
-#years <- c(2012:2020)
+#state <- "AL"
+#years <- c(2012:2019)
 #spec <- "v1.1-GHG"
 
 focal_year <- 2019
@@ -96,6 +101,7 @@ Further details on the methods for calculating consumption based emissions and i
 
 cbe_all <- sapply(models,calculateStateCBE,simplify=TRUE,USE.NAMES=TRUE)
 row.names(cbe_all) <- row.names(calculateStateCBE(models[[1]]))
+colnames(cbe_all) <- years
 
 cbe_agg_soi <- aggregateStateResultMatrix(models[[1]], cbe_all, region=state)
 cbe_agg_rous <- aggregateStateResultMatrix(models[[1]], cbe_all, region='RoUS')
@@ -104,7 +110,7 @@ cbe_agg_row <- aggregateStateResultMatrix(models[[1]], cbe_all, region='RoW')
 cbe_agg <-  cbe_agg_soi + cbe_agg_rous + cbe_agg_row
 
 cbe_rous <- sapply(models,calculateStateCBE,RoUS=TRUE,simplify=TRUE,USE.NAMES=TRUE)
-colnames(cbe_rous) <- stringr::str_replace_all(colnames(cbe_rous),state,"RoUS")
+#colnames(cbe_rous) <- stringr::str_replace_all(colnames(cbe_rous),state,"RoUS")
 cbe_rous_totals <- data.frame(CBE=colSums(cbe_rous))
 cbe_rous_wide <- convertStateResultFormatToStatebyYear(cbe_rous_totals, value.var="CBE")
 cbe_rous_wide_MMT <- convertStateResultFormatToStatebyYear(cbe_rous_totals, value.var="CBE")/1E9
@@ -121,6 +127,8 @@ cbe_all_wide <- convertStateResultFormatToStatebyYear(cbe_all_totals, value.var=
 cbe_all_wide_MMT <- cbe_all_wide/1E9
 
 cbe_all_wide_MMT <- rbind(cbe_all_wide_MMT,cbe_rous_wide_MMT)
+
+cbe_all <- applyHouseholdSharestoResult(cbe_all,households_all)
 
 
 ```
@@ -141,7 +149,7 @@ They typically include emissions associated with transportation, electricity pro
 CBEs include emissions occurring upstream of the point of consumption; when those emissions occur out of state, they would not appear in the state’s territorial inventory.
 The `r state_name` CBEI results are contrasted with the state territorial emissions in Figure \@ref(fig:cbeterritorial). 
 
-```{r cbeterritorial, echo=FALSE, fig.width=6.5, fig.height=4, fig.cap="Comparison of consumption-based and territorial GHG emissions." }
+```{r cbeterritorial, echo=FALSE, fig.width=6.5, fig.height=4, fig.cap="Comparison of consumption-based and territorial GHG emissions. MMT CO2e = Million Metric Tons CO2e-equivalent GHG emissions." }
 ghgi_all <- sapply(models, getStateGHGI, simplify=TRUE, USE.NAMES=TRUE)
 
 # Compare CBE to Territorial for Focal state
@@ -151,7 +159,7 @@ combined <- as.matrix(rbind(terr, cbe))
 
 cbe_divided_by_terr <- (cbe/terr)
 
-rownames(combined) <- c("Territorial", "CBE")
+rownames(combined) <- c("Territorial", "Consumption-based")
 p <- lineChartFigure(combined / 10^9, ylabel="MMT CO2e")
 p <- p +
   scale_y_continuous(limits = c(0, NA)) +
@@ -196,14 +204,12 @@ per_d_SoI_rel <- (per_d_SoI-per_d_SoI[1])/per_d_SoI[1]*100
 rel_d_w_per_d <- rbind(d_SoI_rel,per_d_SoI_rel)
 
 rel_d_w_per_d <- data.frame(rel_d_w_per_d,check.names = FALSE)
-rownames(rel_d_w_per_d) <- c("Consumption", "GHGs Per Dollar")
+rownames(rel_d_w_per_d) <- c("Consumption", "CO2e per $ consumed")
 colnames(rel_d_w_per_d) <- years
-rel_d_w_per_d_fig <- lineChartFigure(as.matrix(rel_d_w_per_d), "% change")
+rel_d_w_per_d_fig <- lineChartFigure(as.matrix(rel_d_w_per_d), "% change relative to initial year")
 rel_d_w_per_d_fig <- rel_d_w_per_d_fig + theme(text = element_text(size=12))
 
 rel_d_w_per_d_fig
-#per_d_fig <- lineChartFigure(as.matrix(per_d), "g CO2e per $ consumed")
-
 ```
 
 If the relative increase in consumption is outpacing the relative decrease in embodied carbon intensity, then consumption-based emissions will increase. Figure 
@@ -222,8 +228,7 @@ pop_rel_change_SoI <- (pop_wide_SoI[1,as.character(max(years))] - pop_wide_SoI[1
 pop_wide <- as.matrix(rbind(pop_wide_SoI,RoUS=pop_wide_RoUS))
 
 per_p <- (cbe_w_rous /1000) / pop_wide
-#rownames(per_p) <- "CBE / person"
-per_person <- lineChartFigure(as.matrix(per_p), "tonnes CO2e per person")
+per_person <- lineChartFigure(as.matrix(per_p), "MT CO2e per resident")
 per_person <- per_person + theme(text = element_text(size=12))
 per_person
 ```
@@ -273,7 +278,7 @@ Within the manufacturing sector, the contributions of categories of goods and th
 Figure \@ref(fig:cbebysectorman) shows the CBE of `r state_name` for manufactured goods consumed and by region of origin of the goods for year `r focal_year`.
 
 ```{r cbebysectorman, echo=FALSE, fig.cap="CBE for manufactured goods consumed in the state. RoUS = Rest of US; RoW = Rest of World", warning=FALSE}
-cbe_all_year <- as.matrix(cbe_all[, col])
+cbe_all_year <- as.matrix(cbe_all[, as.character(focal_year)])
 
 sectors <- cbind(str_split_fixed(rownames(cbe_all_year),"/",2))
 cbe_all_year <- data.frame(cbind(sectors,cbe_all_year))
@@ -320,4 +325,11 @@ trade_balance <- trade_balance + theme(text = element_text(size=12))
 trade_balance
 ```
 
+```{r include=FALSE}
+if (params$saveresultdata) {
+  suffix <- paste0("_",state,"_",min(years),"-",max(years),".csv")
+  write.csv(cbe_all,paste0("CBE_",suffix))
+}
+
+```
 
