@@ -110,7 +110,7 @@ cbe_agg_row <- aggregateStateResultMatrix(models[[1]], cbe_all, region='RoW')
 cbe_agg <-  cbe_agg_soi + cbe_agg_rous + cbe_agg_row
 
 cbe_rous <- sapply(models,calculateStateCBE,RoUS=TRUE,simplify=TRUE,USE.NAMES=TRUE)
-#colnames(cbe_rous) <- stringr::str_replace_all(colnames(cbe_rous),state,"RoUS")
+colnames(cbe_rous) <- stringr::str_replace_all(colnames(cbe_rous),state,"RoUS")
 cbe_rous_totals <- data.frame(CBE=colSums(cbe_rous))
 cbe_rous_wide <- convertStateResultFormatToStatebyYear(cbe_rous_totals, value.var="CBE")
 cbe_rous_wide_MMT <- convertStateResultFormatToStatebyYear(cbe_rous_totals, value.var="CBE")/1E9
@@ -149,7 +149,7 @@ They typically include emissions associated with transportation, electricity pro
 CBEs include emissions occurring upstream of the point of consumption; when those emissions occur out of state, they would not appear in the state’s territorial inventory.
 The `r state_name` CBEI results are contrasted with the state territorial emissions in Figure \@ref(fig:cbeterritorial). 
 
-```{r cbeterritorial, echo=FALSE, fig.width=6.5, fig.height=4, fig.cap="Comparison of consumption-based and territorial GHG emissions. MMT CO2e = Million Metric Tons CO2e-equivalent GHG emissions." }
+```{r cbeterritorial, echo=FALSE, fig.width=6.5, fig.height=4, fig.cap="Comparison of consumption-based and territorial GHG emissions for the state. MMT CO2e = Million Metric Tons CO2e-equivalent GHG emissions." }
 ghgi_all <- sapply(models, getStateGHGI, simplify=TRUE, USE.NAMES=TRUE)
 
 # Compare CBE to Territorial for Focal state
@@ -194,7 +194,7 @@ per_d_fig
 ```
 A CBE change can be driven by a change in the consumption of goods and services or in the embodied carbon intensity, measured in GHG emissions per dollar spent on goods and services, or by changes in both.
 
-```{r relchangeconsumptionvintensity, fig.cap="Relative change in consumption in the state contrasted with relative change in consumption intensity, measured in GHGs per constant dollar", echo=FALSE}
+```{r relchangeconsumptionvintensity, fig.cap="Relative change in consumption in the state contrasted with relative change in consumption intensity, measured in GHGs per constant dollar.", echo=FALSE}
 
 # Convert into a percentage relative to first year
 d_SoI_rel <- (d_SoI-d_SoI[1])/d_SoI[1]*100
@@ -207,7 +207,7 @@ rel_d_w_per_d <- data.frame(rel_d_w_per_d,check.names = FALSE)
 rownames(rel_d_w_per_d) <- c("Consumption", "CO2e per $ consumed")
 colnames(rel_d_w_per_d) <- years
 rel_d_w_per_d_fig <- lineChartFigure(as.matrix(rel_d_w_per_d), "% change relative to initial year")
-rel_d_w_per_d_fig <- rel_d_w_per_d_fig + theme(text = element_text(size=12))
+rel_d_w_per_d_fig <- rel_d_w_per_d_fig + theme(text = element_text(size=12)) 
 
 rel_d_w_per_d_fig
 ```
@@ -216,7 +216,7 @@ If the relative increase in consumption is outpacing the relative decrease in em
 \@ref(fig:relchangeconsumptionvintensity) compares the relative change in consumption in `r state_name` with the relative change in the embodied carbon intensity of the items consumed.
 
 
-```{r perperson, echo=FALSE, fig.cap="CBE per state resident."}
+```{r perperson, echo=FALSE, fig.cap="Consumption-based emissions per state resident."}
 pop <- load_state_population()
 pop <- pop[which(pop$Year %in% years),]
 pop_wide <- reformatStatebyYearLongtoWide(pop, value.var="Population")
@@ -242,7 +242,7 @@ The consumption of goods and services drives consumption-based emissions.
 The total CBE is a sum of GHG emissions associated with all goods and services consumed, along with final household emissions.
 Figure \@ref(fig:cbebysector) shows the CBE of `r state_name` by aggregate sector that the GHGs are associated with and the region of origin of the goods and services for year `r focal_year`.
 
-```{r cbebysector, echo=FALSE, fig.cap="CBE by aggregate sector and good/service origin. RoUS = Rest of US; RoW = Rest of World", warning=FALSE}
+```{r cbebysector, echo=FALSE, fig.cap="CBE by aggregate sector and good/service origin for the state. RoUS = Rest of US; RoW = Rest of World", warning=FALSE}
 
 col <- paste0(state, "-", focal_year)
 cbe_agg_soi_year <- as.matrix(cbe_agg_soi[, col])
@@ -268,9 +268,8 @@ ghgs_sector <- ghgs_sector[c("ID", "Sector", "Value")]
 p <- stackedBarChartResultFigure(ghgs_sector, models[[col]])
 p <- p + 
   xlab('Greenhouse Gases (million tonnes)') +
-  labs(fill = 'Region') +
-  ggtitle(col) +
-  theme(axis.text.y = element_text(size = 7))
+  labs(fill = 'Region', ) 
+  #theme(axis.text.y = element_text(size = 7)) 
 p
 ```
 
@@ -285,17 +284,15 @@ cbe_all_year <- data.frame(cbind(sectors,cbe_all_year))
 colnames(cbe_all_year) <- c("Sector","ID","Value")
 cbe_all_year$Value <- as.numeric(cbe_all_year$Value)/1E9
 
-
-cbe_all_year_man <- subset(cbe_all_year, startsWith(Sector, "3") | startsWith(Sector, "23"))
+cbe_all_year_man <- subset(cbe_all_year, startsWith(Sector, "3"))
 cbe_all_year_man <- cbe_all_year_man[c("ID", "Sector", "Value")]
+
 
 p <- stackedBarChartResultFigure(cbe_all_year_man, models[[col]], grouping="Summary")
 p <- p +
  xlab('Greenhouse Gases (million tonnes)') +
  labs(fill = 'Region') +
- ggtitle(col) +
  theme(axis.text.y = element_text(size = 7))
-
 p
 ```
 # Trade Emissions Balance

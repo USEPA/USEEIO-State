@@ -59,9 +59,9 @@ lineChartFigure <- function(result,ylabel) {
     geom_line(linewidth=1) +
     ylab(ylabel) +
     xlab("Year") +
-    scale_colour_hue(name='Source') +
+    scale_colour_hue() +
     theme_bw() +
-    theme(text = element_text(size=20))
+    theme(text = element_text(size=20), legend.title=element_blank())
   return(p)
 }
 
