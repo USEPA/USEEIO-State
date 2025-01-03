@@ -330,3 +330,5 @@ if (params$saveresultdata) {
 
 ```
 
+# About
+This document was generated using the RMarkdown file `StateCBE.Rmd` that can be found in the [USEEIO-State github repository](https://github.com/USEPA/USEEIO-State). The `r paste0(state,modelstub)` models were used for the series of years to generate these results along with supporting code in the repository. The U.S. Environmental Protection Agency, through its Office of Research and Development, funded and conducted the research described herein under an approved Quality Assurance Project Plan (K-LRTD-0030017-QP-1-3). The Contractor’s role did not include establishing Agency policy. 
