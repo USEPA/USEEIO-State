@@ -92,7 +92,7 @@ This approach allows these regions to account for more complete emissions caused
 
 This document presents summary consumption-based emission (CBE) results for `r state_name` for the years `r paste0(min(years), "-", max(years))`.
 These results were generated using a USEEIO State model for `r state_name` along with state-specific territorial GHG inventories estimated by EPA.
-Further details on the methods for calculating consumption based emissions and interpreting the results can be found in the associated EPA Report, [Consumption-Based Greenhouse Gas Inventories for Northeastern States](https://cfpub.epa.gov/si/si_public_record_Report.cfm?dirEntryId=352619&Lab=CESER).
+Further details on the methods for calculating consumption based emissions and interpreting the results can be found in the associated EPA Report, [Consumption-Based Greenhouse Gas Inventories for Northeastern States](https://cfpub.epa.gov/si/si_public_record_Report.cfm?Lab=CESER&dirEntryId=363340).
 
 
 # Total Consumption-Based Emissions {#ref}
