@@ -268,8 +268,8 @@ ghgs_sector <- ghgs_sector[c("ID", "Sector", "Value")]
 p <- stackedBarChartResultFigure(ghgs_sector, models[[col]])
 p <- p + 
   xlab('Greenhouse Gases (million tonnes)') +
-  labs(fill = 'Region', ) 
-  #theme(axis.text.y = element_text(size = 7)) 
+  labs(fill = 'Region') +  
+  theme(axis.text.y = element_text(size = 9, ,color="black")) 
 p
 ```
 
@@ -280,6 +280,8 @@ Figure \@ref(fig:cbebysectorman) shows the CBE of `r state_name` for manufacture
 cbe_all_year <- as.matrix(cbe_all[, col])
 
 sectors <- cbind(str_split_fixed(rownames(cbe_all_year),"/",2))
+# Replace "US-{ST}" with just "{ST}"
+sectors[,2] <- str_replace(sectors[,2],"US-","") 
 cbe_all_year <- data.frame(cbind(sectors,cbe_all_year))
 colnames(cbe_all_year) <- c("Sector","ID","Value")
 cbe_all_year$Value <- as.numeric(cbe_all_year$Value)/1E9
@@ -292,7 +294,7 @@ p <- stackedBarChartResultFigure(cbe_all_year_man, models[[col]], grouping="Summ
 p <- p +
  xlab('Greenhouse Gases (million tonnes)') +
  labs(fill = 'Region') +
- theme(axis.text.y = element_text(size = 7))
+ theme(axis.text.y = element_text(size = 10,color="black"))
 p
 ```
 # Trade Emissions Balance
