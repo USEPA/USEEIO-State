@@ -6,30 +6,32 @@ library(dplyr)
 #' @param df, must include "Sector", "Value" and "ID" columns
 stackedBarChartResultFigure <- function(df, model, grouping="Sector") {
   mapping <- useeior:::getBEASectorColorMapping(model)
-  # mapping$SummaryCode <- toupper(mapping$SummaryCode)
-  # mapping$GroupName <- mapping$SectorName
+  short_names <- read.csv("../data/names_short.csv")[,c("Code","Name_short")]
+
+  # mapping <- rbind(mapping,
+  #                  data.frame(Sector = c("F010-Mobile", "F010-Stationary"),
+  #                             SummaryCode = c("F010-Mobile", "F010-Stationary"),
+  #                             color = mapping$color[mapping$Sector=="F010"], 
+  #                             SectorName = c("Households - Mobile", "Households - Stationary"))
+  # )
   
-  mapping <- rbind(mapping,
-                   data.frame(Sector = c("F010-Mobile", "F010-Stationary"),
-                              SummaryCode = c("F010-Mobile", "F010-Stationary"),
-                              color = mapping$color[mapping$Sector=="F010"], 
-                              SectorName = c("Households - Mobile", "Households - Stationary"))
-  )
   if (grouping == "Summary") {
-    SectorName <- unique(model$Commodities[, c("Code", "Name")])
-    # mapping$id  <- 1:nrow(mapping)
-    mapping <- merge(mapping, SectorName, by.x = "SummaryCode", by.y = "Code", all.x=TRUE)
-    mapping$Name <- ifelse(is.na(mapping$Name), as.character(mapping$SectorName), mapping$Name)
-    mapping$Sector <- mapping$SummaryCode
-    mapping$SectorName <- mapping$Name
-    # mapping <- mapping[order(mapping$id), ]
+    mapping <- merge(mapping,short_names,by.x = c("SummaryCode"), by.y = c("Code"), all.x = TRUE)
+    df <- merge(df, mapping[, c("SummaryCode", "color", "Name_short")], by.x = "Sector", by.y = "SummaryCode", all.x = TRUE)  
+    names(df)[names(df) == 'Name_short'] <- 'SectorName'
+    df$SectorName <- as.factor(df$SectorName)
+  } else {
+    mapping <- unique(mapping[, c("Sector", "color")])
+    mapping <- merge(mapping,short_names,by.x = c("Sector"), by.y = c("Code"), all.x = TRUE)
+    df <- merge(df, unique(mapping[, c("Sector", "color", "Name_short")]), by = "Sector")  
+    names(df)[names(df) == 'Name_short'] <- 'SectorName'
+    df$SectorName <- as.factor(df$SectorName)
   }
-  df <- merge(df, unique(mapping[, c("Sector", "color", "SectorName")]), by = "Sector")
 
   # Extract primary code in order to set figure stack alignment
   state <- unique(df$ID)[!(unique(df$ID) %in% c("RoUS", "RoW"))]
   df$ID <- factor(df$ID, levels=c("RoW", "RoUS", state))
-  df$SectorName <- factor(df$SectorName, levels=unique(mapping$SectorName))
+  
   df <- df[order(df$SectorName),]
   label_colors <- rev(unique(df[, c("Sector", "color")])[, "color"])
   p <- ggplot(df, aes(x = Value, fill = ID, y = SectorName)) +
