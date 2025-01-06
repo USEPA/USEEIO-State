@@ -269,7 +269,7 @@ p <- stackedBarChartResultFigure(ghgs_sector, models[[col]])
 p <- p + 
   xlab('Greenhouse Gases (million tonnes)') +
   labs(fill = 'Region') +  
-  theme(axis.text.y = element_text(size = 9, ,color="black")) 
+  theme(axis.text.y = element_text(size = 10, ,color="black")) 
 p
 ```
 
