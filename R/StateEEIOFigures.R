@@ -8,12 +8,12 @@ stackedBarChartResultFigure <- function(df, model, grouping="Sector") {
   mapping <- useeior:::getBEASectorColorMapping(model)
   short_names <- read.csv("../data/names_short.csv")[,c("Code","Name_short")]
 
-  # mapping <- rbind(mapping,
-  #                  data.frame(Sector = c("F010-Mobile", "F010-Stationary"),
-  #                             SummaryCode = c("F010-Mobile", "F010-Stationary"),
-  #                             color = mapping$color[mapping$Sector=="F010"], 
-  #                             SectorName = c("Households - Mobile", "Households - Stationary"))
-  # )
+   mapping <- rbind(mapping,
+                    data.frame(Sector = c("F010-Mobile", "F010-Stationary"),
+                               SummaryCode = c("F010-Mobile", "F010-Stationary"),
+                               color = mapping$color[mapping$Sector=="F010"], 
+                               SectorName = c("Households - Mobile", "Households - Stationary"))
+  )
   
   if (grouping == "Summary") {
     mapping <- merge(mapping,short_names,by.x = c("SummaryCode"), by.y = c("Code"), all.x = TRUE)
