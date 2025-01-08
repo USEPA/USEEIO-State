@@ -273,6 +273,14 @@ p <- p +
 p
 ```
 
+```{r sharesbyregion, include=FALSE}
+soi_share <- round(sum(cbe_agg_soi)/sum(cbe_agg),2)
+rous_share <- round(sum(cbe_agg_rous)/sum(cbe_agg),2)
+row_share <- round(sum(cbe_agg_row)/sum(cbe_agg),2)
+```
+
+The shares of CBE by region of origin of the goods and services consumed is: `r state_name`:`r soi_share * 100`%; RoUS:`r rous_share * 100`%; RoW:`r row_share * 100`%. Note that estimate includes household emissions which are by definition associated with the state.
+
 Within the manufacturing sector, the contributions of categories of goods and their sources can be examined in greater depth. 
 Figure \@ref(fig:cbebysectorman) shows the CBE of `r state_name` for manufactured goods consumed and by region of origin of the goods for year `r focal_year`.
 
