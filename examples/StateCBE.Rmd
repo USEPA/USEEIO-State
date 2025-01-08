@@ -299,11 +299,11 @@ p
 ```
 # Trade Emissions Balance
 A trade emissions balance is another way of assessing emissions from a consumption-based perspective.
-A trade balance in economics is typically defined as exports from a region minus the imports into the region, where a trade surplus indicates more goods and services leaving the region that coming in from outside the region.
+A trade balance in economics is typically defined as exports from a region minus the imports into the region, where a trade surplus indicates more goods and services leaving the region than coming in from outside the region.
 Analogously, trade balance information can be used to derive a trade emissions balance for each region.
 Emissions are exported from the SoI when they occur in the SoI but are associated with a commodity that is consumed outside the state, either in the RoUS or RoW.
 Imported emissions are those occurring out of state but associated with a commodity consumed by the SoI.
-Figure \@ref(fig:trade) shows the trend balance of emissions for the time series for `r state_name`.
+Figure \@ref(fig:trade) shows the trade balance of emissions for the time series for `r state_name`.
 A positive value of the balance represents net positive emissions from trade, meaning that the state's consumption results in more emissions than it makes to produce exports.
 
 ```{r trade_balance_calc, echo=FALSE, warning=FALSE, include=FALSE}
@@ -333,9 +333,9 @@ if (params$saveresultdata) {
 ```
 
 # About
-This document was generated using the RMarkdown file `StateCBE.Rmd` that can be found in the [USEEIO-State github repository](https://github.com/USEPA/USEEIO-State). The `r paste0(state,modelstub)` models were used for the series of years to generate these results along with supporting code in the repository. The U.S. Environmental Protection Agency, through its Office of Research and Development, funded and conducted the research described herein under an approved Quality Assurance Project Plan (K-LRTD-0030017-QP-1-3). The Contractor’s role did not include establishing Agency policy. 
+This document was generated using the RMarkdown file `StateCBE.Rmd` that can be found in the [USEEIO-State github repository](https://github.com/USEPA/USEEIO-State). The `r paste0(state,substring(modelstub, 1, nchar(modelstub)-1))` models were used for the series of years to generate these results along with supporting code in the repository. The U.S. Environmental Protection Agency, through its Office of Research and Development, funded and conducted the research described herein under an approved Quality Assurance Project Plan (K-LRTD-0030017-QP-1-3). 
 
 # Notes
-Short names are given for both aggregate categories and more specific manufactured good categories in Figures \@ref(fig:cbebysector) and \@ref(fig:cbebysectorman) for the purpose of display and easy recognition. Identification of these names with broader commodity codes (which correspond with the Bureau of Economic Analysis Input-Ouput Codes which are based on the North American Industry Classification system) is as follows: Education/Healthcare=6;  Dining/Hospitality/Rec=7; Ag/Forestry/Fishery=11; Mining=21; Utilities=22; Construction=23; Wholesalers=42; Information=51; Management services=55; Education=61; Other services=81; Wood=321; Paper=322; Print media=323; Refined Petro/Coal=324; Chemicals=325; Plastics=326; Other constr. materials=327; Raw metals=331; Metal products=332; Machinery=333; Electronics=334; Appliances/Lighting=335; Furniture=337; Misc. goods=339; Food/Beverage=311FT; Textiles=313TT; Clothing/Leather=315AL;  Vehicles - Road=3361MV; Vehicles - Nonroad=3364OT; Households;=F010; Finance/Insurance/Realty=FIRE; Government=G; Professional services=PROF. See Table 6 in the Appendix of the report for more complete names of all categories.
+Short names are given for both aggregate categories and more specific manufactured good categories in Figures \@ref(fig:cbebysector) and \@ref(fig:cbebysectorman) for the purpose of display and easy recognition. Identification of these names with broader commodity codes (which correspond with the Bureau of Economic Analysis Input-Ouput Codes which are based on the North American Industry Classification system) is as follows: Education/Healthcare=6;  Dining/Hospitality/Rec=7; Ag/Forestry/Fishery=11; Mining=21; Utilities=22; Construction=23; Wholesalers=42; Information=51; Management services=55; Education=61; Other services=81; Wood=321; Paper=322; Print media=323; Refined Petro/Coal=324; Chemicals=325; Plastics=326; Other constr. materials=327; Raw metals=331; Metal products=332; Machinery=333; Electronics=334; Appliances/Lighting=335; Furniture=337; Misc. goods=339; Food/Beverage=311FT; Textiles=313TT; Clothing/Leather=315AL;  Vehicles - Road=3361MV; Vehicles - Nonroad=3364OT; Households=F010; Finance/Insurance/Realty=FIRE; Government=G; Professional services=PROF. See Table 6 in the Appendix of the report for more complete names of all categories.
 
 
