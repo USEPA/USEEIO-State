@@ -177,9 +177,9 @@ This metric is also shown for the rest of the U.S. to provide where `r state_nam
 
 ```{r perdollar, fig.cap="Consumption-based emissions per dollar consumed by state residents.", echo=FALSE}
 d_SoI <- sapply(models, calculateDemandByRegion, price_year=focal_year, USE.NAMES = TRUE)
-d_SoI <- colSums(d_SoI)
+d_SoI <- d_SoI[4,] # Extract total row
 d_RoUS <- sapply(models, calculateDemandByType,RoUS=TRUE,price_year=focal_year, USE.NAMES = TRUE)
-d_RoUS <- colSums(d_RoUS)
+d_RoUS <- d_RoUS[5,] # Extract total row
 
 d_w_Rous <- rbind(d_SoI,d_RoUS)
 cbe_w_rous <- rbind(cbe_all_wide,cbe_rous_wide)
