@@ -1,0 +1,349 @@
+---
+title: Consumption-Based Greenhouse Gas Emissions Results for the State of `r params$state` for `r min(params$years)`-`r max(params$years)`
+output:
+  bookdown::html_document2:
+    fig_caption: true
+    number_sections: false
+    mathjax: null
+params:
+  model:
+    label: "Model Type"
+    value: "v1.1-GHG"
+    input: select
+    choices: ["v1.1-GHG","v1.1-GHGc"]
+  years:
+    label: "Model Year"
+    value: [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020]
+    input: select
+    multiple: TRUE
+    choices: [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020]
+  state:
+    label: "State"
+    value: ""
+    input: select
+    multiple: FALSE
+    choices: ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL",
+              "IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT",
+              "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI",
+              "SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"]
+  saveresultdata:
+    label: "Save result data to csv?"
+    value: FALSE
+    choices: [TRUE, FALSE]
+    input: radio
+---
+```{r setup, include=FALSE}
+source("../R/utils.R")
+install_useeior()
+source("../R/StateEEIOFigures.R")
+source("../R/StateEEIOCalculations.R")
+library(useeior)
+library(knitr)
+
+# Stop execution of Rmd if params not selected
+if (params$state=="" || length(params$years) < 2)  {
+  stop("You must select a state and at least two years.")
+}
+
+#Select model build parameters
+state <- params$state
+years <- params$years
+spec <- params$model
+
+# Use R's state dataset to get the state name
+state_name <- state.name[state.abb == state]
+
+#state <- "AL"
+#years <- c(2012:2019)
+#spec <- "v1.1-GHG"
+
+focal_year <- 2019
+
+indicator <- "Greenhouse Gases"
+
+if (spec == "v1.1-GHG") {
+  modelstub <- 'EEIOv1.1-GHG-'
+} else if (spec == "v1.1-GHGc") {
+  if(!state %in% c("VT", "NY", "ME")) {
+    stop(paste0(state, " not available with a customized GHG Inventory, please use v1.1-GHG."))
+  }
+  modelstub <- 'EEIOv1.1-GHGc-'  
+}
+
+```
+```{r load-models, echo=FALSE}
+
+models <- list()
+for(y in years) {
+   modelname <- paste0(state, modelstub, substr(y,3,4))
+   name_for_list <- paste0(state,"-",toString(y))
+   file_path <- file.path("..","models",paste0(modelname,".rds"))
+   if(!file.exists(file_path)) {
+     stop("Please first build or download the models for the selected state and years.")
+   }
+   models[[name_for_list]] <- readRDS(file_path)
+}
+
+
+```
+
+A consumption-based emissions inventory (CBEI) is an accounting method that can be applied to a region, including a state, that quantifies emissions associated with all goods and services consumed by a state, regardless of their origin.
+This approach allows these regions to account for more complete emissions caused by the consumption of goods in their region.
+
+This document presents summary consumption-based emission (CBE) results for `r state_name` for the years `r paste0(min(years), "-", max(years))`.
+These results were generated using a USEEIO State model for `r state_name` along with state-specific territorial GHG inventories estimated by EPA.
+Further details on the methods for calculating consumption based emissions and interpreting the results can be found in the associated EPA Report, [Consumption-Based Greenhouse Gas Inventories for Northeastern States](https://cfpub.epa.gov/si/si_public_record_Report.cfm?Lab=CESER&dirEntryId=363340).
+
+
+# Total Consumption-Based Emissions {#ref}
+
+```{r calculate_results, include=FALSE, echo=FALSE}
+
+cbe_all <- sapply(models,calculateStateCBE,simplify=TRUE,USE.NAMES=TRUE)
+row.names(cbe_all) <- row.names(calculateStateCBE(models[[1]]))
+#colnames(cbe_all) <- years
+
+cbe_agg_soi <- aggregateStateResultMatrix(models[[1]], cbe_all, region=state)
+cbe_agg_rous <- aggregateStateResultMatrix(models[[1]], cbe_all, region='RoUS')
+cbe_agg_row <- aggregateStateResultMatrix(models[[1]], cbe_all, region='RoW')
+
+cbe_agg <-  cbe_agg_soi + cbe_agg_rous + cbe_agg_row
+
+cbe_rous <- sapply(models,calculateStateCBE,RoUS=TRUE,simplify=TRUE,USE.NAMES=TRUE)
+colnames(cbe_rous) <- stringr::str_replace_all(colnames(cbe_rous),state,"RoUS")
+cbe_rous_totals <- data.frame(CBE=colSums(cbe_rous))
+cbe_rous_wide <- convertStateResultFormatToStatebyYear(cbe_rous_totals, value.var="CBE")
+cbe_rous_wide_MMT <- convertStateResultFormatToStatebyYear(cbe_rous_totals, value.var="CBE")/1E9
+
+households_all <- sapply(models, calculateHouseholdShares, indicator=indicator, simplify=TRUE, USE.NAMES=TRUE)
+rownames(households_all) <- rownames(calculateHouseholdShares(models[[1]], indicator))
+#households_all <- readRDS("../models/households_all.RDS")
+
+result_code_loc <- gsub(models[[1]]$specs$ModelRegionAcronyms[1], "SoI", row.names(cbe_all[[1]]))
+cbe_all_total <- matrix(unlist(cbe_all), ncol=length(cbe_all), dimnames=list(result_code_loc,names(cbe_all))) 
+
+cbe_all_totals <- data.frame(CBE=colSums(cbe_all))
+cbe_all_wide <- convertStateResultFormatToStatebyYear(cbe_all_totals, value.var="CBE")
+cbe_all_wide_MMT <- cbe_all_wide/1E9
+
+cbe_all_wide_MMT <- rbind(cbe_all_wide_MMT,cbe_rous_wide_MMT)
+
+cbe_all <- applyHouseholdSharestoResult(cbe_all,households_all)
+
+
+```
+
+
+```{r cbetotal, echo=FALSE}
+
+kable(cbe_all_wide_MMT, digits=1, caption = 'Consumption-based emissions in million metric tons.')
+
+```
+
+Table \@ref(tab:cbetotal) shows the total consumption based emissions for `r state_name` and for the rest of the United States (RoUS) in million metric tons. 
+
+# Comparison to Territorial Inventory
+Many U.S. states compile regular annual greenhouse gas inventories (GHGIs) that are used as a benchmark in measuring progress toward greenhouse gas (GHG) emissions reduction goals.
+These territorial (also called sector-based) inventories typically cover GHG emissions occurring within the state’s borders.
+They typically include emissions associated with transportation, electricity production, industry, land use and forestry, commercial and residential buildings, and waste disposal.
+CBEs include emissions occurring upstream of the point of consumption; when those emissions occur out of state, they would not appear in the state’s territorial inventory.
+The `r state_name` CBEI results are contrasted with the state territorial emissions in Figure \@ref(fig:cbeterritorial). 
+
+```{r cbeterritorial, echo=FALSE, fig.width=6.5, fig.height=4, fig.cap="Comparison of consumption-based and territorial GHG emissions for the state. MMT CO2e = Million Metric Tons CO2e-equivalent GHG emissions." }
+ghgi_all <- sapply(models, getStateGHGI, simplify=TRUE, USE.NAMES=TRUE)
+
+# Compare CBE to Territorial for Focal state
+terr <- t(as.matrix(colSums(ghgi_all, na.rm = TRUE)))
+cbe <- t(as.matrix(colSums(cbe_agg, na.rm = TRUE)))
+combined <- as.matrix(rbind(terr, cbe))
+
+cbe_divided_by_terr <- (cbe/terr)
+
+rownames(combined) <- c("Territorial", "Consumption-based")
+p <- lineChartFigure(combined / 10^9, ylabel="MMT CO2e")
+p <- p +
+  scale_y_continuous(limits = c(0, NA)) +
+  theme(text = element_text(size=12))
+p
+```
+
+The consumption-based emissions are on average `r round(mean(cbe_divided_by_terr),1)` times the size of the territorial emissions during the time period.
+
+# Consumption-Based Emissions Intensity
+Consumption-based emission intensity can be measured as GHGs emitted per dollar spent by final consumers as well as GHGs emitted per resident.
+
+Figure \@ref(fig:perdollar) shows `r state_name`'s consumption-based emissions per dollar spent.
+This metric is also shown for the rest of the U.S. to provide where `r state_name`'s CBE per dollar are in context. These metric is shown using a constant dollar to remove the influence of inflation over this measure.
+
+```{r perdollar, fig.cap="Consumption-based emissions per dollar consumed by state residents.", echo=FALSE}
+d_SoI <- sapply(models, calculateDemandByRegion, price_year=focal_year, USE.NAMES = TRUE)
+d_SoI <- d_SoI[4,] # Extract total row
+d_RoUS <- sapply(models, calculateDemandByType,RoUS=TRUE,price_year=focal_year, USE.NAMES = TRUE)
+d_RoUS <- d_RoUS[5,] # Extract total row
+
+d_w_Rous <- rbind(d_SoI,d_RoUS)
+cbe_w_rous <- rbind(cbe_all_wide,cbe_rous_wide)
+
+per_d <- (cbe_w_rous*1000)/d_w_Rous
+rownames(per_d) <- c(state,"RoUS")
+
+per_d_fig <- lineChartFigure(as.matrix(per_d), "g CO2e per $ consumed")
+per_d_fig <- per_d_fig + theme(text = element_text(size=12))
+per_d_fig
+
+```
+A CBE change can be driven by a change in the consumption of goods and services or in the embodied carbon intensity, measured in GHG emissions per dollar spent on goods and services, or by changes in both.
+
+```{r relchangeconsumptionvintensity, fig.cap="Relative change in consumption in the state contrasted with relative change in consumption intensity, measured in GHGs per constant dollar.", echo=FALSE}
+
+# Convert into a percentage relative to first year
+d_SoI_rel <- (d_SoI-d_SoI[1])/d_SoI[1]*100
+per_d_SoI <- as.matrix(per_d[1,])
+per_d_SoI_rel <- (per_d_SoI-per_d_SoI[1])/per_d_SoI[1]*100
+
+rel_d_w_per_d <- rbind(d_SoI_rel,per_d_SoI_rel)
+
+rel_d_w_per_d <- data.frame(rel_d_w_per_d,check.names = FALSE)
+rownames(rel_d_w_per_d) <- c("Consumption", "CO2e per $ consumed")
+colnames(rel_d_w_per_d) <- years
+rel_d_w_per_d_fig <- lineChartFigure(as.matrix(rel_d_w_per_d), "% change relative to initial year")
+rel_d_w_per_d_fig <- rel_d_w_per_d_fig + theme(text = element_text(size=12)) 
+
+rel_d_w_per_d_fig
+```
+
+If the relative increase in consumption is outpacing the relative decrease in embodied carbon intensity, then consumption-based emissions will increase. Figure 
+\@ref(fig:relchangeconsumptionvintensity) compares the relative change in consumption in `r state_name` with the relative change in the embodied carbon intensity of the items consumed.
+
+
+```{r perperson, echo=FALSE, fig.cap="Consumption-based emissions per state resident."}
+pop <- load_state_population()
+pop <- pop[which(pop$Year %in% years),]
+pop_wide <- reformatStatebyYearLongtoWide(pop, value.var="Population")
+pop_wide_SoI <- pop_wide[which(rownames(pop_wide) == state),]
+pop_wide_RoUS <- colSums(pop_wide[-which(rownames(pop_wide) == state),])
+
+pop_rel_change_SoI <- (pop_wide_SoI[1,as.character(max(years))] - pop_wide_SoI[1,as.character(min(years))])/pop_wide_SoI[1,as.character(min(years))]*100
+
+pop_wide <- as.matrix(rbind(pop_wide_SoI,RoUS=pop_wide_RoUS))
+
+per_p <- (cbe_w_rous /1000) / pop_wide
+per_person <- lineChartFigure(as.matrix(per_p), "MT CO2e per resident")
+per_person <- per_person + theme(text = element_text(size=12))
+per_person
+```
+
+Consumption-based emissions intensity can also be measured in consumption-based emissions per resident. The CBE per `r state_name` resident is shown in Figure  \@ref(fig:perperson).
+This metric is also shown for the rest of the U.S. to provide where `r state_name`'s CBE per resident are in context.
+For reference, the population of `r state_name` changed by `r round(pop_rel_change_SoI,1)`% from the first to last year of the time period, where a positive percentage indicates an increase relative to the starting year population.
+
+# Consumption-Based Emissions By Category of Goods or Service Consumed and Region of Origin
+The consumption of goods and services drives consumption-based emissions. 
+The total CBE is a sum of GHG emissions associated with all goods and services consumed, along with final household emissions.
+Figure \@ref(fig:cbebysector) shows the CBE of `r state_name` by aggregate sector that the GHGs are associated with and the region of origin of the goods and services for year `r focal_year`.
+
+```{r cbebysector, echo=FALSE, fig.cap="CBE by aggregate sector and good/service origin for the state. RoUS = Rest of US; RoW = Rest of World", warning=FALSE}
+
+col <- paste0(state, "-", focal_year)
+cbe_agg_soi_year <- as.matrix(cbe_agg_soi[, col])
+cbe_agg_rous_year <- as.matrix(cbe_agg_rous[, col])
+cbe_agg_row_year <- as.matrix(cbe_agg_row[, col])
+
+v <- c(RoUS='cbe_agg_rous_year', RoW='cbe_agg_row_year')
+v[state] <- 'cbe_agg_soi_year' # Set state specific name for this vector
+ghgs <- combineResults(v)
+ghgs$Value <- ghgs$Value / 10^9
+ghgs <- subset(ghgs, !(ghgs$Sector %in% c("Used", "Other")))
+
+# Split Household Shares before developing figure
+households <- as.data.frame(households_all[, col, drop=FALSE])
+households <- cbind(newSector= rownames(households), households)
+households$Sector <- "F010"
+ghgs_sector <- merge(ghgs, households, by = "Sector", all.x=TRUE)
+idx <- !is.na(ghgs_sector$newSector)
+ghgs_sector$Sector[idx] <- ghgs_sector$newSector[idx]
+ghgs_sector$Value[idx] <- ghgs_sector$Value[idx] * ghgs_sector[idx, col]
+ghgs_sector <- ghgs_sector[c("ID", "Sector", "Value")]
+
+p <- stackedBarChartResultFigure(ghgs_sector, models[[col]])
+p <- p + 
+  xlab('Greenhouse Gases (million tonnes)') +
+  labs(fill = 'Region') +  
+  theme(axis.text.y = element_text(size = 10, ,color="black")) 
+p
+```
+
+```{r sharesbyregion, include=FALSE}
+soi_share <- round(sum(cbe_agg_soi)/sum(cbe_agg),2)
+rous_share <- round(sum(cbe_agg_rous)/sum(cbe_agg),2)
+row_share <- round(sum(cbe_agg_row)/sum(cbe_agg),2)
+```
+
+The shares of CBE by region of origin of the goods and services consumed is: `r state_name`:`r soi_share * 100`%; RoUS:`r rous_share * 100`%; RoW:`r row_share * 100`%. Note that estimate includes household emissions which are by definition associated with the state.
+
+Within the manufacturing sector, the contributions of categories of goods and their sources can be examined in greater depth. 
+Figure \@ref(fig:cbebysectorman) shows the CBE of `r state_name` for manufactured goods consumed and by region of origin of the goods for year `r focal_year`.
+
+```{r cbebysectorman, echo=FALSE, fig.cap="CBE for manufactured goods consumed in the state. RoUS = Rest of US; RoW = Rest of World. See Notes below for more on the classification of these categories.", warning=FALSE}
+cbe_all_year <- as.matrix(cbe_all[, col])
+
+sectors <- cbind(str_split_fixed(rownames(cbe_all_year),"/",2))
+# Replace "US-{ST}" with just "{ST}"
+sectors[,2] <- str_replace(sectors[,2],"US-","") 
+cbe_all_year <- data.frame(cbind(sectors,cbe_all_year))
+colnames(cbe_all_year) <- c("Sector","ID","Value")
+cbe_all_year$Value <- as.numeric(cbe_all_year$Value)/1E9
+
+cbe_all_year_man <- subset(cbe_all_year, startsWith(Sector, "3"))
+cbe_all_year_man <- cbe_all_year_man[c("ID", "Sector", "Value")]
+
+
+p <- stackedBarChartResultFigure(cbe_all_year_man, models[[col]], grouping="Summary")
+p <- p +
+ xlab('Greenhouse Gases (million tonnes)') +
+ labs(fill = 'Region') +
+ theme(axis.text.y = element_text(size = 10,color="black"))
+p
+```
+# Trade Emissions Balance
+A trade emissions balance is another way of assessing emissions from a consumption-based perspective.
+A trade balance in economics is typically defined as exports from a region minus the imports into the region, where a trade surplus indicates more goods and services leaving the region than coming in from outside the region.
+Analogously, trade balance information can be used to derive a trade emissions balance for each region.
+Emissions are exported from the SoI when they occur in the SoI but are associated with a commodity that is consumed outside the state, either in the RoUS or RoW.
+Imported emissions are those occurring out of state but associated with a commodity consumed by the SoI.
+Figure \@ref(fig:trade) shows the trade balance of emissions for the time series for `r state_name`.
+A positive value of the balance represents net positive emissions from trade, meaning that the state's consumption results in more emissions than it makes to produce exports.
+
+```{r trade_balance_calc, echo=FALSE, warning=FALSE, include=FALSE}
+cbe_trade_all <- sapply(models, calculateCBETradeBalance, simplify=FALSE, USE.NAMES=TRUE)
+cbe_trade_all_df <- sapply(cbe_trade_all, matricizeandflip)
+rownames(cbe_trade_all_df) <- c("Exports to RoUS", "Exports to RoW", "Imports from RoUS",
+                                "Imports from RoW", "Balance")
+cbe_trade_summary_df <- rbind(colSums(cbe_trade_all_df[c(1, 2),]),
+                              colSums(cbe_trade_all_df[c(3, 4),]),
+                              cbe_trade_all_df[c(5),])
+rownames(cbe_trade_summary_df) <- c("Exports", "Imports", "Balance")
+
+```
+```{r trade, echo=FALSE, warning=FALSE, fig.cap="Trade emissions balance"}
+# Alternatively can chart "cbe_trade_all_df" to differentiate RoW and RoUS
+trade_balance <- lineChartFigure(cbe_trade_summary_df / 10^9, "Greenhouse Gases (million tonnes)")
+trade_balance <- trade_balance + theme(text = element_text(size=12))
+trade_balance
+```
+
+```{r include=FALSE}
+if (params$saveresultdata) {
+  suffix <- paste0("_",state,"_",min(years),"-",max(years),".csv")
+  write.csv(cbe_all,paste0("CBE_",suffix))
+}
+
+```
+
+# About
+This document was generated using the RMarkdown file `StateCBE.Rmd` that can be found in the [USEEIO-State github repository](https://github.com/USEPA/USEEIO-State). The `r paste0(state,substring(modelstub, 1, nchar(modelstub)-1))` models were used for the series of years to generate these results along with supporting code in the repository. The U.S. Environmental Protection Agency, through its Office of Research and Development, funded and conducted the research described herein under an approved Quality Assurance Project Plan (K-LRTD-0030017-QP-1-3). 
+
+# Notes
+Short names are given for both aggregate categories and more specific manufactured good categories in Figures \@ref(fig:cbebysector) and \@ref(fig:cbebysectorman) for the purpose of display and easy recognition. Identification of these names with broader commodity codes (which correspond with the Bureau of Economic Analysis Input-Ouput Codes which are based on the North American Industry Classification system) is as follows: Education/Healthcare=6;  Dining/Hospitality/Rec=7; Ag/Forestry/Fishery=11; Mining=21; Utilities=22; Construction=23; Wholesalers=42; Information=51; Management services=55; Education=61; Other services=81; Wood=321; Paper=322; Print media=323; Refined Petro/Coal=324; Chemicals=325; Plastics=326; Other constr. materials=327; Raw metals=331; Metal products=332; Machinery=333; Electronics=334; Appliances/Lighting=335; Furniture=337; Misc. goods=339; Food/Beverage=311FT; Textiles=313TT; Clothing/Leather=315AL;  Vehicles - Road=3361MV; Vehicles - Nonroad=3364OT; Households=F010; Finance/Insurance/Realty=FIRE; Government=G; Professional services=PROF. See Table 6 in the Appendix of the report for more complete names of all categories.
+
+

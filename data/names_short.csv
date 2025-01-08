@@ -1,0 +1,88 @@
+Code,Name,Name_short,Num_char
+6,"Educational services, health care, and social assistance",Education/Healthcare,20
+7,"Arts, entertainment, recreation, accommodation, and food services",Dining/Hospitality/Rec,22
+11,"Agriculture, forestry, fishing, and hunting",Ag/Forestry/Fishery,19
+21,Mining,Mining,6
+22,"Electricity, natural gas, drinking water, and wastewater treatment",Utilities,9
+23,Construction,Construction,12
+42,Wholesale trade,Wholesalers,11
+51,Information,Information,11
+55,Company and enterprise management,Management services,19
+61,Educational institutions and services,Education,9
+81,"Other services, except government",Other services,14
+211,Unrefined oil and gas,Oil and gas,11
+212,"Metal ores, dimensional stone, nonmetallic minerals",Mining products,15
+213,Well drilling and support activities for mining,Mining support,14
+321,"Wood products (e.g. plywood, veneer)",Wood,4
+322,Paper products and paper production facilities,Paper,5
+323,Print media and printing support,Print media,11
+324,"Petroleum fuels, asphalt, and other petroleum and coal products",Refined Petro/Coal,18
+325,"Agricultural, pharmaceutical, industrial, and commercial chemicals",Chemicals,9
+326,Plastics and rubber products,Plastics,8
+327,"Clay, glass, cement, concrete, and other nonmetallic mineral products",Other constr. materials,23
+331,Primary and secondary ferrous and nonferrous metals,Raw metals,10
+332,Fabricated metal products (e.g. architectural and structural metal products),Metal products,14
+333,Machinery (except computers),Machinery,9
+334,"Computers and relevant parts, conductors, measuring devices, communication devices",Electronics,11
+335,"Lights and light fixtures, switch boards, transformers, and home appliances",Appliances/Lighting,19
+337,Furniture and shelving,Furniture,9
+339,"Medical supplies, entertainment and sporting goods, fashion goods, advertising products",Misc. goods,11
+441,Vehicles and parts sales,Car dealers & part stores,25
+445,Food and beverage stores,Grocery stores,14
+452,General merchandise stores,General retail stores,21
+481,Air transport,Air transport,13
+482,Rail transport,Rail transport,14
+483,"Water transport (boats, ships, ferries)",Water transport,15
+484,Truck transport,Truck transport,15
+485,Passenger ground transport,Public transport,16
+486,Pipeline transport,Pipeline transport,18
+493,Warehouses,Warehouses,10
+511,"Media, literature, and software","Media, literature, and software",31
+512,Film and sound-based entertainment,Film and sound-based entertainment,34
+513,"Radio, TV, telecommunication","Radio, TV, telecommunication",28
+514,"Data processing, internet publishing, and other information services","Data processing, internet publishing, and other information services",68
+523,"Financial investments, exchanges, and advising","Financial investments, exchanges, and advising",46
+524,"Insurance agencies, carriers, and brokerages","Insurance agencies, carriers, and brokerages",44
+525,"Funds, trusts, and financial vehicles","Funds, trusts, and financial vehicles",37
+561,Administrative and support services,Administrative and support services,35
+562,Waste management and remediation services,Waste management and remediation services,41
+621,"Healthcare professions, laboratories, and ambulances","Healthcare professions, laboratories, and ambulances",52
+622,Hospitals,Hospitals,9
+623,"Nursing, community, mental health, and substance abuse facilities","Nursing, community, mental health, and substance abuse facilities",65
+624,"Child day care, community food services, housing services, and other relief services","Child day care, community food services, housing services, and other relief services",84
+713,"Amusement facilities, gambling facilities, resort and recreation facilities","Amusement facilities, gambling facilities, resort and recreation facilities",75
+721,Hotels and campgrounds,Hotels and campgrounds,22
+722,Food and beverage establishments,Food and beverage establishments,32
+5411,Legal services,Legal services,14
+5415,Computer programming and systems design,Computer programming and systems design,39
+111CA,"Oilseeds, grains, vegetables, fruits, animal farms and aquaculture",Farm products,13
+113FF,"Raw forest products, wild-caught fish and game, agriculture and forestry support",Forest products,15
+311FT,Food and beverage and tobacco products,Food/Beverage,13
+313TT,Textiles and textile-derived products (except clothes),Textiles,8
+315AL,Clothing and leather,Clothing/Leather,16
+31G,Manufacturing,Manufacturing,13
+3361MV,On-road vehicles (excluding motorcycles) and accompanying parts,Vehicles - Road,15
+3364OT,"Other vehicles (e.g. aircraft, water vessels), missiles, and accompanying parts",Vehicles - Nonroad,18
+44RT,Retail trade,Retail trade,12
+487OS,"Couriers, messengers, transportation for leisure activities",Delivery services,17
+48TW,Transportation and warehousing,Transport/Storage,17
+4A0,Other retail,Other retail,12
+521CI,"Monetary authorities, depository and nondepository credit intermediation and related activities","Monetary authorities, depository and nondepository credit intermediation and related activities",95
+532RL,"Renting and leasing of goods, equipment, vehicles and nonfinancial intangible assets","Renting and leasing of goods, equipment, vehicles and nonfinancial intangible assets",84
+5412OP,"Miscellaneous professional, scientific, and technical services","Miscellaneous professional, scientific, and technical services",62
+711AS,"Performing arts, spectator sports, museums, and related activities","Performing arts, spectator sports, museums, and related activities",66
+F010,Households,Households,10
+FIRE,"Finance, insurance, real estate, rental, and leasing",Finance/Insurance/Realty,24
+G,Government,Government,10
+GFE,Federal electric utilities and postal service,Federal electric utilities and postal service,45
+GFGD,Federal general government (defense),Federal general government (defense),36
+GFGN,Federal general government (nondefense),Federal general government (nondefense),39
+GSLE,Other state and local government enterprises including transit and utilities,Other state and local government enterprises including transit and utilities,76
+GSLG,State and local general government,State and local general government,34
+HS,Housing,Housing,7
+ORE,Other real estate,Other real estate,17
+Other,Other,Other,5
+PROF,Professional and business services,Professional services,21
+Used,Used,Used,4
+F010-Mobile,Household-Mobile,Household-Mobile,16
+F010-Stationary,Households-Stationary,Households-Stationary,21

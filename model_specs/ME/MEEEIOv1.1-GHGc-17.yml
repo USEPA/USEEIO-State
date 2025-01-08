@@ -1,8 +1,8 @@
-Model: "StateEEIOv1.1-GHG-17" # 2017 Summary, Commodity
+Model: "MEEEIOv1.1-GHGc-17" # 2017 Summary, Commodity
 BaseIOSchema: 2012
 BaseIOLevel: "Summary"
 IOYear: 2017 # Year for IO data
-ModelRegionAcronyms: ["US-CT", "RoUS"]
+ModelRegionAcronyms: ["US-ME", "RoUS"]
 ModelType: "EEIO"
 IODataSource: "stateior"
 IODataVersion: "0.2.1"
@@ -18,7 +18,7 @@ SatelliteTable:
     FullName: "Greenhouse Gases"
     Abbreviation: "GHG"
     StaticSource: TRUE
-    StaticFile: "flowsa/FlowBySector/GHG_state_2017_m1_v2.0.0_a8c5929.parquet"
+    StaticFile: "flowsa/FlowBySector/GHGc_state_ME_2017_v2.0.3_32c23ef.parquet"
     FileLocation: "DataCommons"
     DataYears: [2017]
     Locations: ["US"]

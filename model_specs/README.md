@@ -8,7 +8,7 @@ All model specification files follow the useeior [model specification](https://g
 - Naming pattern is `location-version-extensions(optional)-year`
 - Model specification files exist that create models for all states in one build (in the [all_states](/all_states) folder and have the name 'StateEEIO') and others that create individual state models, in state-specific folders.
 - By default all EEIO v1 models have **GHG, WAT, CHAIR, GRDREL, WATREL, LAND, CRHW, EMP, VADD** extensions (see any model spec for the full names). If the model only has one or more extensions, this is included in the name, e.g. ('-GHG-') in the name indicates GHG extensions only.
-- Individual state models the names use the state 2 letter acronym plus 'EEIO' like 'COHEEIO' for Colorado.
+- Individual state models the names use the state 2 letter acronym plus 'EEIO' like 'COEEIO' for Colorado.
 - Models are specific to year, generally named after the input-output data year, where the last two digits of the year appear at the end of the model name. Data years for extensions can vary and do not always match a model IO year. 
 
 
