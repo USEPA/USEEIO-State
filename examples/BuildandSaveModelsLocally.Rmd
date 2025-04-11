@@ -8,13 +8,13 @@ params:
     label: "Model Type"
     value: "v1.0"
     input: select
-    choices: ["v1.0","v1.1-GHG","v1.1-GHGc"]
+    choices: ["v1.0","v1.1-GHG","v1.1-GHGc","v1.3-pecan"]
   years:
     label: "Model Year(s)"
     value: 2012
     input: select
     multiple: TRUE
-    choices: [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020]
+    choices: [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]
   states:
     label: "State(s)"
     value: "AL"
@@ -63,6 +63,9 @@ if (grepl("GHGc",spec)) {
 
 for(state in states) {
   for(year in years) {
+    if(!is_model_spec_valid(year, spec)) {
+      next
+    }
     print(paste0("Building model for ",state, ": ", year))
     #If this is a custom model the spec will live in the state's own folder and have a state-specific name
     # else a StateEEIO* spec is used
