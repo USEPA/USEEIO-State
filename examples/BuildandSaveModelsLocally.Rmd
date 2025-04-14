@@ -14,7 +14,7 @@ params:
     value: 2012
     input: select
     multiple: TRUE
-    choices: [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]
+    choices: [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022]
   states:
     label: "State(s)"
     value: "AL"
