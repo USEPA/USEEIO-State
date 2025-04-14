@@ -53,6 +53,9 @@ is_model_spec_valid <- function(year, spec) {
   if(year > 2020 & !(spec %in% c("v1.3-pecan"))) {
     print(paste0("WARNING: Model spec ", spec, " not available beyond 2020."))
     return(FALSE)
+  } else if(year < 2017 & (spec %in% c("v1.3-pecan"))) {
+    print(paste0("WARNING: Model spec ", spec, " not available prior to 2017."))
+    return(FALSE)    
   } else {
     return(TRUE)
   }
