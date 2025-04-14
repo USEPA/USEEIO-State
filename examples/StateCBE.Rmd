@@ -54,8 +54,8 @@ spec <- params$model
 state_name <- state.name[state.abb == state]
 
 #state <- "AL"
-#years <- c(2012:2019)
-#spec <- "v1.1-GHG"
+#years <- c(2017:2022)
+#spec <- "v1.3-pecan"
 
 focal_year <- 2019
 
