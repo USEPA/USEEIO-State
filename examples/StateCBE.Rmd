@@ -70,6 +70,7 @@ if (spec == "v1.1-GHG") {
   modelstub <- 'EEIOv1.1-GHGc-'
 } else if (spec == "v1.3-pecan") {
   modelstub <- 'EEIOv1.3-pecan-'
+  focal_year <- max(years)
 }
 
 ```
