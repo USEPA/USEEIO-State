@@ -340,7 +340,7 @@ trade_balance
 
 ```{r include=FALSE}
 if (params$saveresultdata) {
-  suffix <- paste0("_",state,"_",min(years),"-",max(years),".csv")
+  suffix <- paste0(state,"_",min(years),"-",max(years),".csv")
   write.csv(cbe_all,paste0("CBE_",suffix))
 }
 

@@ -10,5 +10,6 @@ examples/GenerateResults_files*
 examples/CBEI_files*
 examples/*.docx
 examples/*.html
+examples/*.csv
 models/*
 .idea/*
