@@ -1,4 +1,4 @@
-useeior_ver = "v1.6.1"
+useeior_ver = "v1.7.1"
 # useeior_ver = "develop"
 
 #' Install useeior (via pak).
@@ -46,4 +46,17 @@ load_state_population <- function(path=NULL) {
   pop <- pop[,c("FlowAmount","Abbreviation","Year")]
   colnames(pop) <- c("Population","State","Year")
   return(pop)
+}
+
+#' Check if model spec and year are valid combinations.
+is_model_spec_valid <- function(year, spec) {
+  if(year > 2020 & !(spec %in% c("v1.3-pecan"))) {
+    print(paste0("WARNING: Model spec ", spec, " not available beyond 2020."))
+    return(FALSE)
+  } else if(year < 2017 & (spec %in% c("v1.3-pecan"))) {
+    print(paste0("WARNING: Model spec ", spec, " not available prior to 2017."))
+    return(FALSE)    
+  } else {
+    return(TRUE)
+  }
 }

@@ -14,11 +14,12 @@ All model specification files follow the useeior [model specification](https://g
 
 ## USEEIO State model version guide
 
-|  Version     | Import Emission Factors | Default Extensions                                     | stateior version |
-|:-------------|:------------------------|:------------------------------------------------------ |:-----------------|
-| v1.0         | No                      | GHG, WAT, CHAIR, GRDREL, WATREL, LAND, CRHW, EMP, VADD | 2012 (v0.2.1)    |
-| v1.1         | Yes                     | GHG                                                    | 2012 (v0.2.1)    | 
+|  Version     | Import Emission Factors* | Default Extensions                                     | stateior version |
+|:-------------|:-------------------------|:------------------------------------------------------ |:-----------------|
+| v1.0         | No                       | GHG, WAT, CHAIR, GRDREL, WATREL, LAND, CRHW, EMP, VADD | 2012 (v0.2.1)    |
+| v1.1         | Yes                      | GHG                                                    | 2012 (v0.2.1)    | 
+| v1.3         | Yes                      | GHG                                                    | 2017 (v0.4.0)    | 
 
-By default the v1.1 models use import emissions factors build using EXIOBASE to represent embodied GHGs in imports in place of using the domestic technology assumption. 
+\* By default, some models use import emissions factors build using EXIOBASE to represent embodied GHGs in imports in place of using the domestic technology assumption. 
 
 

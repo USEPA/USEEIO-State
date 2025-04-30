@@ -8,13 +8,13 @@ params:
     label: "Model Type"
     value: "v1.0"
     input: select
-    choices: ["v1.0", "v1.1-GHG", "v1.1-GHGc"]
+    choices: ["v1.0", "v1.1-GHG", "v1.1-GHGc","v1.3-pecan"]
   years:
     label: "Model Year(s)"
     value: 2012
     input: select
     multiple: TRUE
-    choices: [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020]
+    choices: [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022]
   states:
     label: "State(s)"
     value: ""
@@ -43,6 +43,8 @@ if (spec == "v1.0") {
   modelstub <- 'EEIOv1.1-GHG-'
 } else if (spec == "v1.1-GHGc") {
   modelstub <- 'EEIOv1.1-GHGc-'
+} else if (spec == "v1.3-pecan") {
+  modelstub <- 'EEIOv1.3-pecan-'
 }
 
 ```
@@ -62,6 +64,9 @@ for(state in states) {
     stop(paste0(state, " is only available with a customized GHG Inventory, please use v1.1-GHGc."))
   }
   for(year in years) {
+    if(!is_model_spec_valid(year, spec)) {
+      next
+    }
     modelname <- paste0(state, modelstub,substr(year,3,4)) 
     file_path <- download_model_RDS(modelname)
 
