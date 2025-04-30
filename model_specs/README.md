@@ -14,6 +14,8 @@ All model specification files follow the useeior [model specification](https://g
 
 ## USEEIO State model version guide
 
+For additional details on available USEEIO State models, see the [USEEIO repository](https://github.com/USEPA/USEEIO/blob/master/models.md).
+
 |  Version     | Import Emission Factors* | Default Extensions                                     | stateior version |
 |:-------------|:-------------------------|:------------------------------------------------------ |:-----------------|
 | v1.0         | No                       | GHG, WAT, CHAIR, GRDREL, WATREL, LAND, CRHW, EMP, VADD | 2012 (v0.2.1)    |
