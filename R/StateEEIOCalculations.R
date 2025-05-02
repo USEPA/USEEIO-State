@@ -18,9 +18,9 @@ calculateStateCBE <- function(model, CO2e=TRUE, perspective="FINAL",
                                    show_RoW=show_RoW)
   # Note this function requires a model with only a single indicator
   if(CO2e) {
-    r<-r$LCIA_f
+    r<-r$H_l
   } else {
-    r<-r$LCI_f
+    r<-r$G_l
   }
   return(r)
 }
@@ -245,27 +245,27 @@ calculateCBETradeBalance <- function(model) {
 
   # Emissions exported from SoI to RoUS
   E_x_RoUS <- calculateEEIOModel(model, perspective="DIRECT", demand="Consumption", location="RoUS",
-                                 use_domestic_requirements=TRUE, show_RoW=TRUE)[["LCIA_d"]]
+                                 use_domestic_requirements=TRUE, show_RoW=TRUE)[["H_r"]]
   E_x_RoUS <- E_x_RoUS[grepl(paste0('/*', SoI), row.names(E_x_RoUS)), , drop=FALSE]
   
   # Emissions exported from SoI to RoW (uses SoI export demand vector)
   E_x_RoW <- calculateEEIOModel(model, perspective="DIRECT", demand=export_RoW, location=SoI,
-                                use_domestic_requirements=TRUE, show_RoW=TRUE)[["LCIA_d"]]
+                                use_domestic_requirements=TRUE, show_RoW=TRUE)[["H_r"]]
   E_x_RoW_RoUS <-  E_x_RoW[grepl('/RoUS', row.names(E_x_RoW)), , drop=FALSE] ## Add this in E_m_RoUS below
   E_x_RoW <- E_x_RoW[grepl(paste0('/*', SoI), row.names(E_x_RoW)), , drop=FALSE]
   
   # Emissions imported to SoI from RoUS
   E_m_RoUS <- calculateEEIOModel(model, perspective="DIRECT", demand="Consumption", location=SoI,
-                                 use_domestic_requirements=TRUE, show_RoW=TRUE)[["LCIA_d"]]
+                                 use_domestic_requirements=TRUE, show_RoW=TRUE)[["H_r"]]
   E_m_RoUS <- E_m_RoUS[grepl('/RoUS', row.names(E_m_RoUS)), , drop=FALSE]
   E_m_RoUS <- E_m_RoUS + E_x_RoW_RoUS ## Add in SoI export emissions occurring in RoUS
   
   # Emissions imported to SoI from RoW
   # To get at 2nd and 3rd term, subtract domestic from Total
   E_m_RoW <- (calculateEEIOModel(model, perspective="DIRECT", demand="Consumption", location=SoI,
-                                 use_domestic_requirements=FALSE, show_RoW=TRUE)[["LCIA_d"]] -
+                                 use_domestic_requirements=FALSE, show_RoW=TRUE)[["H_r"]] -
                 calculateEEIOModel(model, perspective="DIRECT", demand="Consumption", location=SoI,
-                                   use_domestic_requirements=TRUE, show_RoW=TRUE)[["LCIA_d"]])
+                                   use_domestic_requirements=TRUE, show_RoW=TRUE)[["H_r"]])
   E_m_RoW <- E_m_RoW[grepl('/RoW', row.names(E_m_RoW)), , drop=FALSE]
     
   CBE_trade <- data.frame(cbind(-E_x_RoUS, -E_x_RoW, E_m_RoUS, E_m_RoW))

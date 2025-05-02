@@ -82,13 +82,13 @@ result <- calculateEEIOModel(CO, perspective = "DIRECT", use_domestic_requiremen
 
 Show the totals for the results for GHGs (kg CO2e), Jobs, and Value Added ($) by Region
 ```{r}
-CO_result <- colSums(result$LCIA_d[grep("US-CO",row.names(result$LCIA_d)),])
-RoUS_result <- colSums(result$LCIA_d[grep("RoUS",row.names(result$LCIA_d)),])
+CO_result <- colSums(result$H_r[grep("US-CO",row.names(result$H_r)),])
+RoUS_result <- colSums(result$H_r[grep("RoUS",row.names(result$H_r)),])
 US_result <- CO_result+RoUS_result
 
 kable(t(data.frame(CO=CO_result,RoUS=RoUS_result,`AllUS`=US_result)))
 ```
 The full results can be viewed by sector and location
 ```{r}
-kable(result$LCIA_d)
+kable(result$H_r)
 ```
